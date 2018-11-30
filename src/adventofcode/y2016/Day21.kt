@@ -1,8 +1,8 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.SimpleParser
-import nl.ruudwiegers.adventofcode.util.parser
+import adventofcode.util.SimpleParser
+import adventofcode.util.parser
 
 object Day21 : AdventSolution(2016, 21, "Scrambled Letters and Hash") {
 	override fun solvePartOne(input: String) = scramble("abcdefgh", scramblingParser, input.split("\n"))

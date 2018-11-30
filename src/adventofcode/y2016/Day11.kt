@@ -1,8 +1,8 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.IState
-import nl.ruudwiegers.adventofcode.util.aStar
+import adventofcode.util.IState
+import adventofcode.util.aStar
 
 object Day11 : AdventSolution(2016, 11, "Radioisotope Thermoelectric Generators") {
 

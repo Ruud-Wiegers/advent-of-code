@@ -1,4 +1,4 @@
-package nl.ruudwiegers.adventofcode.util
+package adventofcode.util
 
 fun <T> permute(input: List<T>): Sequence<List<T>> = input.fold(sequenceOf(listOf())) { permutations, elementToAdd ->
 	permutations.flatMap { permutation ->

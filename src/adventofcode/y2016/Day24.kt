@@ -1,9 +1,9 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.IState
-import nl.ruudwiegers.adventofcode.util.aStar
-import nl.ruudwiegers.adventofcode.util.permute
+import adventofcode.util.IState
+import adventofcode.util.aStar
+import adventofcode.util.permute
 import kotlin.math.abs
 
 object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {

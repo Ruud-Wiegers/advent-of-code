@@ -1,6 +1,5 @@
 package adventofcode
 
-import nl.ruudwiegers.adventofcode.AOC_SESSION
 import java.io.File
 import java.net.URL
 

@@ -1,16 +1,16 @@
-package nl.ruudwiegers.adventofcode.y2015
+package adventofcode.y2015
 
 import adventofcode.AdventSolution
 
 object Day19 : AdventSolution(2015, 19, "Medicine for Rudolph") {
 
 	override fun solvePartOne(input: String) = parse(input)
-			.let { (ts, m) -> newMolecules(m, ts) }
+			.let { (transitions, molecule) -> newMolecules(molecule, transitions) }
 			.count()
 			.toString()
 
 	override fun solvePartTwo(input: String): String {
-		val (transitions, molecule) = parse(input)
+		val (_, molecule) = parse(input)
 
 		val c = molecule.count { it.isUpperCase() } - molecule.count("Rn") - molecule.count("Ar") - 2 * molecule.count("Y") - 1
 		return c.toString()

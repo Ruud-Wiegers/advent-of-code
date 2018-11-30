@@ -1,4 +1,4 @@
-package nl.ruudwiegers.adventofcode.y2015
+package adventofcode.y2015
 
 
 import adventofcode.AdventSolution

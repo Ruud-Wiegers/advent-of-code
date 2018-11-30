@@ -1,4 +1,4 @@
-package nl.ruudwiegers.adventofcode.util
+package adventofcode.util
 
 import java.util.*
 

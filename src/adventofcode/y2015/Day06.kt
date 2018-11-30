@@ -1,8 +1,8 @@
-package nl.ruudwiegers.adventofcode.y2015
+package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.SimpleParser
-import nl.ruudwiegers.adventofcode.util.parser
+import adventofcode.util.SimpleParser
+import adventofcode.util.parser
 
 private typealias ScreenAction = IScreen.() -> Unit
 

@@ -1,7 +1,7 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.parser
+import adventofcode.util.parser
 
 
 object Day08 : AdventSolution(2016, 8, "Two-Factor Authentication") {

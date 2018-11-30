@@ -1,7 +1,7 @@
-package nl.ruudwiegers.adventofcode.y2015
+package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import nl.ruudwiegers.adventofcode.util.permute
+import adventofcode.util.permute
 
 
 object Day13 : AdventSolution(2015, 13, "Knights of the Dinner Table") {
