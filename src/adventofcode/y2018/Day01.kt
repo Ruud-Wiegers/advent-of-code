@@ -11,31 +11,19 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 					.toString()
 
 	override fun solvePartTwo(input: String): String {
-		val deltas = input.splitToSequence("\n")
-				.map(String::toInt)
-				.toList()
+		val changes = input.split("\n").map(String::toInt)
 
-		return generateSequence { deltas }
+		var frequency = 0
+		val reached = mutableSetOf<Int>()
+
+		generateSequence { changes }
 				.flatten()
-				.scan(0, Int::plus)
-				.findFirstRepetition()
-				.toString()
-	}
-}
+				.forEach {
+					reached += frequency
+					frequency += it
+					if (frequency in reached) return frequency.toString()
+				}
 
-private fun <T, R> Sequence<T>.scan(initial: R, operation: (R, T) -> R): Sequence<R> {
-	var result: R = initial
-	return this.map {
-		result = operation(result, it)
-		result
+		throw IllegalStateException()
 	}
-}
-
-private fun <T> Sequence<T>.findFirstRepetition(): T? {
-	val seen = mutableSetOf<T>()
-	forEach {
-		if (it in seen) return it
-		seen += it
-	}
-	return null
 }
