@@ -4,12 +4,18 @@ import adventofcode.AdventSolution
 
 object Day22 : AdventSolution(2015, 22, "Wizard Simulator 20XX") {
 
-	override fun solvePartOne(input: String): String = play(false)
-	override fun solvePartTwo(input: String): String = play(true)
+	override fun solvePartOne(input: String): String = parseInput(input).let { (hp, damage) -> play(hp, damage, false) }
+	override fun solvePartTwo(input: String): String = parseInput(input).let { (hp, damage) -> play(hp, damage, true) }
+
+	private fun parseInput(input: String): Pair<Int, Int> {
+		val hp = input.substringAfter(": ").substringBefore('\n').toInt()
+		val dmg = input.substringAfterLast(": ").toInt()
+		return hp to dmg
+	}
 
 
-	private fun play(hardMode: Boolean): String {
-		val start = Combat(50, 500, 51, 9, 0, 0, 0, hardMode, 0)
+	private fun play(hp: Int, damage: Int, hardMode: Boolean): String {
+		val start = Combat(50, 500, hp, damage, 0, 0, 0, hardMode, 0)
 		var bestScore = Int.MAX_VALUE
 		return generateSequence(listOf(start)) { c ->
 			c.filterNot { it.isVictorious() }.filter { it.cost < bestScore }

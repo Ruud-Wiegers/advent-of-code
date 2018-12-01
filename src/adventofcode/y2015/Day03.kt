@@ -1,7 +1,11 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 
+fun main(args: Array<String>) {
+	Day03.solve()
+}
 object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum") {
 
 	override fun solvePartOne(input: String) = visitEach(input).size.toString()
@@ -20,7 +24,7 @@ object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum")
 		var x = 0
 		var y = 0
 
-		val visited = mutableSetOf<Pair<Int, Int>>()
+		val visited = mutableSetOf(Pair(0 , 0))
 
 		route.forEach {
 			when (it) {
