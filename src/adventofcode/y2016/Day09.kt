@@ -20,6 +20,7 @@ object Day09 : AdventSolution(2016, 9, "Explosives in Cyberspace") {
 			val (_, b, r) = match.destructured
 			val indexOfCompressedBlock = match.groups[1]!!.range.last + 2
 			decompressedLength += b.toInt() * r.toInt()
+			decompressedLength += match.groups[1]!!.range.first -1
 			pos += indexOfCompressedBlock + b.toInt()
 		}
 		return decompressedLength
@@ -37,6 +38,7 @@ object Day09 : AdventSolution(2016, 9, "Explosives in Cyberspace") {
 			val (_, b, r) = match.destructured
 			val indexOfCompressedBlock = match.groups[1]!!.range.last + 2
 			val substring = content.substring(pos + indexOfCompressedBlock, pos + indexOfCompressedBlock + b.toInt())
+			decompressedLength += match.groups[1]!!.range.first -1
 			decompressedLength += decompress2(substring) * r.toInt()
 			pos += indexOfCompressedBlock + b.toInt()
 		}
