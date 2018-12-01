@@ -13,6 +13,7 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 	override fun solvePartTwo(input: String): String {
 		val deltas = input.splitToSequence("\n")
 				.map(String::toInt)
+				.toList()
 
 		return generateSequence { deltas }
 				.flatten()
