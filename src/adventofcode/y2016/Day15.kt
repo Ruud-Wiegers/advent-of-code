@@ -3,16 +3,17 @@ package adventofcode.y2016
 import adventofcode.AdventSolution
 
 object Day15 : AdventSolution(2016, 15, "Timing is Everything") {
-	private val configuration = listOf(
-			Disc(17, 15),
-			Disc(3, 2),
-			Disc(19, 4),
-			Disc(13, 2),
-			Disc(7, 2),
-			Disc(5, 0))
+	override fun solvePartOne(input: String) = calulateWaitingTime(parseConfig(input)).toString()
+	override fun solvePartTwo(input: String) = calulateWaitingTime(parseConfig(input) + Disc(11, 0)).toString()
 
-	override fun solvePartOne(input: String) = calulateWaitingTime(configuration).toString()
-	override fun solvePartTwo(input: String) = calulateWaitingTime(configuration + Disc(11, 0)).toString()
+	private fun parseConfig(s: String): List<Disc> =
+			s.split("\n")
+					.map {
+						val size = it.substringAfter(" has ").substringBefore(" ").toLong()
+						val position = it.substringAfterLast(' ').dropLast(1).toLong()
+						Disc(size, position)
+					}
+
 
 	private fun calulateWaitingTime(configuration: List<Disc>): Long = configuration
 			.mapIndexed { i, d -> d.rotate(i + 1) }
@@ -59,11 +60,3 @@ object Day15 : AdventSolution(2016, 15, "Timing is Everything") {
 
 
 }
-/*
-Disc #1 has 17 positions; at time=0, it is at position 15.
-Disc #2 has 3 positions; at time=0, it is at position 2.
-Disc #3 has 19 positions; at time=0, it is at position 4.
-Disc #4 has 13 positions; at time=0, it is at position 2.
-Disc #5 has 7 positions; at time=0, it is at position 2.
-Disc #6 has 5 positions; at time=0, it is at position 0.
- */

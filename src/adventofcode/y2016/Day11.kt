@@ -1,23 +1,41 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 import adventofcode.util.IState
 import adventofcode.util.aStar
 
 object Day11 : AdventSolution(2016, 11, "Radioisotope Thermoelectric Generators") {
 
 	override fun solvePartOne(input: String): String = aStar(FloorPlan(1,
-			listOf(E(1, 1), E(2, 1), E(2, 1), E(3, 3), E(3, 3))))
+			parseConfig(input)))
 			?.cost
 			.toString()
 
 	override fun solvePartTwo(input: String): String = aStar(FloorPlan(1,
-			listOf(E(1, 1), E(1, 1), E(1, 1), E(2, 1), E(2, 1), E(3, 3), E(3, 3))))
+			listOf(E(1, 1), E(1, 1)) + parseConfig(input)))
 			?.cost
 			.toString()
 }
 
-data class E(val chip: Int, val gen: Int) : Comparable<E> {
+private fun parseConfig(input: String): List<E> {
+	val chips = mutableMapOf<String, Int>()
+	val generators = mutableMapOf<String, Int>()
+	input.splitToSequence("\n").forEachIndexed { floor, contents ->
+		contents.splitToSequence(" a ")
+				.map { it.substringBefore(' ') }
+				.forEach {
+					if ('-' in it)
+						chips[it.substringBefore('-')] = floor + 1
+					else generators[it] = floor + 1
+				}
+	}
+	return chips.map { E(it.value, generators[it.key]!!) }
+
+}
+
+
+private data class E(val chip: Int, val gen: Int) : Comparable<E> {
 	override fun compareTo(other: E): Int {
 		val ch = chip.compareTo(other.chip)
 		return if (ch != 0) ch else gen.compareTo(other.gen)
@@ -33,7 +51,7 @@ data class E(val chip: Int, val gen: Int) : Comparable<E> {
 			else emptySequence()
 }
 
-data class FloorPlan(private val elevator: Int, private val elements: List<E>) : IState {
+private data class FloorPlan(private val elevator: Int, private val elements: List<E>) : IState {
 	private fun isValid(): Boolean = elevator in 1..4 &&
 			elements.filterNot { it.chip == it.gen }
 					.none { element ->
