@@ -2,7 +2,7 @@ package adventofcode.y2018
 
 import adventofcode.AdventSolution
 
-object Day02 : AdventSolution(2018, 2, "?") {
+object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
 	override fun solvePartOne(input: String): String {
 		val list = input.splitToSequence("\n")
