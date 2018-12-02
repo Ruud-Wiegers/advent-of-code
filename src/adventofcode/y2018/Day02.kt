@@ -21,11 +21,14 @@ object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 	override fun solvePartTwo(input: String): String {
 		val boxes = input.split("\n")
 
-		for (box in boxes)
+		for (box in boxes) {
 			for (other in boxes) {
 				val matchingCharacters = box.filterIndexed { i, ch -> other[i] == ch }
-				if (matchingCharacters.length == box.length - 1) return matchingCharacters
+				if (matchingCharacters.length == box.length - 1) {
+					return matchingCharacters
+				}
 			}
+		}
 		return ""
 	}
 }
