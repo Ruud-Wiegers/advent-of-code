@@ -7,25 +7,21 @@ object Day16 : AdventSolution(2016, 16, "Dragon Checksum ") {
 	override fun solvePartTwo(input: String) = fillDisk(input, 35651584).checksum()
 }
 
-private tailrec fun fillDisk(inputValue: String, size: Int): String =
-		if (inputValue.length >= size)
-			inputValue.substring(0, size)
-		else
-			fillDisk(dragon(inputValue), size)
+private fun fillDisk(inputValue: String, size: Int): String =
+		generateSequence(inputValue, String::dragon)
+				.first { it.length >= size }
+				.take(size)
 
-private fun dragon(a: String) = a
-		.reversed()
+private fun String.dragon() = reversed()
 		.replace('0', 'x')
 		.replace('1', '0')
 		.replace('x', '1')
-		.let { a + '0' + it }
+		.let { this + '0' + it }
 
 
-private tailrec fun String.checksum(): String =
-		if (length % 2 != 0)
-			this
-		else
-			this.diff().checksum()
+private fun String.checksum(): String =
+		generateSequence(this, String::diff)
+				.first { it.length % 2 != 0 }
 
 private fun String.diff(): String = (indices step 2)
 		.asSequence()

@@ -35,9 +35,10 @@ private fun Square.symmetries(): List<Square> {
 }
 
 private fun Square.rotate(): Square = indices.map { i ->
-	this[0].indices.reversed().map { j ->
-		this[j][i]
-	}.joinToString("")
+	this[0].indices.reversed()
+			.map { j -> this[j][i] }
+			.fold(StringBuilder(), StringBuilder::append)
+			.toString()
 }
 
 private fun Square.step(squareSize: Int, fullRules: Map<Square, Square>): Square =
@@ -46,7 +47,7 @@ private fun Square.step(squareSize: Int, fullRules: Map<Square, Square>): Square
 					.transpose()
 					.map { square -> fullRules[square]!! }
 					.transpose()
-					.map { line -> line.joinToString("") }
+					.map { line -> line.fold(StringBuilder(), StringBuilder::append).toString() }
 		}
 
 private fun Square.countLights() = sumBy { line -> line.count { char -> char == '#' } }
