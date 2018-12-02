@@ -5,29 +5,30 @@ import adventofcode.AdventSolution
 object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
 	override fun solvePartOne(input: String): String {
-		val list = input.splitToSequence("\n")
-				.map { it.groupingBy { it }.eachCount() }
-				.toList()
+		val frequencies = input.split("\n")
+				.map { id ->
+					id.groupingBy { it }
+							.eachCount()
+							.values
+				}
 
-		val two = list.count { 2 in it.values }
-		val three = list.count { 3 in it.values }
+		val two = frequencies.count { 2 in it }
+		val three = frequencies.count { 3 in it }
 
 		return (two * three).toString()
 	}
 
 	override fun solvePartTwo(input: String): String {
-		val ids = input.split("\n")
-		for (a in ids) {
-			for (b in ids) {
-				val diff = a.zip(b) { c, d -> if (c == d) c else null }
-						.filterNotNull()
-						.toCharArray()
-						.let { String(it) }
-				if (diff.length == a.length - 1)
-					return diff
+		val boxes = input.split("\n")
+
+		return boxes.indices.asSequence().flatMap { i ->
+			(0 until i).asSequence().map { j ->
+				boxes[i] to boxes[j]
 			}
 		}
-
-		return ""
+				.map { (a, b) -> keepSame(a, b) }
+				.first { it.length == boxes[0].length - 1 }
 	}
+
+	private fun keepSame(a: String, b: String) = a.filterIndexed { index, ch -> b[index] == ch }
 }
