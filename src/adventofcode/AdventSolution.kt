@@ -1,5 +1,6 @@
 package adventofcode
 
+import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 abstract class AdventSolution(val year: Int, val day: Int, val title: String) {
@@ -20,9 +21,9 @@ fun AdventSolution.solve() {
 
 	var solution1 = ""
 	var solution2 = ""
-	val time1 = measureTimeMillis { solution1 = solvePartOne(input) }
+	val time1 = measureNanoTime { solution1 = solvePartOne(input) } / 1_000_000
 	println("[${time1.toString().padStart(4).colored(gradeSolution(time1))} ms]  $solution1")
-	val time2 = measureTimeMillis { solution2 = solvePartTwo(input) }
+	val time2 = measureNanoTime { solution2 = solvePartTwo(input) } / 1_000_000
 	println("[${time2.toString().padStart(4).colored(gradeSolution(time2))} ms]  $solution2")
 	println()
 	System.out.flush()
