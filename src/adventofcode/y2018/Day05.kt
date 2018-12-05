@@ -5,29 +5,24 @@ import java.util.*
 
 object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
 
-	override fun solvePartOne(input: String): String {
-		val processed = process(input)
-		return processed.toString()
-	}
+    override fun solvePartOne(input: String) = process(input).size.toString()
 
-	override fun solvePartTwo(input: String): String {
-		return ('a'..'z')
-				.asSequence()
-				.map { ch -> input.filter { it.toLowerCase() != ch } }
-				.map { process(it) }
-				.min()
-				.toString()
-	}
+    override fun solvePartTwo(input: String): String {
+        val preProcessed = String(process(input).toCharArray())
 
-	private fun process(input: String): Int {
-		val processed = Stack<Char>()
-		for (ch in input) {
-			if (processed.isEmpty() || ch == processed.peek() || ch.toLowerCase() != processed.peek().toLowerCase())
-				processed.push(ch)
-			else
-				processed.pop()
-		}
-		return processed.size
-	}
+        return ('a'..'z')
+                .asSequence()
+                .map { ch -> preProcessed.filter { it.toLowerCase() != ch } }
+                .map { process(it).size }
+                .min()
+                .toString()
+    }
 
+    private fun process(input: String): List<Char> = Stack<Char>().apply {
+        for (ch in input)
+            if (isEmpty() || ch == peek() || ch.toLowerCase() != peek().toLowerCase())
+                push(ch)
+            else
+                pop()
+    }
 }
