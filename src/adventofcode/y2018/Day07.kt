@@ -1,10 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import java.util.*
-
-fun main() = repeat(5) { Day07.solve() }
 
 object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
 
