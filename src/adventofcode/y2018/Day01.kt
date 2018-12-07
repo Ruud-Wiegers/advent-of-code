@@ -4,26 +4,26 @@ import adventofcode.AdventSolution
 
 object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 
-	override fun solvePartOne(input: String) =
-			input.splitToSequence("\n")
-					.map(String::toInt)
-					.sum()
-					.toString()
+    override fun solvePartOne(input: String) =
+            input.splitToSequence("\n")
+                    .map(String::toInt)
+                    .sum()
+                    .toString()
 
-	override fun solvePartTwo(input: String): String {
-		val changes = input.split("\n").map(String::toInt)
+    override fun solvePartTwo(input: String): String {
+        val changes = input.split("\n").map(String::toInt)
 
-		var frequency = 0
-		val reached = mutableSetOf<Int>()
+        var frequency = 0
+        val reached = mutableSetOf<Int>()
 
-		generateSequence { changes }
-				.flatten()
-				.forEach {
-					reached += frequency
-					frequency += it
-					if (frequency in reached) return frequency.toString()
-				}
+        generateSequence { changes }
+                .flatten()
+                .forEach {
+                    reached += frequency
+                    frequency += it
+                    if (frequency in reached) return frequency.toString()
+                }
 
-		throw IllegalStateException()
-	}
+        throw IllegalStateException()
+    }
 }
