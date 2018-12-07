@@ -1,60 +1,67 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
+import adventofcode.solve
+import java.util.*
 
+fun main() = repeat(5) { Day07.solve() }
 
 object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
 
 	override fun solvePartOne(input: String): String {
-		val dependencies = parse(input)
+		val prerequisites = parse(input)
 		val open = ('A'..'Z').toSortedSet()
-		val res = mutableListOf<Char>()
+		val completed = mutableListOf<Char>()
 
 		while (open.isNotEmpty()) {
-			val n = open.first { dependencies[it]?.none { it in open } ?: true }
-			open.remove(n)
-			res.add(n)
+			val newTask = open.first { prerequisites[it].orEmpty().none { it in open } }
+			open -= newTask
+			completed +=newTask
 		}
 
-		return res.joinToString("")
+		return completed.joinToString("")
 	}
 
 	override fun solvePartTwo(input: String): String {
-		val dependencies = parse(input)
-
+		val prerequisites: Map<Char, SortedSet<Char>> = parse(input)
 		val open = ('A'..'Z').toSortedSet()
-		val processing = mutableMapOf<Char, Int>()
+		val tasksInProgress = mutableMapOf<Char, Int>()
+		val completed = mutableSetOf<Char>()
 
-		var count = 0
+		var currentTime = 0
 
-		while (open.isNotEmpty()) {
-			while (processing.size < 5) {
-				val n = open.firstOrNull {
-					dependencies[it]?.none {
-						it in open || it in processing.keys
-					} ?: true
-				} ?: break
-				open.remove(n)
-				processing[n] = 61 + (n - 'A')
-			}
-			count++
-			for (k in processing.keys.toList()) {
-				processing[k] = processing[k]!! - 1
-				processing.remove(k, 0)
-			}
+		while (completed.size < 26) {
+			//assign new tasks to waiting elves if possible
+			open
+					.filter { prerequisites[it].orEmpty().all { it in completed } }
+					.take(5 - tasksInProgress.size)
+					.forEach { newTaskId ->
+						open -= newTaskId
+						tasksInProgress[newTaskId] = currentTime + 61 + (newTaskId - 'A')
+					}
+
+			//advance the time to the completion of the next task
+			currentTime = tasksInProgress.values.min() ?: currentTime
+
+			//move all completed tasks to  'complete'
+			tasksInProgress.keys
+					.filter { tasksInProgress[it] == currentTime }
+					.forEach { completedTaskId ->
+						tasksInProgress -= completedTaskId
+						completed += completedTaskId
+					}
 		}
 
-		return (count + (processing.values.max() ?: 0)).toString()
+		return currentTime.toString()
 	}
 
 	private fun parse(input: String) = input
 			.splitToSequence("\n")
 			.map {
-				val a = it.substringAfter("Step ")[0]
-				val b = it.substringAfter("before step ")[0]
-				a to b
+				val required = it.substringAfter("Step ")[0]
+				val next = it.substringAfter("before step ")[0]
+				next to required
 			}
-			.groupBy({ it.second }, { it.first })
-			.toSortedMap()
-
+			.groupBy({ it.first }, { it.second })
+			.mapValues { it.value.toSortedSet() }
 }
