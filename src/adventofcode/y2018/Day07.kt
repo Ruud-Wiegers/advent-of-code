@@ -7,9 +7,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
 
 	override fun solvePartOne(input: String): String {
 		val dependencies = parse(input)
-
 		val open = ('A'..'Z').toSortedSet()
-
 		val res = mutableListOf<Char>()
 
 		while (open.isNotEmpty()) {
@@ -31,15 +29,18 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
 
 		while (open.isNotEmpty()) {
 			while (processing.size < 5) {
-				val n = open.firstOrNull { dependencies[it]?.none { it in open || it in processing.keys } ?: true }
-						?: break
+				val n = open.firstOrNull {
+					dependencies[it]?.none {
+						it in open || it in processing.keys
+					} ?: true
+				} ?: break
 				open.remove(n)
 				processing[n] = 61 + (n - 'A')
 			}
 			count++
 			for (k in processing.keys.toList()) {
 				processing[k] = processing[k]!! - 1
-				processing.remove(k,0)
+				processing.remove(k, 0)
 			}
 		}
 
