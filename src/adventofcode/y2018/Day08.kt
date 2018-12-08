@@ -10,18 +10,20 @@ object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
 
     private fun parse(input: String) = input
             .splitToSequence(" ")
-            .map { it.toInt() }
-            .let { readNode(it.iterator()) }
+            .map(String::toInt)
+            .iterator()
+            .let(::Node)
 
-    private fun readNode(iter: Iterator<Int>): Node =
-            Node(iter.next(), iter.next()).apply {
-                repeat(numChildren) { children += readNode(iter) }
-                repeat(numMetadata) { metadata += iter.next() }
-            }
+    private class Node(iter: Iterator<Int>) {
+        private val children: List<Node>
+        private val metadata: List<Int>
 
-    private data class Node(val numChildren: Int, val numMetadata: Int) {
-        val children = mutableListOf<Node>()
-        val metadata = mutableListOf<Int>()
+        init {
+            val childrenCount = iter.next()
+            val metadataCount = iter.next()
+            children = List(childrenCount) { Node(iter) }
+            metadata = List(metadataCount) { iter.next() }
+        }
 
         fun simpleChecksum(): Int = metadata.sum() + children.sumBy(Node::simpleChecksum)
 

@@ -17,4 +17,5 @@ private fun toHex(data:ByteArray): String {
 	}
 	return r.toString()
 }
+
 private val hexCode = "0123456789abcdef".toCharArray()
