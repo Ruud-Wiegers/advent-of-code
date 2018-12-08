@@ -13,7 +13,7 @@ object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
             .map { it.toInt() }
             .let { readNode(it.iterator()) }
 
-    private fun readNode(iter: Iterator<Int>) =
+    private fun readNode(iter: Iterator<Int>): Node =
             Node(iter.next(), iter.next()).apply {
                 repeat(numChildren) { children += readNode(iter) }
                 repeat(numMetadata) { metadata += iter.next() }
