@@ -10,8 +10,8 @@ abstract class AdventSolution(val year: Int, val day: Int, val title: String) {
 		require(day in 1..25) { "$day is not a valid day in december. Choose a day in 1-25" }
 	}
 
-	abstract fun solvePartOne(input: String): String
-	abstract fun solvePartTwo(input: String): String
+	abstract fun solvePartOne(input: String): Any?
+	abstract fun solvePartTwo(input: String): Any?
 }
 
 fun AdventSolution.solve() {
@@ -19,8 +19,8 @@ fun AdventSolution.solve() {
 
 	println("Day $day: ${title.colored("32;1")}")
 
-	var solution1 = ""
-	var solution2 = ""
+	var solution1 :Any? = null
+	var solution2 :Any? =null
 	val time1 = measureNanoTime { solution1 = solvePartOne(input) } / 1_000_000
 	println("[${time1.toString().padStart(4).colored(gradeSolution(time1))} ms]  $solution1")
 	val time2 = measureNanoTime { solution2 = solvePartTwo(input) } / 1_000_000

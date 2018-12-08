@@ -4,10 +4,10 @@ import adventofcode.AdventSolution
 
 object Day03 : AdventSolution(2018, 3, "No Matter How You Slice It") {
 
-    override fun solvePartOne(input: String): String {
+    override fun solvePartOne(input: String): Int {
         val claims = parseInput(input)
         val fabric = applyClaimsToFabric(claims)
-        return fabric.count { it > 1 }.toString()
+        return fabric.count { it > 1 }
     }
 
     override fun solvePartTwo(input: String): String {

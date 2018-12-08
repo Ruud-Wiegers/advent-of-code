@@ -19,7 +19,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
         return completed.joinToString("")
     }
 
-    override fun solvePartTwo(input: String): String {
+    override fun solvePartTwo(input: String): Int {
         val prerequisites: Map<Char, SortedSet<Char>> = parse(input)
         val open = ('A'..'Z').toSortedSet()
         val tasksInProgress = mutableMapOf<Char, Int>()
@@ -49,7 +49,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
                     }
         }
 
-        return currentTime.toString()
+        return currentTime
     }
 
     private fun parse(input: String) = input

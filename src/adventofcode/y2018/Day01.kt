@@ -8,9 +8,8 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
             input.splitToSequence("\n")
                     .map(String::toInt)
                     .sum()
-                    .toString()
 
-    override fun solvePartTwo(input: String): String {
+    override fun solvePartTwo(input: String): Int {
         val changes = input.split("\n").map(String::toInt)
 
         var frequency = 0
@@ -21,7 +20,7 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
                 .forEach {
                     reached += frequency
                     frequency += it
-                    if (frequency in reached) return frequency.toString()
+                    if (frequency in reached) return frequency
                 }
 
         throw IllegalStateException()

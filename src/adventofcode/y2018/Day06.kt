@@ -5,7 +5,7 @@ import kotlin.math.abs
 
 object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
 
-    override fun solvePartOne(input: String): String {
+    override fun solvePartOne(input: String): Int? {
         val points = parse(input)
         val counts = mutableMapOf<Point, Int>()
 
@@ -29,7 +29,7 @@ object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
             }
         }
 
-        return counts.filterKeys { it !in disqualified }.values.max().toString()
+        return counts.filterKeys { it !in disqualified }.values.max()
 
     }
 
@@ -48,7 +48,7 @@ object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
         return closestPoint
     }
 
-    override fun solvePartTwo(input: String): String {
+    override fun solvePartTwo(input: String): Int {
         val points = parse(input)
 
         val height = points.height()
@@ -58,7 +58,7 @@ object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
                         points.sumBy { it.distanceTo(x, y) }
                     }
                     .count { it < 10000 }
-        }.toString()
+        }
     }
 
     private fun parse(input: String) = input.splitToSequence("\n")

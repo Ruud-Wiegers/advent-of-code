@@ -4,7 +4,7 @@ import adventofcode.AdventSolution
 
 object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
-    override fun solvePartOne(input: String): String {
+    override fun solvePartOne(input: String): Int {
         val frequencies = input.split("\n")
                 .map { id ->
                     id.groupingBy { it }
@@ -15,7 +15,7 @@ object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
         val two = frequencies.count { 2 in it }
         val three = frequencies.count { 3 in it }
 
-        return (two * three).toString()
+        return two * three
     }
 
     override fun solvePartTwo(input: String): String {

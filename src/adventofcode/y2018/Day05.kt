@@ -5,9 +5,9 @@ import java.util.*
 
 object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
 
-    override fun solvePartOne(input: String) = process(input).size.toString()
+    override fun solvePartOne(input: String) = process(input).size
 
-    override fun solvePartTwo(input: String): String {
+    override fun solvePartTwo(input: String): Int? {
         val preProcessed = String(process(input).toCharArray())
 
         return ('a'..'z')
@@ -15,7 +15,7 @@ object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
                 .map { ch -> preProcessed.filter { it.toLowerCase() != ch } }
                 .map { process(it).size }
                 .min()
-                .toString()
+
     }
 
     private fun process(input: String): List<Char> = Stack<Char>().apply {

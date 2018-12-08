@@ -4,9 +4,9 @@ import adventofcode.AdventSolution
 
 object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
 
-    override fun solvePartOne(input: String) = parse(input).simpleChecksum().toString()
+    override fun solvePartOne(input: String) = parse(input).simpleChecksum()
 
-    override fun solvePartTwo(input: String) = parse(input).complexChecksum().toString()
+    override fun solvePartTwo(input: String) = parse(input).complexChecksum()
 
     private fun parse(input: String) = input
             .splitToSequence(" ")
