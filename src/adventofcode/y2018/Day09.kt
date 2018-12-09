@@ -8,65 +8,34 @@ fun main(args: Array<String>) = Day09.solve()
 
 object Day09 : AdventSolution(2018, 9, "Marble Mania") {
 
-    override fun solvePartOne(input: String): Long? {
-        val (players, highestMarble) = parse(input)
-        return linkedMarbleGame(players, highestMarble)
-    }
+    override fun solvePartOne(input: String) = parse(input).let { (p, m) -> game(p, m) }
 
-    override fun solvePartTwo(input: String): Long? {
-        val (players, highestMarble) = parse(input)
+    override fun solvePartTwo(input: String) = parse(input).let { (p, m) -> game(p, m * 100) }
 
-        return linkedMarbleGame(players, highestMarble * 100)
-    }
-
-    private fun linkedMarbleGame(players: Int, highestMarble: Int): Long? {
+    //The magic trick: use a linked list, also rotate the circle, not a cursor
+    private fun game(players: Int, highestMarble: Int): Long? {
         val scores = LongArray(players)
-        var currentElf = 0
-
-
         val circle = LinkedList<Int>()
-        circle.add(0)
-        var currentPosition = circle.listIterator()
-
+        circle += 0
 
         for (nextMarble in 1..highestMarble) {
-            if (nextMarble % 23 != 0) {
-                    if (currentPosition.hasNext()) currentPosition.next()
-                    else{ currentPosition = circle.listIterator()
-                        currentPosition.next()
-                }
-                currentPosition.add(nextMarble)
-                currentElf = (currentElf + 1) % scores.size
+            if (nextMarble % 23 == 0) {
+                repeat(7) { circle.offerFirst(circle.pollLast()) }
+                scores[nextMarble % scores.size] += nextMarble.toLong() + circle.pollLast().toLong()
+
+                circle.offer(circle.poll())
             } else {
-                scores[currentElf] += nextMarble.toLong()
-                repeat(7) {
-                    if (currentPosition.hasPrevious()) currentPosition.previous()
-                    else{
-                        currentPosition = circle.listIterator(circle.size)
-                        currentPosition.previous()
-
-                    }
-                }
-                val m = if (currentPosition.hasPrevious()) currentPosition.previous() else {
-                    currentPosition = circle.listIterator(circle.size)
-                    currentPosition.previous()
-                }
-
-                currentPosition.remove()
-                currentPosition.next()
-
-                scores[currentElf] += m.toLong()
-
-                currentElf = (currentElf + 1) % scores.size
+                circle.offer(circle.poll())
+                circle.offer(nextMarble)
             }
         }
         return scores.max()
     }
 
     private fun parse(input: String): Pair<Int, Int> {
-        val players = input.substringBefore(" ").toInt()
-        val marbles = input.substringAfter("worth ").substringBefore(" ").toInt()
-        return players to marbles
+        val r = "(\\d+) players; last marble is worth (\\d+) points".toRegex()
+        val (players, lastMarble) = r.matchEntire(input)!!.destructured
+        return players.toInt() to lastMarble.toInt()
     }
 
 }
