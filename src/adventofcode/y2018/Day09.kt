@@ -15,7 +15,7 @@ object Day09 : AdventSolution(2018, 9, "Marble Mania") {
     //The magic trick: use a linked list, also rotate the circle, not a cursor
     private fun game(players: Int, highestMarble: Int): Long? {
         val scores = LongArray(players)
-        val circle = LinkedList<Int>()
+        val circle = ArrayDeque<Int>()
         circle += 0
 
         for (nextMarble in 1..highestMarble) {
