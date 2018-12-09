@@ -18,7 +18,7 @@ object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
 
     }
 
-    private fun process(input: String): List<Char> = Stack<Char>().apply {
+    private fun process(input: String): Deque<Char> = ArrayDeque<Char>().apply {
         for (ch in input)
             if (isEmpty() || ch == peek() || ch.toLowerCase() != peek().toLowerCase())
                 push(ch)

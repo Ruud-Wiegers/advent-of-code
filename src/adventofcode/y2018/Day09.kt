@@ -1,10 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import java.util.*
-
-fun main(args: Array<String>) = Day09.solve()
 
 object Day09 : AdventSolution(2018, 9, "Marble Mania") {
 
@@ -23,10 +20,10 @@ object Day09 : AdventSolution(2018, 9, "Marble Mania") {
                 repeat(7) { circle.offerFirst(circle.pollLast()) }
                 scores[nextMarble % scores.size] += nextMarble.toLong() + circle.pollLast().toLong()
 
-                circle.offer(circle.poll())
+                circle.offerLast(circle.pollFirst())
             } else {
-                circle.offer(circle.poll())
-                circle.offer(nextMarble)
+                circle.offerLast(circle.pollFirst())
+                circle.offerLast(nextMarble)
             }
         }
         return scores.max()
@@ -37,5 +34,4 @@ object Day09 : AdventSolution(2018, 9, "Marble Mania") {
         val (players, lastMarble) = r.matchEntire(input)!!.destructured
         return players.toInt() to lastMarble.toInt()
     }
-
 }
