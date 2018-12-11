@@ -9,27 +9,38 @@ fun main(args: Array<String>) {
 
 object Day11 : AdventSolution(2018, 11, "The Stars Align") {
 
-    override fun solvePartOne(input: String) = ""
+    override fun solvePartOne(input: String): String {
+        val g = CumulativeGrid(300) { x, y -> power(x + 1, y + 1, input.toInt()) }
+
+        var maxP = 0
+        var answer = ""
+
+        for (x in 0 until 300 - 3) {
+            for (y in 0 until 300 - 3) {
+                val p = g.cumulative(x, y, 3)
+                if (p > maxP) {
+                    maxP = p
+                    answer = "${x+2},${y+2}"
+                }
+            }
+        }
+        return answer
+    }
 
     override fun solvePartTwo(input: String): String {
 
-        val serial = input.toInt()
-
-        //something something cumulative magic.
-        val grid = (1..300).map { y ->
-            (1..300).map { x -> power(x, y, serial) }.scan(0, Int::plus)
-        }.scan(List(300) { 0 }) { a, b -> a.zip(b, Int::plus) }
+        val g = CumulativeGrid(300) { x, y -> power(x + 1, y + 1, input.toInt()) }
 
         var maxP = 0
         var answer = ""
 
         for (sq in 1..300) {
-            for (x in 1..301 - sq) {
-                for (y in 1..301 - sq) {
-                    val p = calculatePower(x, y, sq, grid)
+            for (x in 1..300 - sq) {
+                for (y in 1..300 - sq) {
+                    val p = g.cumulative(x , y , sq)
                     if (p > maxP) {
                         maxP = p
-                        answer = "$y,$x,$sq"
+                        answer = "${x+2},${y+2},$sq"
                     }
                 }
             }
@@ -43,19 +54,20 @@ object Day11 : AdventSolution(2018, 11, "The Stars Align") {
         return p / 100 % 10 - 5
     }
 
-    private fun calculatePower(x: Int, y: Int, sq: Int, grid: List<List<Int>>): Int {
-
-        fun get(x: Int, y: Int): Int = grid.getOrElse(y - 2) { return 0 }.getOrElse(x - 2) { 0 }
-        return get(y + sq, x + sq) - get(y, x + sq) - get(y + sq, x) + get(y, x)
-    }
-
 }
 
-//Analogous to the Rx scan operator. A fold that returns each intermediate value.
-private fun <T, R> Iterable<T>.scan(initial: R, operation: (R, T) -> R): List<R> {
-    var result: R = initial
-    return this.map {
-        result = operation(result, it)
-        result
+private class CumulativeGrid(size: Int, value: (x: Int, y: Int) -> Int) {
+    private val g = List(size + 1) { IntArray(size + 1) }
+
+    init {
+        for (y in 1..size)
+            for (x in 1..size)
+                g[y][x] = value(x, y) + g[y - 1][x] + g[y][x - 1] - g[y - 1][x - 1]
     }
+
+
+    fun cumulative(x: Int, y: Int, sq: Int): Int =
+            g[y + sq][x + sq] - g[y + sq][x] - g[y][x + sq] + g[y][x]
+
+
 }
