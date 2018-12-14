@@ -2,6 +2,7 @@ package adventofcode.y2018
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.y2018.Day13.Direction.*
 
 fun main() = Day13.solve()
 
@@ -10,40 +11,12 @@ object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {
     override fun solvePartOne(input: String): String {
         val (track, carts) = parse(input)
 
-
         while (true) {
-            carts.sortBy { it.p.x }
-            carts.sortBy { it.p.y }
+            for (cart in carts.sortedBy { it.p.y * 10000 + it.p.x }) {
+                cart.move(track)
 
-            for (cart in carts) {
-                cart.p += cart.d.vector
-
-                if (carts.count { c -> cart.p == c.p } > 1) {
-                    return "${cart.p.x},${cart.p.y}"
-                }
-
-                when (track[cart.p.y][cart.p.x]) {
-                    '/' -> cart.d = when (cart.d) {
-                        Direction.UP -> Direction.RIGHT
-                        Direction.RIGHT -> Direction.UP
-                        Direction.DOWN -> Direction.LEFT
-                        Direction.LEFT -> Direction.DOWN
-                    }
-
-                    '\\' -> cart.d = when (cart.d) {
-                        Direction.UP -> Direction.LEFT
-                        Direction.LEFT -> Direction.UP
-                        Direction.DOWN -> Direction.RIGHT
-                        Direction.RIGHT -> Direction.DOWN
-                    }
-                    '+' -> {
-                        when (cart.t) {
-                            0 -> cart.d = cart.d.left()
-                            2 -> cart.d = cart.d.right()
-                        }
-                        cart.t = (cart.t + 1) % 3
-                    }
-                }
+                if (carts.count { it.p == cart.p } > 1)
+                    return cart.position()
             }
         }
     }
@@ -52,69 +25,58 @@ object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {
         val (track, carts) = parse(input)
 
         while (true) {
-            carts.sortBy { it.p.x }
-            carts.sortBy { it.p.y }
+            for (cart in carts.sortedBy { it.p.y * 10000 + it.p.x }) {
+                cart.move(track)
 
-            for (cart in carts) {
-                cart.p += cart.d.vector
-
-                val p = cart.p
-                if (carts.count { c -> c.p == p } > 1) {
-                    carts
-                            .filter { it.p == p }
-                            .forEach { it.p = Point(-1000000, -100) }
-                }
-                if (cart.p.x >= 0) {
-
-                    when (track[cart.p.y][cart.p.x]) {
-                        '/' -> cart.d = when (cart.d) {
-                            Direction.UP -> Direction.RIGHT
-                            Direction.RIGHT -> Direction.UP
-                            Direction.DOWN -> Direction.LEFT
-                            Direction.LEFT -> Direction.DOWN
-                        }
-
-                        '\\' -> cart.d = when (cart.d) {
-                            Direction.UP -> Direction.LEFT
-                            Direction.LEFT -> Direction.UP
-                            Direction.DOWN -> Direction.RIGHT
-                            Direction.RIGHT -> Direction.DOWN
-                        }
-                        '+' -> {
-                            when (cart.t) {
-                                0 -> cart.d = cart.d.left()
-                                2 -> cart.d = cart.d.right()
-                            }
-                            cart.t = (cart.t + 1) % 3
-                        }
-                    }
-                }
+                if (carts.count { it.p == cart.p } > 1)
+                    carts.removeIf { it.p == cart.p }
             }
-            carts.removeIf { it.p.x < 0 }
-            if (carts.size == 1) return "${carts[0].p.x},${carts[0].p.y}"
 
-
+            if (carts.size == 1)
+                return carts[0].position()
         }
     }
 
-    private fun parse(input: String): Pair<List<List<Track>>, MutableList<Cart>> {
+    private fun Cart.move(track: List<String>) {
+        if (p.x < 0 || p.y < 0) return
+
+        p += d.vector
+
+        when (track[p.y][p.x]) {
+            '/' -> d = when (d) {
+                UP -> RIGHT
+                RIGHT -> UP
+                DOWN -> LEFT
+                LEFT -> DOWN
+            }
+
+            '\\' -> d = when (d) {
+                UP -> LEFT
+                LEFT -> UP
+                DOWN -> RIGHT
+                RIGHT -> DOWN
+            }
+            '+' -> {
+                when (t) {
+                    0 -> d = d.left()
+                    2 -> d = d.right()
+                }
+                t = (t + 1) % 3
+            }
+        }
+    }
+
+    private fun parse(input: String): Pair<List<String>, MutableList<Cart>> {
+        val track = input.split("\n")
+
         val carts = mutableListOf<Cart>()
-        val track = input.split("\n").mapIndexed { y, r ->
-            r.mapIndexed { x, ch ->
+        track.forEachIndexed { y, r ->
+            r.forEachIndexed { x, ch ->
                 when (ch) {
-                    '^' -> {
-                        carts += Cart(Point(x, y), Direction.UP, 0);'|'
-                    }
-                    'V' -> {
-                        carts += Cart(Point(x, y), Direction.DOWN, 0);'|'
-                    }
-                    '<' -> {
-                        carts += Cart(Point(x, y), Direction.LEFT, 0);'-'
-                    }
-                    '>' -> {
-                        carts += Cart(Point(x, y), Direction.RIGHT, 0);'-'
-                    }
-                    else -> ch
+                    '^' -> carts += Cart(Point(x, y), UP, 0)
+                    'v' -> carts += Cart(Point(x, y), DOWN, 0)
+                    '<' -> carts += Cart(Point(x, y), LEFT, 0)
+                    '>' -> carts += Cart(Point(x, y), RIGHT, 0)
                 }
             }
         }
@@ -122,20 +84,20 @@ object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {
         return track to carts
     }
 
-    private data class Cart(var p: Point, var d: Direction, var t: Int)
-}
-private typealias Track = Char
+    private data class Cart(var p: Point, var d: Direction, var t: Int) {
+        fun position() = "${p.x},${p.y}"
+    }
 
-private enum class Direction(val vector: Point) {
-    UP(Point(0, -1)), RIGHT(Point(1, 0)), DOWN(Point(0, 1)), LEFT(Point(-1, 0));
+    private enum class Direction(val vector: Point) {
+        UP(Point(0, -1)), RIGHT(Point(1, 0)), DOWN(Point(0, 1)), LEFT(Point(-1, 0));
 
-    fun left() = turn(3)
-    fun right() = turn(1)
-    fun reverse() = turn(2)
+        fun left() = turn(3)
+        fun right() = turn(1)
 
-    private fun turn(i: Int): Direction = Direction.values().let { it[(it.indexOf(this) + i) % it.size] }
-}
+        private fun turn(i: Int): Direction = values().let { it[(it.indexOf(this) + i) % it.size] }
+    }
 
-private data class Point(val x: Int, val y: Int) {
-    operator fun plus(o: Point) = Point(x + o.x, y + o.y)
+    private data class Point(val x: Int, val y: Int) {
+        operator fun plus(o: Point) = Point(x + o.x, y + o.y)
+    }
 }
