@@ -30,14 +30,18 @@ object Day14 : AdventSolution(2018, 14, "Chocolate Charts") {
             val res = recipes[e1] + recipes[e2]
             if (res > 9) {
                 recipes += res / 10
-                if (recipes.takeLast(target.size) == target) break
+                if (recipes.endMatches(target)) break
             }
             recipes += res % 10
-            if (recipes.takeLast(target.size) == target) break
+            if (recipes.endMatches(target)) break
 
             e1 = (e1 + recipes[e1] + 1) % recipes.size
             e2 = (e2 + recipes[e2] + 1) % recipes.size
         }
         return recipes.size - target.size
     }
+
+    //faster version of takeLast(end.size)==end
+    private fun List<Int>.endMatches(end: List<Int>) =
+            this.size >= end.size && end.indices.all { end[it] == this[size - end.size + it] }
 }
