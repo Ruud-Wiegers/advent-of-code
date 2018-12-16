@@ -1,12 +1,6 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-import java.util.*
-
-fun main(args: Array<String>) {
-    Day16.solve()
-}
 
 object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
 
@@ -28,7 +22,7 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
         return result.reg[0]
     }
 
-    private fun findOperationsFromExamples(examples: List<Example>): SortedMap<Int, Operation> {
+    private fun findOperationsFromExamples(examples: List<Example>): Map<Int, Operation> {
         val foundOpcodes = sortedMapOf<Int, Operation>()
         while (foundOpcodes.size < Operation.values().size) {
             val testCases = examples.filter { it.instruction.opcode !in foundOpcodes.keys }
