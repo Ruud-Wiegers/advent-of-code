@@ -2,47 +2,33 @@ package adventofcode.y2018
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import java.util.*
-
-fun main(args: Array<String>) {
-    Day16.solve()
-}
 
 object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
-
-    override fun solvePartOne(input: String): Int {
-        return parse(input).first.count { (before, instruction, after) ->
-            Operation.values().count { operation ->
-                operation.execute(before, instruction) == after
-            } >= 3
-        }
-    }
+    override fun solvePartOne(input: String) = parse(input).first.count { operations.count(it::isSolvedBy) >= 3 }
 
     override fun solvePartTwo(input: String): Int {
         val (examples, program) = parse(input)
         val foundOpcodes = findOperationsFromExamples(examples)
 
-        val result = program.fold(State(listOf(0,0,0,0))) { state, instruction ->
-            foundOpcodes[instruction.opcode]!!.execute(state,instruction)
+        val result = program.fold(listOf(0, 0, 0, 0)) { state, instruction ->
+            foundOpcodes[instruction.opcode].execute(state, instruction)
         }
-        return result.reg[0]
+        return result[0]
     }
 
-    private fun findOperationsFromExamples(examples: List<Example>): SortedMap<Int, Operation> {
+    private fun findOperationsFromExamples(examples: List<Example>): List<Operation> {
         val foundOpcodes = sortedMapOf<Int, Operation>()
-        while (foundOpcodes.size < Operation.values().size) {
+        while (foundOpcodes.size < operations.size) {
             val testCases = examples.filter { it.instruction.opcode !in foundOpcodes.keys }
-            val ops = Operation.values().filter { it !in foundOpcodes.values }
-            testCases.forEach { ex ->
-                val validOps = ops.filter { op ->
-                    op.execute(ex.before, ex.instruction) == ex.after
-                }
+            val ops = operations.filter { it !in foundOpcodes.values }
+            testCases.forEach { example ->
+                val validOps = ops.filter(example::isSolvedBy)
                 if (validOps.size == 1) {
-                    foundOpcodes[ex.instruction.opcode] = validOps.first()
+                    foundOpcodes[example.instruction.opcode] = validOps.first()
                 }
             }
         }
-        return foundOpcodes
+        return foundOpcodes.values.toList()
     }
 
     private fun parse(input: String): Pair<List<Example>, List<Instruction>> {
@@ -57,9 +43,9 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
                         .map(String::toInt)
             }
             Example(
-                    State(before),
+                    before,
                     Instruction(op[0], op[1], op[2], op[3]),
-                    State(after)
+                    after
             )
 
         }
@@ -67,82 +53,39 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
         val p = prog.split('\n').map { it.split(" ").map(String::toInt).let { (a, b, c, d) -> Instruction(a, b, c, d) } }
         return (e to p)
     }
+}
 
-    data class Example(val before: State, val instruction: Instruction, val after: State)
-    data class State(val reg: List<Int>)
-    data class Instruction(val opcode: Int, val input1: Int, val input2: Int, val target: Int)
+private typealias Operation = (r: Registers, a: Int, b: Int) -> Int
 
-    enum class Operation {
-        Addr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] + regs[data.input2]
-        },
-        Addi {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] + data.input2
-        },
-        Mulr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] * regs[data.input2]
-        },
-        Muli {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] * data.input2
-        },
-        Banr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] and regs[data.input2]
-        },
-        Bani {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] and data.input2
-        },
-        Borr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] or regs[data.input2]
-        },
-        Bori {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1] or data.input2
-        },
-        Setr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    regs[data.input1]
-        },
-        Seti {
-            override fun execute(regs: List<Int>, data: Instruction) = data.input1
-        },
-        Gtir {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (data.input1 > regs[data.input2]) 1 else 0
-        },
-        Gtri {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (regs[data.input1] > data.input2) 1 else 0
-        },
-        Gtrr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (regs[data.input1] > regs[data.input2]) 1 else 0
-        },
-        Eqir {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (data.input1 == regs[data.input2]) 1 else 0
-        },
-        Eqri {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (regs[data.input1] == data.input2) 1 else 0
-        },
-        Eqrr {
-            override fun execute(regs: List<Int>, data: Instruction) =
-                    if (regs[data.input1] == regs[data.input2]) 1 else 0
-        };
+private val operations = listOf<Operation>(
+        { r, a, b -> r[a] + r[b] },
+        { r, a, b -> r[a] + b },
+        { r, a, b -> r[a] * r[b] },
+        { r, a, b -> r[a] * b },
+        { r, a, b -> r[a] and r[b] },
+        { r, a, b -> r[a] and b },
+        { r, a, b -> r[a] or r[b] },
+        { r, a, b -> r[a] or b },
+        { r, a, _ -> r[a] },
+        { _, a, _ -> a },
+        { r, a, b -> if (a > r[b]) 1 else 0 },
+        { r, a, b -> if (r[a] > b) 1 else 0 },
+        { r, a, b -> if (r[a] > r[b]) 1 else 0 },
+        { r, a, b -> if (a == r[b]) 1 else 0 },
+        { r, a, b -> if (r[a] == b) 1 else 0 },
+        { r, a, b -> if (r[a] == r[b]) 1 else 0 }
+)
 
-        fun execute(state: State, data: Instruction): State {
-            val regs = state.reg.toMutableList()
-            regs[data.target] = execute(state.reg, data)
-            return state.copy(reg = regs)
+
+private fun Operation.execute(registers: Registers, instruction: Instruction): Registers =
+        registers.toMutableList().also { regs ->
+            regs[instruction.target] = this(registers, instruction.input1, instruction.input2)
         }
 
-         protected abstract fun execute(regs: List<Int>, data: Instruction): Int
-    }
+
+private data class Example(val before: Registers, val instruction: Instruction, val after: Registers) {
+    fun isSolvedBy(op: Operation) = op.execute(before, instruction) == after
 }
+
+private typealias Registers = List<Int>
+private data class Instruction(val opcode: Int, val input1: Int, val input2: Int, val target: Int)
