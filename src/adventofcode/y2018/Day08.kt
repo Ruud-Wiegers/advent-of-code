@@ -30,6 +30,8 @@ object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
         fun complexChecksum(): Int = if (children.isEmpty())
             metadata.sum()
         else
-            metadata.sumBy { children.getOrNull(it - 1)?.complexChecksum() ?: 0 }
+            metadata.map { it - 1 }
+                    .filter { it in children.indices }
+                    .sumBy { children[it].complexChecksum() }
     }
 }
