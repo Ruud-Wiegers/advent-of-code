@@ -1,105 +1,57 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import adventofcode.util.SimpleParser
-import adventofcode.util.parser
-
-private typealias ScreenAction = IScreen.() -> Unit
+import adventofcode.y2015.Day06.Action.*
 
 object Day06 : AdventSolution(2015, 6, "Probably a Fire Hazard") {
 
-	override fun solvePartOne(input: String): String {
-		val parser = buildParser()
-		return input.split('\n')
-				.map { line -> parser.parse(line) ?: throw IllegalStateException() }
-				.fold(BinaryScreen(1000, 1000)) { screen, action -> screen.apply(action) }
-				.litPixels()
-				.toString()
-	}
+    override fun solvePartOne(input: String): Int =
+            execute(parse(input)) { v, a ->
+                when (a) {
+                    ON -> 1
+                    OFF -> 0
+                    TOGGLE -> 1 - v
+                }
+            }
 
-	override fun solvePartTwo(input: String): String {
+    override fun solvePartTwo(input: String): Int =
+            execute(parse(input)) { v, a ->
+                when (a) {
+                    ON -> v + 1
+                    OFF -> maxOf(v - 1, 0)
+                    TOGGLE -> v + 2
+                }
+            }
 
-		val parser = buildParser()
+    private inline fun execute(instructions: Sequence<Instruction>, execute: (v: Int, a: Action) -> Int): Int {
+        val screen = Array(1000) { IntArray(1000) }
 
-		return input.split('\n')
-				.map { line -> parser.parse(line) ?: throw IllegalStateException() }
-				.fold(BrightScreen(1000, 1000)) { screen, action -> screen.apply(action) }
-				.totalBrightness()
-				.toString()
-	}
+        for (instruction in instructions) {
+            for (y in instruction.y1..instruction.y2) {
+                val row = screen[y]
+                for (x in instruction.x1..instruction.x2)
+                    row[x] = execute(row[x], instruction.a)
+            }
+        }
 
+        return screen.sumBy(IntArray::sum)
+    }
 
-	private fun buildParser(): SimpleParser<ScreenAction> = parser {
-		rule("turn on (\\d+),(\\d+) through (\\d+),(\\d+)") { (x1, y1, x2, y2) ->
-			{ turnOnRange(x1.toInt()..x2.toInt(), y1.toInt()..y2.toInt()) }
-		}
-		rule("turn off (\\d+),(\\d+) through (\\d+),(\\d+)") { (x1, y1, x2, y2) ->
-			{ turnOffRange(x1.toInt()..x2.toInt(), y1.toInt()..y2.toInt()) }
-		}
-		rule("toggle (\\d+),(\\d+) through (\\d+),(\\d+)") { (x1, y1, x2, y2) ->
-			{ toggleRange(x1.toInt()..x2.toInt(), y1.toInt()..y2.toInt()) }
-		}
-	}
-}
+    private fun parse(input: String): Sequence<Instruction> {
+        val regex = "(.*) (\\d+),(\\d+) through (\\d+),(\\d+)".toRegex()
+        return input.splitToSequence("\n")
+                .map { regex.matchEntire(it)!!.destructured }
+                .map { (a, x1, y1, x2, y2) ->
+                    val act = when (a) {
+                        "turn on" -> ON
+                        "turn off" -> OFF
+                        "toggle" -> TOGGLE
+                        else -> throw IllegalArgumentException(a)
+                    }
+                    Instruction(act, x1.toInt(), y1.toInt(), x2.toInt(), y2.toInt())
+                }
+    }
 
-interface IScreen {
-	fun turnOnRange(xs: IntRange, ys: IntRange) = doAThing(xs, ys, IScreen::turnOn)
-	fun turnOffRange(xs: IntRange, ys: IntRange) = doAThing(xs, ys, IScreen::turnOff)
-	fun toggleRange(xs: IntRange, ys: IntRange) = doAThing(xs, ys, IScreen::toggle)
-
-	fun turnOn(x: Int, y: Int)
-	fun turnOff(x: Int, y: Int)
-	fun toggle(x: Int, y: Int)
-
-	private fun doAThing(xs: IntRange, ys: IntRange, action: IScreen.(x: Int, y: Int) -> Unit) {
-		for (x in xs)
-			for (y in ys)
-				action(x, y)
-	}
-
-}
-
-class BinaryScreen(rows: Int, columns: Int) : IScreen {
-	private val screen: Array<BooleanArray> = Array(rows) {
-		BooleanArray(columns) { false }
-	}
-
-	override fun turnOn(x: Int, y: Int) {
-		screen[y][x] = true
-	}
-
-	override fun turnOff(x: Int, y: Int) {
-		screen[y][x] = false
-	}
-
-	override fun toggle(x: Int, y: Int) {
-		screen[y][x] = !screen[y][x]
-	}
-
-
-	fun litPixels() = screen.sumBy { row -> row.count { it } }
-
-}
-
-class BrightScreen(rows: Int, columns: Int) : IScreen {
-	private val screen: Array<IntArray> = Array(rows) {
-		IntArray(columns) { 0 }
-	}
-
-	override fun turnOn(x: Int, y: Int) {
-		screen[y][x] += 1
-	}
-
-	override fun turnOff(x: Int, y: Int) {
-		if (screen[y][x] > 0) screen[y][x]--
-	}
-
-	override fun toggle(x: Int, y: Int) {
-		screen[y][x] += 2
-	}
-
-
-	fun totalBrightness() = screen.sumBy { it.sum() }
-
-
+    enum class Action { ON, OFF, TOGGLE }
+    data class Instruction(val a: Action, val x1: Int, val y1: Int, val x2: Int, val y2: Int)
 }
