@@ -1,60 +1,56 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
+import adventofcode.solve
+import kotlin.math.max
+import kotlin.math.min
+
+fun main() = Day18.solve()
 
 object Day18 : AdventSolution(2015, 18, "Like a GIF For Your Yard") {
 
-	override fun solvePartOne(input: String) = generateSequence(ConwayGrid(input)) { it.next() }
-			.drop(100)
-			.first()
-			.countAlive()
-			.toString()
+    override fun solvePartOne(input: String) = generateSequence(ConwayGrid(input), ConwayGrid::next)
+            .drop(100)
+            .first()
+            .countAlive()
 
-
-	override fun solvePartTwo(input: String) = generateSequence(ConwayGrid(input).stuckCorners()) { it.next().stuckCorners() }
-			.drop(100)
-			.first()
-			.countAlive()
-			.toString()
+    override fun solvePartTwo(input: String) = generateSequence(ConwayGrid(input).stuckCorners()) { it.next().stuckCorners() }
+            .drop(100)
+            .first()
+            .countAlive()
 
 }
 
 
 private data class ConwayGrid(private val grid: List<BooleanArray>) {
 
-	constructor(input: String) : this(input
-			.split("\n")
-			.map { it.map { it == '#' }.toBooleanArray() })
+    constructor(input: String) : this(input.split("\n").map { it.map { it == '#' }.toBooleanArray() })
 
-	fun next() = List(grid.size) { y ->
-		BooleanArray(grid[0].size) { x ->
-			shouldTurnAlive(x, y)
-		}
-	}.let { ConwayGrid(it) }
+    fun next() = List(grid.size) { y ->
+        BooleanArray(grid[0].size) { x ->
+            aliveNext(x, y)
+        }
+    }.let(::ConwayGrid)
 
-	fun stuckCorners() = this.copy().apply {
-		val last = grid.first().size - 1
-		grid.first()[0] = true
-		grid.first()[last] = true
-		grid.last()[0] = true
-		grid.last()[last] = true
-	}
+    fun stuckCorners() = this.copy().apply {
+        val last = grid.lastIndex
+        grid[0][0] = true
+        grid[0][last] = true
+        grid[last][0] = true
+        grid[last][last] = true
+    }
 
-	fun countAlive() = grid.sumBy { it.count { row -> row } }
+    fun countAlive() = grid.sumBy { it.count { row -> row } }
 
+    private fun aliveNext(x: Int, y: Int) = area(x, y) == 3 || grid[y][x] && area(x, y) == 4
 
-	private fun shouldTurnAlive(x: Int, y: Int) = neighbors(x, y) == 3
-			|| grid[y][x] && neighbors(x, y) == 2
+    private fun area(x: Int, y: Int): Int {
+        var count = 0
+        for (i in max(x - 1, 0)..min(x + 1, grid.lastIndex))
+            for (j in max(y - 1, 0)..min(y + 1, grid.lastIndex))
+                if (grid[j][i]) count++
 
-	private fun neighbors(x: Int, y: Int) =
-			(x - 1..x + 1).flatMap { i ->
-				(y - 1..y + 1).mapNotNull { j ->
-					if (i == x && j == y) false else grid.getOrNull(j)?.getOrNull(i)
-				}
-			}.count { it }
+        return count
+    }
 
 }
-
-
-
-
