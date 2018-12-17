@@ -1,28 +1,32 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
+import java.util.*
 
 object Day16 : AdventSolution(2016, 16, "Dragon Checksum ") {
-	override fun solvePartOne(input: String) = fillDisk(input, 272).checksum()
-	override fun solvePartTwo(input: String) = fillDisk(input, 35651584).checksum()
+    override fun solvePartOne(input: String) = fillDisk(input, 272).checksum()
+    override fun solvePartTwo(input: String) = fillDisk(input, 35651584).checksum()
 }
 
-private fun fillDisk(inputValue: String, size: Int): String =
-		generateSequence(inputValue, String::dragon)
-				.first { it.length >= size }
-				.take(size)
+private fun fillDisk(inputValue: String, size: Int): BooleanArray{
+    val initial = BooleanArray(inputValue.length) { inputValue[it] == '1' }
+    val disk= generateSequence(initial, BooleanArray::dragon)
+				.first { it.size >= size }
 
-private fun String.dragon() = reversed()
-		.replace('0', 'x')
-		.replace('1', '0')
-		.replace('x', '1')
-		.let { this + '0' + it }
+    return Arrays.copyOf(disk, size)
+}
 
+private fun BooleanArray.dragon(): BooleanArray {
+    val doubled = Arrays.copyOf(this, this.size * 2 + 1)
+    for (i in indices) doubled[doubled.lastIndex - i] = !this[i]
+    return doubled
+}
 
-private fun String.checksum(): String =
-		generateSequence(this, String::diff)
-				.first { it.length % 2 != 0 }
+private fun BooleanArray.checksum(): String =
+        generateSequence(this) { it.diff() }
+                .first { it.size % 2 != 0 }
+                .map { if (it) '1' else '0' }
+                .fold(StringBuilder(), StringBuilder::append)
+                .toString()
 
-private fun String.diff(): String = chunkedSequence(2) { s -> if (s[0]==s[1]) '1' else '0' }
-		.fold(StringBuilder(), StringBuilder::append)
-		.toString()
+private fun BooleanArray.diff() = BooleanArray(this.size / 2) { this[it * 2] == this[it * 2 + 1] }
