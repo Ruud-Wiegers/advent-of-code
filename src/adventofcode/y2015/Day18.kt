@@ -1,11 +1,8 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import kotlin.math.max
 import kotlin.math.min
-
-fun main() = Day18.solve()
 
 object Day18 : AdventSolution(2015, 18, "Like a GIF For Your Yard") {
 
@@ -20,7 +17,6 @@ object Day18 : AdventSolution(2015, 18, "Like a GIF For Your Yard") {
             .countAlive()
 
 }
-
 
 private data class ConwayGrid(private val grid: List<BooleanArray>) {
 

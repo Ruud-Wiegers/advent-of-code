@@ -23,9 +23,6 @@ private fun String.checksum(): String =
 		generateSequence(this, String::diff)
 				.first { it.length % 2 != 0 }
 
-private fun String.diff(): String = (indices step 2)
-		.asSequence()
-		.map { this[it] == this[it + 1] }
-		.map { if (it) '1' else '0' }
+private fun String.diff(): String = chunkedSequence(2) { s -> if (s[0]==s[1]) '1' else '0' }
 		.fold(StringBuilder(), StringBuilder::append)
 		.toString()

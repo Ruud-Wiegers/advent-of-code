@@ -3,9 +3,6 @@ package adventofcode.y2015
 import adventofcode.AdventSolution
 import adventofcode.solve
 
-fun main(args: Array<String>) {
-	Day03.solve()
-}
 object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum") {
 
 	override fun solvePartOne(input: String) = visitEach(input).size.toString()

@@ -1,8 +1,12 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 import adventofcode.util.md5
+import java.security.MessageDigest
+import java.util.stream.IntStream
 
+fun main()=Day04.solve()
 object Day04 : AdventSolution(2015, 4, "The Ideal Stocking Stuffer") {
 
 	override fun solvePartOne(input: String) = solve(input, "00000")
