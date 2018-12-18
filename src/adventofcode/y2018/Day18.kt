@@ -1,11 +1,11 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.y2017.takeWhileDistinct
 import kotlin.math.max
 import kotlin.math.min
 
-fun main()=Day18.solve()
+
 object Day18 : AdventSolution(2018, 18, "Settlers of The North Pole") {
 
 
@@ -15,23 +15,29 @@ object Day18 : AdventSolution(2018, 18, "Settlers of The North Pole") {
             .score()
 
     override fun solvePartTwo(input: String): Int {
-        generateSequence(seed = ConwayGrid(input)) { it.next()}
-                .drop(20000 )
-                .take(50)
-                .map { it.score() }
-                .forEach { println(it) }
+        val (steps, state) = generateSequence(ConwayGrid(input)) { it.next() }
+                .takeWhileDistinct()
+                .withIndex().last()
 
-        return (1000000000 - 20000) % 28
+        val cycle = generateSequence(state) { it.next() }
+                .takeWhileDistinct()
+                .count()
+
+        val r = (1000000000 - steps) % cycle
+        return generateSequence(state) { it.next() }
+                .drop(r)
+                .first()
+                .score()
+
     }
 
-//20
 }
 
 private data class ConwayGrid(private val grid: List<String>) {
 
     constructor(input: String) : this(input.split("\n"))
 
-    fun score() =grid.sumBy { it.count { it== '|' } }*grid.sumBy { it.count { it== '#' } }
+    fun score() = grid.sumBy { it.count { it == '|' } } * grid.sumBy { it.count { it == '#' } }
 
     fun next() = List(grid.size) { y ->
         grid[0].indices.map { x ->
@@ -42,15 +48,15 @@ private data class ConwayGrid(private val grid: List<String>) {
 
     private fun aliveNext(x: Int, y: Int): Char {
         return when (grid[y][x]) {
-            '.' -> if (area(x, y, '|') >= 3) '|' else '.'
-            '|' -> if (area(x, y, '#') >= 3) '#' else '|'
-            '#' -> if (area(x, y, '|') > 0 && area(x, y, '#') > 0) '#' else '.'
+            '.' -> if (neighbors(x, y, '|') >= 3) '|' else '.'
+            '|' -> if (neighbors(x, y, '#') >= 3) '#' else '|'
+            '#' -> if (neighbors(x, y, '|') > 0 && neighbors(x, y, '#') > 0) '#' else '.'
             else -> '?'
         }
 
     }
 
-    private fun area(x: Int, y: Int, c: Char): Int {
+    private fun neighbors(x: Int, y: Int, c: Char): Int {
         var count = 0
         for (i in max(x - 1, 0)..min(x + 1, grid.lastIndex))
             for (j in max(y - 1, 0)..min(y + 1, grid.lastIndex))
@@ -59,5 +65,4 @@ private data class ConwayGrid(private val grid: List<String>) {
 
         return count
     }
-
 }

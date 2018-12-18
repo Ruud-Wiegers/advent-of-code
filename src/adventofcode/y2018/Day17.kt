@@ -1,10 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-
-fun main() = Day17.solve()
 
 object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
 
@@ -61,9 +58,9 @@ object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
             }
 
         } while (changes)
-        println ((stillWater).count{ it.y in yRange})
+        println((stillWater).count { it.y in yRange })
 
-        return (flowingWater + stillWater).count{ it.y in yRange}
+        return (flowingWater + stillWater).count { it.y in yRange }
 
     }
 
