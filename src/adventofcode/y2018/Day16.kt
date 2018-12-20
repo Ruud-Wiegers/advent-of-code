@@ -84,10 +84,10 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
 }
 
 private data class Example(val before: Registers, val instruction: Instruction, val after: Registers)
-private data class Instruction(val opcode: Int, val input1: Int, val input2: Int, val target: Int)
-private typealias Registers = List<Int>
+ data class Instruction(val opcode: Int, val input1: Int, val input2: Int, val target: Int)
+ typealias Registers = List<Int>
 
-private typealias Operation = (r: Registers, a: Int, b: Int) -> Int
+ typealias Operation = (r: Registers, a: Int, b: Int) -> Int
 
 private fun Operation.execute(registers: Registers, instruction: Instruction): Registers =
         registers.toMutableList().also { regs ->
