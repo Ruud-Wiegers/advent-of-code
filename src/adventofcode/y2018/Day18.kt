@@ -5,9 +5,7 @@ import adventofcode.y2017.takeWhileDistinct
 import kotlin.math.max
 import kotlin.math.min
 
-
 object Day18 : AdventSolution(2018, 18, "Settlers of The North Pole") {
-
 
     override fun solvePartOne(input: String) = generateSequence(ConwayGrid(input), ConwayGrid::next)
             .drop(10)

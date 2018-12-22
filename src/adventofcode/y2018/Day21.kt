@@ -1,13 +1,10 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.elfcode.Instruction
 import adventofcode.util.elfcode.execute
 import adventofcode.util.elfcode.parseToElfcode
 import adventofcode.y2017.takeWhileDistinct
-
-fun main() = Day21.solve()
 
 object Day21 : AdventSolution(2018, 21, "Chronal Conversion") {
     override fun solvePartOne(input: String) = parseToElfcode(input)

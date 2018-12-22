@@ -1,12 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import kotlin.math.abs
-
-fun main(args: Array<String>) {
-    Day15.solve()
-}
 
 object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
 
@@ -84,7 +79,6 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
                     .firstOrNull()
 
 
-
     private fun moveTo(attacker: Combatant, map: MutableList<MutableList<Tile>>, combatants: MutableList<Combatant>) {
         val targetsByDistance = combatants
                 .asSequence()
@@ -136,7 +130,7 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
 
     }
 
-    data class Combatant(var p: Point, var hp: Int, val power: Int, val isElf: Boolean){
+    data class Combatant(var p: Point, var hp: Int, val power: Int, val isElf: Boolean) {
         fun isValidTarget(attacker: Combatant) = isAdjecentTo(attacker) && isElf != attacker.isElf && isAlive()
         fun isAdjecentTo(attacker: Combatant) =
                 abs(p.y - attacker.p.y) + abs(p.x - attacker.p.x) == 1

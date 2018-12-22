@@ -1,9 +1,6 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-
-fun main() = Day17.solve()
 
 object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
 

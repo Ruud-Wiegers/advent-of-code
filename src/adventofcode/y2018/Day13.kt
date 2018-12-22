@@ -1,10 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.y2018.Day13.Direction.*
-
-fun main() = Day13.solve()
 
 object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {
 

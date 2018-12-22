@@ -1,11 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import java.util.*
-
-
-fun main() = Day20.solve()
 
 object Day20 : AdventSolution(2018, 20, "A Regular Map") {
 
@@ -59,12 +55,12 @@ object Day20 : AdventSolution(2018, 20, "A Regular Map") {
 
                     val newPositions = mutableSetOf<Point>()
                     currentPositions.forEach { room ->
-                                val n = room.step(ch)
+                        val n = room.step(ch)
 
-                                neighbors.getOrPut(room) { mutableSetOf() }.add(n)
-                                neighbors.getOrPut(n) { mutableSetOf() }.add(room)
-                                newPositions.add(n)
-                            }
+                        neighbors.getOrPut(room) { mutableSetOf() }.add(n)
+                        neighbors.getOrPut(n) { mutableSetOf() }.add(room)
+                        newPositions.add(n)
+                    }
                     currentPositions = newPositions
                 }
                 '(' -> {
