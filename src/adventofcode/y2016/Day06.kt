@@ -2,38 +2,22 @@ package adventofcode.y2016
 
 import adventofcode.AdventSolution
 
+private typealias CharacterSelector = (frequencyMap: Map<Char, Int>) -> Map.Entry<Char, Int>?
 
 object Day06 : AdventSolution(2016, 6, "Signals and Noise") {
+	override fun solvePartOne(input: String) = solve(input) { it.maxBy { (_, freq) -> freq } }
+	override fun solvePartTwo(input: String) = solve(input) { it.minBy { (_, freq) -> freq } }
 
-	override fun solvePartOne(input: String): String {
-		val lines = input.split("\n")
+	private inline fun solve(input: String, crossinline selectCharFromFreqMap: CharacterSelector) = input.split("\n")
+			.transpose()
+			.asSequence()
+			.map { str -> str.groupingBy { it }.eachCount() }
+			.map { selectCharFromFreqMap(it) }
+			.map { it!!.key }
+			.joinToString("")
 
-
-		return lines.first().indices.map { index ->
-			lines
-					.map { it[index] }
-					.groupingBy { it }
-					.eachCount()
-					.entries
-					.maxBy { it.value }
-					?.key
-		}
-				.joinToString("")
-	}
-
-	override fun solvePartTwo(input: String): String {
-		val lines = input.split("\n")
-
-
-		return lines.first().indices.map { index ->
-			lines
-					.map { it[index] }
-					.groupingBy { it }
-					.eachCount()
-					.entries
-					.minBy { it.value }
-					?.key
-		}
-				.joinToString("")
-	}
+	private fun List<String>.transpose(): List<String> =
+			first().indices.map { index ->
+				asSequence().map { it[index] }.joinToString("")
+			}
 }

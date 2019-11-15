@@ -1,34 +1,21 @@
 package adventofcode.util
 
 
-class SimpleParser<RESULT> {
-	private val children = arrayListOf<ParseRule<RESULT>>()
+class SimpleParser<RESULT : Any> {
+	private val rules = arrayListOf<ParseRule<RESULT>>()
 
 	fun rule(regex: String, converter: (MatchResult.Destructured) -> RESULT) {
-		children += ParseRule(regex.toRegex(), converter)
+		rules += ParseRule(regex.toRegex(), converter)
 	}
 
-	fun parse(text: String) = children
+	fun parse(text: String): RESULT? = rules
 			.asSequence()
-			.map { it -> it.parse(text) }
-			.firstOrNull { it != null }
+			.mapNotNull { it.parse(text) }
+			.firstOrNull()
 }
 
-fun <R> parser(init: SimpleParser<R>.() -> Unit): SimpleParser<R> {
-	val parser = SimpleParser<R>()
-	parser.init()
-	return parser
-}
+fun <R : Any> parser(init: SimpleParser<R>.() -> Unit) = SimpleParser<R>().apply(init)
 
 class ParseRule<out R>(private val regex: Regex, private val convertToResult: (MatchResult.Destructured) -> R) {
-
-	fun parse(text: String): R? {
-		val matchResult = regex.matchEntire(text)
-		if (matchResult != null) {
-			val captureGroups = matchResult.destructured
-			return convertToResult(captureGroups)
-		}
-		return null
-	}
-
+	fun parse(text: String): R? = regex.matchEntire(text)?.destructured?.let { convertToResult(it) }
 }
