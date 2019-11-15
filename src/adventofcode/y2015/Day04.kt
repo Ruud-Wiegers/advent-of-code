@@ -6,7 +6,6 @@ import adventofcode.util.md5
 import java.security.MessageDigest
 import java.util.stream.IntStream
 
-fun main()=Day04.solve()
 object Day04 : AdventSolution(2015, 4, "The Ideal Stocking Stuffer") {
 
 	override fun solvePartOne(input: String) = solve(input, "00000")
@@ -19,5 +18,4 @@ object Day04 : AdventSolution(2015, 4, "The Ideal Stocking Stuffer") {
 					.map { md5(it) }
 					.indexOfFirst { it.startsWith(prefix) }
 					.toString()
-
 }

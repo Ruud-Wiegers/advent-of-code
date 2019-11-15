@@ -1,38 +1,37 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.util.scan
 
 object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum") {
 
-	override fun solvePartOne(input: String) = visitEach(input).size.toString()
+    override fun solvePartOne(input: String) = input.visitEach().size
 
-	override fun solvePartTwo(input: String): String {
-		val (s1, s2) = input.withIndex().partition { it.index % 2 == 0 }
-		val route1 = s1.map { it.value }.joinToString("")
-		val route2 = s2.map { it.value }.joinToString("")
+    override fun solvePartTwo(input: String): Int {
+        val route1 = input.filterIndexed { i, _ -> i % 2 == 0 }.visitEach()
+        val route2 = input.filterIndexed { i, _ -> i % 2 != 0 }.visitEach()
+        val visited = route1 + route2
 
-		val visited = visitEach(route1) + visitEach(route2)
+        return visited.size
+    }
 
-		return visited.size.toString()
-	}
+    private fun String.visitEach() = asSequence()
+            .scan(Pos(0, 0), Pos::next, includeInitial = true)
+            .toSet()
 
-	private fun visitEach(route: String): MutableSet<Pair<Int, Int>> {
-		var x = 0
-		var y = 0
+    data class Pos(val x: Int, val y: Int) {
+        fun next(ch: Char) = Pos(x + ch.dx(), y + ch.dy())
 
-		val visited = mutableSetOf(Pair(0 , 0))
+        private fun Char.dx() = when (this) {
+            '>' -> 1
+            '<' -> -1
+            else -> 0
+        }
 
-		route.forEach {
-			when (it) {
-				'^' -> y++
-				'v' -> y--
-				'<' -> x++
-				'>' -> x--
-			}
-			visited += Pair(x, y)
-		}
-		return visited
-	}
+        private fun Char.dy() = when (this) {
+            '^' -> 1
+            'v' -> -1
+            else -> 0
+        }
+    }
 }
-
