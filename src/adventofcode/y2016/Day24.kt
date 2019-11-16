@@ -9,7 +9,7 @@ import kotlin.math.abs
 object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
 
 	lateinit var maze: List<BooleanArray>
-	lateinit var checkPoints: Array<Pair<Int, Int>>
+	private lateinit var checkPoints: Array<Pair<Int, Int>>
 
 	override fun solvePartOne(input: String): String {
 		val distanceTable = buildDistanceTable(input)

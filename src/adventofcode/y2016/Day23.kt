@@ -24,4 +24,3 @@ object Day23 : AdventSolution(2016, 23, "Safe Cracking") {
 		return s.registers[0].toString()
 	}
 }
-

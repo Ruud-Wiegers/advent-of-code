@@ -9,7 +9,7 @@ object Day20 : AdventSolution(2016, 20, "Firewall Rules") {
 				.first()
 
 		return if (blacklistedIpRanges.first > 0) "0"
-		else (blacklistedIpRanges.endInclusive + 1).toString()
+		else (blacklistedIpRanges.last + 1).toString()
 	}
 
 	override fun solvePartTwo(input: String): String {

@@ -71,8 +71,7 @@ private data class CavePoint(val x: Int, val y: Int, val equipment: Equipment) {
         if (equipment != Equipment.Neither) list.add(CavePoint(x, y, Equipment.Neither) to 7)
 
         return list.filter { (s, _) ->
-            val terrain = cave[s.y][s.x]
-            when (terrain) {
+            when (cave[s.y][s.x]) {
                 0 -> s.equipment != Equipment.Neither
                 1 -> s.equipment != Equipment.Torch
                 2 -> s.equipment != Equipment.Climbing
