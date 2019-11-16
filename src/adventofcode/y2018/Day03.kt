@@ -17,7 +17,7 @@ object Day03 : AdventSolution(2018, 3, "No Matter How You Slice It") {
     }
 
     private fun parseInput(input: String): Sequence<Claim> {
-        val rule = "#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)".toRegex()
+        val rule = """#(\d+) @ (\d+),(\d+): (\d+)x(\d+)""".toRegex()
         return input.splitToSequence("\n")
                 .map { rule.matchEntire(it)!!.destructured }
                 .map { (id, x, y, w, h) -> Claim(id, x.toInt(), y.toInt(), w.toInt(), h.toInt()) }

@@ -1,6 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
+import adventofcode.util.cartesian
 
 object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
@@ -20,15 +21,10 @@ object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
     override fun solvePartTwo(input: String): String {
         val boxes = input.split("\n")
-
-        for (box in boxes) {
-            for (other in boxes) {
-                val matchingCharacters = box.filterIndexed { i, ch -> other[i] == ch }
-                if (matchingCharacters.length == box.length - 1) {
-                    return matchingCharacters
-                }
-            }
-        }
-        return ""
+        val l = boxes[0].length
+        return boxes
+                .cartesian()
+                .map { (a, b) -> a.filterIndexed { i, ch -> b[i] == ch } }
+                .first { it.length == l - 1 }
     }
 }
