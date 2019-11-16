@@ -1,28 +1,21 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
+import adventofcode.util.scan
+
 
 object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 
-    override fun solvePartOne(input: String) =
-            input.splitToSequence("\n")
-                    .map(String::toInt)
-                    .sum()
+    override fun solvePartOne(input: String) = input.splitToSequence("\n").sumBy(String::toInt)
 
-    override fun solvePartTwo(input: String): Int {
+    override fun solvePartTwo(input: String): Int? {
         val changes = input.split("\n").map(String::toInt)
 
-        var frequency = 0
         val reached = mutableSetOf<Int>()
 
-        generateSequence { changes }
+        return generateSequence { changes }
                 .flatten()
-                .forEach {
-                    reached += frequency
-                    frequency += it
-                    if (frequency in reached) return frequency
-                }
-
-        throw IllegalStateException()
+                .scan(0, Int::plus)
+                .find { !reached.add(it) }
     }
 }
