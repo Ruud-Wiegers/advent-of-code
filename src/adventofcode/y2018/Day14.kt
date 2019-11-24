@@ -1,6 +1,9 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
+import adventofcode.solve
+
+fun main() = repeat(10){Day14.solve()}
 
 object Day14 : AdventSolution(2018, 14, "Chocolate Charts") {
 
@@ -14,21 +17,29 @@ object Day14 : AdventSolution(2018, 14, "Chocolate Charts") {
 
     override fun solvePartTwo(input: String): Int {
         val target = input.map { it - '0' }
-        val recipes = generateRecipes{it.endMatches(target)}
+        val recipes = generateRecipes { it.endMatches(target) }
         return recipes.size - target.size
     }
 
-    private fun generateRecipes(stop: (List<Int>)->Boolean): MutableList<Int> {
+    private fun generateRecipes(stop: (List<Int>) -> Boolean): MutableList<Int> {
         val recipes = mutableListOf(3, 7)
         var e1 = 0
         var e2 = 1
         while (true) {
-            for (it in (recipes[e1] + recipes[e2]).toString()) {
-                recipes += it - '0'
+            var score = recipes[e1] + recipes[e2]
+            if (score >= 10) {
+                recipes += 1
                 if (stop(recipes)) return recipes
+                score -= 10
             }
-            e1 = (e1 + recipes[e1] + 1) % recipes.size
-            e2 = (e2 + recipes[e2] + 1) % recipes.size
+
+            recipes += score
+            if (stop(recipes)) return recipes
+
+            e1 = (e1 + recipes[e1] + 1)
+            while (e1 >= recipes.size) e1 -= recipes.size
+            e2 = (e2 + recipes[e2] + 1)
+            while (e2 >= recipes.size) e2 -= recipes.size
         }
     }
 

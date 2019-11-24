@@ -4,11 +4,13 @@ import adventofcode.AdventSolution
 
 object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
 
-    override fun solvePartOne(input: String) =
-            Reservoirs(input).apply { this.flow(Point(500, 0)) }.countWater()
+    override fun solvePartOne(input: String) = Reservoirs(input)
+            .apply { flow(Point(500, 0)) }
+            .count { it in "|~" }
 
-    override fun solvePartTwo(input: String) =
-            Reservoirs(input).apply { this.flow(Point(500, 0)) }.countStill()
+    override fun solvePartTwo(input: String) = Reservoirs(input)
+            .apply { flow(Point(500, 0)) }
+            .count { it == '~' }
 
     private class Reservoirs(input: String) {
         val xRange: IntRange
@@ -17,64 +19,41 @@ object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
 
         init {
             val clay = input.let(::parseToClayCoordinates)
-
             xRange = clay.minBy { it.x }!!.x..clay.maxBy { it.x }!!.x
             yRange = clay.minBy { it.y }!!.y..clay.maxBy { it.y }!!.y
             map = coordinatesToMap(clay)
-
         }
 
-        fun flow(p: Point) {
-            val d = Point(p.x, p.y + 1)
-            if (d !in map) return
+        fun flow(source: Point) {
+            map[source.y][source.x] = '|'
 
-            if (map[d] == '.') {
-                map[d] = '|'
-                flow(d)
-            }
+            val down = Point(source.x, source.y + 1)
+            if (down.y > map.lastIndex) return
+            if (map[down] == '.') flow(down)
 
-            val l = Point(p.x - 1, p.y)
-            if (map[d] in "#~" && l in map && map[l] == '.') {
-                map[l] = '|'
-                flow(l)
-            }
+            val left = Point(source.x - 1, source.y)
+            if (map[left] == '.' && map[down] in "#~") flow(left)
 
-            val r = Point(p.x + 1, p.y)
-            if (map[d] in "#~" && r in map && map[r] == '.') {
-                map[r] = '|'
-                flow(r)
-            }
+            val right = Point(source.x + 1, source.y)
+            if (map[right] == '.' && map[down] in "#~") flow(right)
 
-            if (hasWalls(p)) fillLeftAndRight(p)
+            fillRow(source)
         }
 
-        private fun hasWalls(source: Point): Boolean =
-                hasWall(source.x downTo 0, source.y) && hasWall(source.x..xRange.last, source.y)
+        private operator fun List<CharArray>.get(p: Point) = this[p.y][p.x]
 
-        private fun hasWall(xs: IntProgression, y: Int): Boolean {
+        //only fills when we've reached the rightmost point of the row
+        private fun fillRow(source: Point) {
+            val row = map[source.y]
+            if (row[source.x + 1] != '#') return
 
-            for (x in xs)
-                when (map[y][x]) {
-                    '#' -> return true
-                    '.' -> return false
-                }
-            return false
+            val leftEnd = (source.x downTo 0).find { x -> row[x] != '|' || map[source.y + 1][x] !in "#~" } ?: return
+            if (row[leftEnd] != '#') return
+
+            (leftEnd + 1..source.x).forEach { x -> row[x] = '~' }
         }
 
-        private fun fillLeftAndRight(source: Point) {
-            fillUntilWall(source.x downTo 0, source.y)
-            fillUntilWall(source.x..xRange.last, source.y)
-        }
-
-        private fun fillUntilWall(xs: IntProgression, y: Int) {
-            for (x in xs) {
-                if (map[y][x] == '#') return
-                map[y][x] = '~'
-            }
-        }
-
-        private fun coordinatesToMap(clay: Set<Point>): List<CharArray> {
-
+        private fun coordinatesToMap(clay: Iterable<Point>): List<CharArray> {
             val map = List(yRange.last + 1) {
                 CharArray(xRange.last + 1) { '.' }
             }
@@ -84,31 +63,24 @@ object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
             return map
         }
 
-        fun countWater() = map.slice(yRange).sumBy { it.count { it in "|~" } }
-        fun countStill() = map.slice(yRange).sumBy { it.count { it == '~' } }
-
+        fun count(predicate: (Char) -> Boolean) = map.slice(yRange).sumBy { it.count(predicate) }
     }
+}
 
-    private fun parseToClayCoordinates(input: String): MutableSet<Point> {
-        val clay = mutableSetOf<Point>()
-        val regex = "(.).*?(\\d+).*?(\\d+).*?(\\d+).*?".toRegex()
-        input.splitToSequence("\n")
-                .map { regex.matchEntire(it)!!.destructured }
-                .forEach { (o, a, b1, b2) ->
-                    if (o == "x")
-                        for (y in b1.toInt()..b2.toInt()) clay += Point(a.toInt(), y)
+private fun parseToClayCoordinates(input: String): List<Point> {
+    val regex = """([xy])=(\d+), [xy]=(\d+)..(\d+)""".toRegex()
+    return input.splitToSequence("\n")
+            .map { regex.matchEntire(it)!!.destructured }
+            .map { (orientation, a, bStart, bEnd) ->
+                (bStart.toInt()..bEnd.toInt()).map {
+                    if (orientation == "x")
+                        Point(a.toInt(), it)
                     else
-                        for (x in b1.toInt()..b2.toInt()) clay += Point(x, a.toInt())
+                        Point(it, a.toInt())
                 }
-        return clay
-    }
-
-    data class Point(val x: Int, val y: Int)
-
+            }
+            .flatten()
+            .toList()
 }
 
-private operator fun List<CharArray>.contains(p: Day17.Point) = p.y in indices && p.x in this[0].indices
-private operator fun List<CharArray>.get(p: Day17.Point) = this[p.y][p.x]
-private operator fun List<CharArray>.set(p: Day17.Point, c: Char) {
-    this[p.y][p.x] = c
-}
+private data class Point(val x: Int, val y: Int)
