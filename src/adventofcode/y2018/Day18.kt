@@ -2,65 +2,61 @@ package adventofcode.y2018
 
 import adventofcode.AdventSolution
 import adventofcode.y2017.takeWhileDistinct
-import kotlin.math.max
-import kotlin.math.min
 
 object Day18 : AdventSolution(2018, 18, "Settlers of The North Pole") {
 
-    override fun solvePartOne(input: String) = generateSequence(ConwayGrid(input), ConwayGrid::next)
-            .drop(10)
-            .first()
-            .score()
+    override fun solvePartOne(input: String) =
+            generateSequence(ConwayGrid(input), ConwayGrid::next)
+                    .drop(10)
+                    .first()
+                    .resourceValue()
 
     override fun solvePartTwo(input: String): Int {
-        val (steps, state) = generateSequence(ConwayGrid(input)) { it.next() }
+        val (steps, state) = generateSequence(ConwayGrid(input), ConwayGrid::next)
                 .takeWhileDistinct()
-                .withIndex().last()
+                .withIndex()
+                .last()
 
-        val cycle = generateSequence(state) { it.next() }
+        val cycleLength = generateSequence(state, ConwayGrid::next)
                 .takeWhileDistinct()
                 .count()
 
-        val r = (1000000000 - steps) % cycle
-        return generateSequence(state) { it.next() }
-                .drop(r)
+        val remainingSteps = (1_000_000_000 - steps) % cycleLength
+        return generateSequence(state, ConwayGrid::next)
+                .drop(remainingSteps)
                 .first()
-                .score()
-
+                .resourceValue()
     }
-
 }
 
-private data class ConwayGrid(private val grid: List<String>) {
+private data class ConwayGrid(private val grid: List<List<Char>>) {
 
-    constructor(input: String) : this(input.split("\n"))
+    constructor(input: String) : this(input.lines().map(String::toList))
 
-    fun score() = grid.sumBy { it.count { it == '|' } } * grid.sumBy { it.count { it == '#' } }
+    fun resourceValue() = count('|') * count('#')
 
-    fun next() = List(grid.size) { y ->
+    private fun count(ch: Char) = grid.flatten().count { it == ch }
+
+    fun next() = grid.indices.map { y ->
         grid[0].indices.map { x ->
-            aliveNext(x, y)
-        }.joinToString("")
+            typeInNextGeneration(x, y)
+        }
     }.let(::ConwayGrid)
 
+    private fun typeInNextGeneration(x: Int, y: Int): Char =
+            when (grid[y][x]) {
+                '.' -> if (countNear(x, y, '|') >= 3) '|' else '.'
+                '|' -> if (countNear(x, y, '#') >= 3) '#' else '|'
+                '#' -> if (countNear(x, y, '|') == 0 || countNear(x, y, '#') <= 1) '.' else '#'
+                else -> throw IllegalStateException()
+            }
 
-    private fun aliveNext(x: Int, y: Int): Char {
-        return when (grid[y][x]) {
-            '.' -> if (neighbors(x, y, '|') >= 3) '|' else '.'
-            '|' -> if (neighbors(x, y, '#') >= 3) '#' else '|'
-            '#' -> if (neighbors(x, y, '|') > 0 && neighbors(x, y, '#') > 0) '#' else '.'
-            else -> '?'
-        }
-
-    }
-
-    private fun neighbors(x: Int, y: Int, c: Char): Int {
+    private fun countNear(x: Int, y: Int, c: Char): Int {
         var count = 0
-        for (i in max(x - 1, 0)..min(x + 1, grid.lastIndex))
-            for (j in max(y - 1, 0)..min(y + 1, grid.lastIndex))
-                if (grid[j][i] == c) count++
-        if (grid[y][x] == c) count--
-
+        for (j in y - 1..y + 1)
+            for (i in x - 1..x + 1)
+                if (grid.getOrNull(j)?.getOrNull(i) == c)
+                    count++
         return count
     }
 }
