@@ -5,7 +5,8 @@ import java.util.*
 
 object Day20 : AdventSolution(2018, 20, "A Regular Map") {
 
-    override fun solvePartOne(input: String) = findDistances(input).values.max()
+    override fun solvePartOne(input: String) =
+            findDistances(input).values.max()
 
     override fun solvePartTwo(input: String) =
             findDistances(input).count { it.value >= 1000 }
