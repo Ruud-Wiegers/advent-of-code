@@ -14,7 +14,7 @@ object Day22 : AdventSolution(2018, 22, "Mode Maze") {
         return cave.sumBy(IntArray::sum)
     }
 
-    override fun solvePartTwo(input: String): Int {
+    override fun solvePartTwo(input: String): Int? {
         val (depth, tx, ty) = parse(input)
 
         val cave = buildMaze(depth, tx + 50, ty + 50)
@@ -23,7 +23,7 @@ object Day22 : AdventSolution(2018, 22, "Mode Maze") {
         val start = CavePoint(0, 0, Equipment.Torch)
         val goal = CavePoint(tx, ty, Equipment.Torch)
 
-        return findPath(start, goal, cave) ?: -1
+        return findPath(start, goal, cave)
 
     }
 
