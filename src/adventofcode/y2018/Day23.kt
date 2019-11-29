@@ -1,15 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import kotlin.math.abs
-
-
-//This one is a mess. Tried lots of things, still experimenting with alternatives
-//got lucky
-fun main(args: Array<String>) {
-    Day23.solve()
-}
 
 object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") {
 
@@ -21,49 +13,23 @@ object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") 
         return bots.count { it.p in best }
     }
 
-    override fun solvePartTwo(input: String): Long {
+    override fun solvePartTwo(input: String): Long? {
         val bots = parse(input)
 
-        val cluster = bots.toMutableSet()
-
-        //guessing there's only one clique
-        cluster.removeIf { bots.count { b -> it.overlaps(b) } < 500 }
+        //guessing there's one clique
+        val cluster = bots.filter { bots.count { b -> it.overlaps(b) } > 500 }.toSet()
         require(cluster.all { c -> cluster.all(c::overlaps) })
 
-        val rep = cluster
+        //guessing there's at least one point in the remaining swarm that's covered by all bots.
+        //also guessing this area is small.
+
+        return cluster
                 .map(::PlanarRepresentation)
-                .reduce(PlanarRepresentation::merge)
-        println(rep)
-
-        val b= magic(cluster)
-        println(b)
-        println(PlanarRepresentation(b))
-        return b.p.distance(Point3D(0,0,0))
-    }
-
-    private fun magic(cluster: MutableSet<NanoBot>): NanoBot {
-        var currentRadius = 100_000_000L
-        val origin = Point3D(0, 0, 0)
-        var currentBots = setOf(NanoBot(origin, currentRadius))
-
-        while (currentRadius > 0) {
-            currentRadius = (currentRadius / 2) + if (currentRadius > 2) 1 else 0
-
-            val newGeneration = currentBots.flatMap { bot ->
-                bot.p.neighbors(currentRadius).map { c ->
-                    bot.copy(p = c, r = currentRadius).let { newBot ->
-                        newBot to cluster.count {
-                            newBot.overlaps(it)
-                        }
-                    }
-                }
-            }
-            val maxBots = newGeneration.map { it.second }.max() ?: 0
-
-            currentBots = newGeneration.filter { it.second == maxBots }.map { it.first }.toSet()
-        }
-
-        return currentBots.minBy { origin.distance(it.p) }!!
+                .reduce(PlanarRepresentation::intersection)
+                .boundingCube()
+                .filter { p -> cluster.all { p in it } }
+                .map { abs(it.x) + abs(it.y) + abs(it.z) }
+                .min()
     }
 
     private fun parse(input: String): List<NanoBot> = input
@@ -82,20 +48,6 @@ object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") 
         fun overlaps(other: NanoBot) = p.distance(other.p) <= r + other.r
         operator fun contains(other: Point3D) = p.distance(other) <= r
     }
-
-    private fun Point3D.neighbors(d: Long): Iterable<Point3D> =
-            (-1L..1L).flatMap { xd ->
-                (-1L..1L).flatMap { yd ->
-                    (-1L..1L).map { zd ->
-                        copy(
-                                x = x + xd * d,
-                                y = y + yd * d,
-                                z = z + zd * d
-                        )
-                    }
-                }
-            }
-
 
 
     /* planar representation of axis-oriented octahedra:
@@ -120,8 +72,66 @@ object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") 
                         b.p.x + b.p.y + b.p.z + b.r,
                         b.p.x - b.p.y + b.p.z + b.r))
 
-        fun merge(o: PlanarRepresentation) = PlanarRepresentation(
+        init {
+            check(isValid())
+        }
+
+        fun intersection(o: PlanarRepresentation) = PlanarRepresentation(
                 low.zip(o.low, ::maxOf), high.zip(o.high, ::minOf)
         )
+
+        fun isValid() = low.zip(high).all { (l, h) -> l <= h }
+
+        fun x() = (low[2] + low[3] - high[0] - high[2]) / 2..(high[2] + high[3] - low[0] - low[2]) / 2
+        fun y() = (low[1] + low[2] - high[0] - high[2]) / 2..(high[1] + high[2] - low[0] - low[2]) / 2
+        fun z() = (low[0] + low[2]) / 2..(high[0] + high[2]) / 2
+
+        fun boundingCube() = sequence {
+            for (x in x())
+                for (y in y())
+                    for (z in z())
+                        yield(Point3D(x, y, z))
+        }
+
+    }
+
+
+    private fun partitioningSolve(cluster: MutableSet<Day23.NanoBot>): Day23.NanoBot {
+
+        fun Day23.Point3D.neighbors(d: Long): Iterable<Day23.Point3D> =
+                (-1L..1L).flatMap { xd ->
+                    (-1L..1L).flatMap { yd ->
+                        (-1L..1L).map { zd ->
+                            copy(
+                                    x = x + xd * d,
+                                    y = y + yd * d,
+                                    z = z + zd * d
+                            )
+                        }
+                    }
+                }
+
+        var currentRadius = 100_000_000L
+        val origin = Day23.Point3D(0, 0, 0)
+        var currentBots = setOf(Day23.NanoBot(origin, currentRadius))
+
+        while (currentRadius > 0) {
+            currentRadius = (currentRadius / 2) + if (currentRadius > 2) 1 else 0
+
+            val newGeneration = currentBots.flatMap { bot ->
+                bot.p.neighbors(currentRadius).map { c ->
+                    bot.copy(p = c, r = currentRadius).let { newBot ->
+                        newBot to cluster.count {
+                            newBot.overlaps(it)
+                        }
+                    }
+                }
+            }
+            val maxBots = newGeneration.map { it.second }.max() ?: 0
+
+            currentBots = newGeneration.filter { it.second == maxBots }.map { it.first }.toSet()
+        }
+
+        return currentBots.minBy { origin.distance(it.p) }!!
     }
 }

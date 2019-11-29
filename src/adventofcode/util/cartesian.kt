@@ -14,3 +14,10 @@ fun <T, U> Iterable<T>.cartesian(other: Iterable<U>): Sequence<Pair<T, U>> =
                 Pair(a, b)
             }
         }
+
+fun <T, U> Sequence<T>.cartesian(other: Iterable<U>): Sequence<Pair<T, U>> =
+        flatMap { a ->
+            other.asSequence().map { b ->
+                Pair(a, b)
+            }
+        }
