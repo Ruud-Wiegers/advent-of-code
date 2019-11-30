@@ -15,7 +15,7 @@ object Day04 : AdventSolution(2016, 4, "Security Through Obscurity") {
 
 
     private fun parseRooms(input: String): Sequence<Room> {
-        return input.splitToSequence("\n")
+        return input.lineSequence()
                 .map {
                     Room(
                             name = it.substringBeforeLast("-"),

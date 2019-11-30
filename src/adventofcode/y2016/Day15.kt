@@ -7,7 +7,7 @@ object Day15 : AdventSolution(2016, 15, "Timing is Everything") {
 	override fun solvePartTwo(input: String) = calulateWaitingTime(parseConfig(input) + Disc(11, 0)).toString()
 
 	private fun parseConfig(s: String): List<Disc> =
-			s.split("\n")
+			s.lines()
 					.map {
 						val size = it.substringAfter(" has ").substringBefore(" ").toLong()
 						val position = it.substringAfterLast(' ').dropLast(1).toLong()
@@ -35,9 +35,9 @@ object Day15 : AdventSolution(2016, 15, "Timing is Everything") {
 		return Disc(s, (s - r) % s)
 	}
 
-	private fun extendedGcd(a: Long, b: Long): Triple<Long, Long, Long> {
-		var a = a
-		var b = b
+	private fun extendedGcd(i: Long, j: Long): Triple<Long, Long, Long> {
+		var a = i
+		var b = j
 		val aa = longArrayOf(1, 0)
 		val bb = longArrayOf(0, 1)
 		while (true) {

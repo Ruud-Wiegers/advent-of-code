@@ -30,7 +30,7 @@ object Day16 : AdventSolution(2015, 16, "Aunt Sue") {
 			.map { it.index + 1 }
 			.first().toString()
 
-	private fun parseInput(input: String) = input.splitToSequence("\n")
+	private fun parseInput(input: String) = input.lineSequence()
 			.map {
 				it.substringAfter(":")
 						.split(',')

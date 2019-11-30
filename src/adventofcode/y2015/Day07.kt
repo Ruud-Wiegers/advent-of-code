@@ -4,10 +4,10 @@ import adventofcode.AdventSolution
 
 object Day07 : AdventSolution(2015, 7, "Some Assembly Required") {
 
-	override fun solvePartOne(input: String) = WireMap(input.split("\n")).evaluate("a").toString()
+	override fun solvePartOne(input: String) = WireMap(input.lines()).evaluate("a").toString()
 
 	override fun solvePartTwo(input: String): String {
-		val result = WireMap(input.split("\n")).evaluate("a").toString()
+		val result = WireMap(input.lines()).evaluate("a").toString()
 		val amendedInput = "$input\n$result -> b"
 		return solvePartOne(amendedInput)
 	}

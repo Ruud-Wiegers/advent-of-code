@@ -21,7 +21,7 @@ object Day14 : AdventSolution(2015, 14, "Reindeer Olympics") {
 }
 
 
-private fun parseInput(distances: String) = distances.split("\n")
+private fun parseInput(distances: String) = distances.lines()
 		.mapNotNull { Regex("(\\w+) can fly (\\d+) km/s for (\\d+) seconds, but then must rest for (\\d+) seconds.").matchEntire(it) }
 		.map { it.destructured }
 		.map { (name, speed, stamina, rest) ->

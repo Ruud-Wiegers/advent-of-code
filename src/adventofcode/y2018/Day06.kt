@@ -61,7 +61,7 @@ object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
         }
     }
 
-    private fun parse(input: String) = input.splitToSequence("\n")
+    private fun parse(input: String) = input.lineSequence()
             .map { it.split(", ") }
             .map { (x, y) -> Point(x.toInt(), y.toInt()) }
             .toList()

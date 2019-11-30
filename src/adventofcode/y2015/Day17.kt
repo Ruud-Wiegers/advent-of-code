@@ -4,12 +4,12 @@ import adventofcode.AdventSolution
 
 object Day17 : AdventSolution(2015, 17, "No Such Thing as Too Much") {
 
-	override fun solvePartOne(input: String) = input.split("\n")
+	override fun solvePartOne(input: String) = input.lines()
 			.map { it.toInt() }
 			.let { partitions(it, 150) }
 			.toString()
 
-	override fun solvePartTwo(input: String) = input.split("\n")
+	override fun solvePartTwo(input: String) = input.lines()
 			.map { it.toInt() }
 			.let { partitions2(it, 0, 150) }
 			.groupingBy { it }.eachCount()

@@ -27,7 +27,7 @@ object Day04 : AdventSolution(2018, 4, "Repose Record") {
         val schedule = mutableMapOf<Int, MutableList<IntRange>>()
         var scheduleOfActiveGuard: MutableList<IntRange>? = null
         var asleep = 0
-        input.splitToSequence("\n")
+        input.lineSequence()
                 .sorted()
                 .map { it.substringAfter(':').substringBefore(']').toInt() to it.substringAfter("] ") }
                 .forEach { (minute, message) ->

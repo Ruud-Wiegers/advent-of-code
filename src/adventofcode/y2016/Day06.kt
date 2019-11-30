@@ -8,7 +8,7 @@ object Day06 : AdventSolution(2016, 6, "Signals and Noise") {
 	override fun solvePartOne(input: String) = solve(input) { it.maxBy { (_, freq) -> freq } }
 	override fun solvePartTwo(input: String) = solve(input) { it.minBy { (_, freq) -> freq } }
 
-	private inline fun solve(input: String, crossinline selectCharFromFreqMap: CharacterSelector) = input.split("\n")
+	private inline fun solve(input: String, crossinline selectCharFromFreqMap: CharacterSelector) = input.lines()
 			.transpose()
 			.asSequence()
 			.map { str -> str.groupingBy { it }.eachCount() }

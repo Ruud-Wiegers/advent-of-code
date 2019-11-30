@@ -1,7 +1,7 @@
 package adventofcode.util
 
 
-fun parseToAssemBunny(string: String): List<Instruction> = string.split("\n").map(::parseInstruction)
+fun parseToAssemBunny(string: String): List<Instruction> = string.lines().map(::parseInstruction)
 
  private fun parseInstruction(string: String): Instruction = string.split(" ").let {
 	when (it[0]) {

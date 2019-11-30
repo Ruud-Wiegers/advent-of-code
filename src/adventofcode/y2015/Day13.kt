@@ -39,7 +39,7 @@ object Day13 : AdventSolution(2015, 13, "Knights of the Dinner Table") {
 					.map { it.zipWithNext { a, b -> distanceTable[a][b] + distanceTable[b][a] }.sum() }
 
 
-	private fun parseInput(distances: String) = distances.splitToSequence("\n")
+	private fun parseInput(distances: String) = distances.lineSequence()
 			.mapNotNull { Regex("(\\w+) would (\\w+) (\\d+) happiness units by sitting next to (\\w+).").matchEntire(it) }
 			.map { it.destructured }
 			.map { (start, sign, amount, end) ->

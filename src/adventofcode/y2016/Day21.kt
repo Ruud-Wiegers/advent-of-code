@@ -5,9 +5,9 @@ import adventofcode.util.SimpleParser
 import adventofcode.util.parser
 
 object Day21 : AdventSolution(2016, 21, "Scrambled Letters and Hash") {
-	override fun solvePartOne(input: String) = scramble("abcdefgh", scramblingParser, input.split("\n"))
+	override fun solvePartOne(input: String) = scramble("abcdefgh", scramblingParser, input.lines())
 
-	override fun solvePartTwo(input: String) = scramble("fbgdceah", unscramblingParser, input.split("\n").reversed())
+	override fun solvePartTwo(input: String) = scramble("fbgdceah", unscramblingParser, input.lines().reversed())
 }
 
 typealias StringOperation = String.() -> String

@@ -27,7 +27,7 @@ object Day08 : AdventSolution(2017, 8, "I Heard You Like Registers") {
 	private fun parseInput(input: String): Sequence<Instruction> {
 		val regex = "([a-z]+) ([a-z]+) (-?\\d+) if ([a-z]+) ([^ ]+) (-?\\d+)"
 				.toRegex()
-		return input.splitToSequence("\n")
+		return input.lineSequence()
 				.map { regex.matchEntire(it)?.destructured!! }
 				.map { (a, b, c, d, e, f) ->
 					val sign = if (b == "inc") 1 else -1

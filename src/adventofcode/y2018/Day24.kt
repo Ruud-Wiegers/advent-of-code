@@ -80,7 +80,7 @@ private fun String.toDamageType() = Damage.valueOf(this.capitalize())
 private fun parse(input: String): Sequence<Group> {
     val regex = "(\\d+) units each with (\\d+) hit points(.*) with an attack that does (\\d+) (.*) damage at initiative (\\d+)".toRegex()
     return input
-            .splitToSequence("\n")
+            .lineSequence()
             .map { regex.matchEntire(it) }
             .filterNotNull()
             .map { it.destructured }

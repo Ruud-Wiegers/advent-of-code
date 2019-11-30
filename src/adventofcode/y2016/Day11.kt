@@ -21,7 +21,7 @@ object Day11 : AdventSolution(2016, 11, "Radioisotope Thermoelectric Generators"
 private fun parseConfig(input: String): List<E> {
 	val chips = mutableMapOf<String, Int>()
 	val generators = mutableMapOf<String, Int>()
-	input.splitToSequence("\n").forEachIndexed { floor, contents ->
+	input.lineSequence().forEachIndexed { floor, contents ->
 		contents.splitToSequence(" a ")
 				.map { it.substringBefore(' ') }
 				.forEach {

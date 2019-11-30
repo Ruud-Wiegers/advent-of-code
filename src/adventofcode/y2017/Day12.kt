@@ -22,7 +22,7 @@ object Day12 : AdventSolution(2017, 12, "Digital Plumber") {
 		return groups.count().toString()
 	}
 
-	private fun parseInput(input: String): Map<Int, List<Int>> = input.split("\n")
+	private fun parseInput(input: String): Map<Int, List<Int>> = input.lines()
 			.map { line -> line.split(" <-> ") }
 			.associate { (program, connections) ->
 				program.toInt() to connections.split(", ").map { it.toInt() }

@@ -21,7 +21,7 @@ object Day25 : AdventSolution(2017, 25, "The Halting Problem") {
 }
 
 private fun parseInstructions(input: String): Pair<Int, TuringMachine> {
-	val instructions = input.split("\n")
+	val instructions = input.lines()
 	val initialState = instructions[0].substringAfter("Begin in state ")
 			.dropLast(1)
 	val stepsUntilDiagnostic = instructions[1].substringAfter("Perform a diagnostic checksum after ")

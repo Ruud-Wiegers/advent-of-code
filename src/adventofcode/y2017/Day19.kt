@@ -5,14 +5,14 @@ import adventofcode.AdventSolution
 object Day19 : AdventSolution(2017, 19, "A Series of Tubes") {
 
 	override fun solvePartOne(input: String): String {
-		val lines = input.split("\n")
+		val lines = input.lines()
 		val pipeRunner = PipeRunner(lines)
 		pipeRunner.run()
 		return pipeRunner.word
 	}
 
 	override fun solvePartTwo(input: String): String {
-		val lines = input.split("\n")
+		val lines = input.lines()
 		val pipeRunner = PipeRunner(lines)
 		pipeRunner.run()
 		return pipeRunner.count.toString()

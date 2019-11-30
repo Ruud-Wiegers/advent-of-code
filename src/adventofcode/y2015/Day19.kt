@@ -20,7 +20,7 @@ object Day19 : AdventSolution(2015, 19, "Medicine for Rudolph") {
 
 
 	private fun parse(input: String): Pair<Map<String, Set<String>>, String> {
-		val (rewriteRules, other) = input.split("\n").partition { "=>" in it }
+		val (rewriteRules, other) = input.lines().partition { "=>" in it }
 
 		val transitions = rewriteRules.map { it.substringBefore(" =>") to it.substringAfter("=> ") }
 				.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }

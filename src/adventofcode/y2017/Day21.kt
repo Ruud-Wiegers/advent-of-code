@@ -24,7 +24,7 @@ object Day21 : AdventSolution(2017, 21, "Fractal Art") {
 }
 
 private fun parseRewriteRules(input: String): Map<Square, Square> =
-		input.split("\n")
+		input.lines()
 				.map { it.split(" => ").map { it.split("/") } }
 				.flatMap { (old, new) -> old.symmetries().map { symmetryOfOld -> symmetryOfOld to new } }
 				.toMap()

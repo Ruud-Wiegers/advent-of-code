@@ -69,7 +69,7 @@ object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
 
 private fun parseToClayCoordinates(input: String): List<Point> {
     val regex = """([xy])=(\d+), [xy]=(\d+)..(\d+)""".toRegex()
-    return input.splitToSequence("\n")
+    return input.lineSequence()
             .map { regex.matchEntire(it)!!.destructured }
             .map { (orientation, a, bStart, bEnd) ->
                 (bStart.toInt()..bEnd.toInt()).map {

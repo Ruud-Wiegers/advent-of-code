@@ -53,7 +53,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
     }
 
     private fun parse(input: String) = input
-            .splitToSequence("\n")
+            .lineSequence()
             .map {
                 val required = it.substringAfter("Step ")[0]
                 val next = it.substringAfter("before step ")[0]

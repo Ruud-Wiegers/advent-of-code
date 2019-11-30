@@ -41,7 +41,7 @@ object Day10 : AdventSolution(2016, 10, "Balance Bots") {
     }
 
     private fun parse(input: String): Triple<MutableMap<Int, List<Int>>, Map<Int, Int>, Map<Int, Int>> {
-        val lines = input.splitToSequence("\n")
+        val lines = input.lineSequence()
 
         val valuePattern = ("value (\\d+) goes to bot (\\d+)").toRegex()
         val chips = lines

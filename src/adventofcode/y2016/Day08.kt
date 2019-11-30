@@ -33,7 +33,7 @@ object Day08 : AdventSolution(2016, 8, "Two-Factor Authentication") {
 
 
 		return Screen().apply {
-			input.splitToSequence("\n").forEach { line ->
+			input.lineSequence().forEach { line ->
 				val command = parser.parse(line) ?: throw IllegalStateException()
 				command(this)
 			}

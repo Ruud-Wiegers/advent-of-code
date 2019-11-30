@@ -46,7 +46,7 @@ object Day15 : AdventSolution(2015, 15, "Science for Hungry People") {
 	}
 }
 
-private fun parseInput(distances: String) = distances.split("\n")
+private fun parseInput(distances: String) = distances.lines()
 		.mapNotNull { Regex("(\\w+): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)").matchEntire(it) }
 		.map { it.destructured }
 		.map { (name, cap, d, f, t, cal) ->

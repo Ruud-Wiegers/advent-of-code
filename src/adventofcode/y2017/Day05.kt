@@ -19,7 +19,7 @@ object Day05 : AdventSolution(2017, 5, "A Maze of Twisty Trampolines, All Alike"
 	}
 
 	private fun parse(input: String): IntArray = input
-			.split("\n")
+			.lines()
 			.map { it.toInt() }
 			.toIntArray()
 

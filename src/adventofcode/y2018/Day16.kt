@@ -58,7 +58,7 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
 
         val examples = partOne.splitToSequence("\n\n")
                 .map {
-                    val (before, op, after) = it.split("\n").map { line ->
+                    val (before, op, after) = it.lines().map { line ->
                         line.filter { c -> c in ('0'..'9') || c == ' ' }
                                 .trim()
                                 .split(" ")
@@ -73,7 +73,7 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
 
                 }
 
-        val program = partTwo.splitToSequence("\n")
+        val program = partTwo.lineSequence()
                 .map {
                     it.split(" ")
                             .map(String::toInt)

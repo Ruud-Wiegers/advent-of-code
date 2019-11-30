@@ -34,7 +34,7 @@ object Day07 : AdventSolution(2017, 7, "Recursive Circus") {
 	}
 
 	private fun parse(input: String) = input
-			.split("\n")
+			.lines()
 			.map { UnlinkedProgram(it) }
 
 	private fun findRootProgram(programs: List<UnlinkedProgram>) =

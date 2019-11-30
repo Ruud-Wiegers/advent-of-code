@@ -39,7 +39,7 @@ object Day12 : AdventSolution(2018, 12, "Subterranean Sustainability") {
     }
 
     private fun parse(input: String): Pair<String, Map<String, Char>> {
-        val lines = input.split("\n")
+        val lines = input.lines()
 
         val initial = lines[0].substringAfter("initial state: ")
         val rules = lines.drop(2).map { it.split(" => ") }.associate { (cfg, n) -> cfg to n[0] }

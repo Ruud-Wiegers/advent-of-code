@@ -14,7 +14,7 @@ object Day02 : AdventSolution(2015, 2, "I Was Told There Would Be No Math") {
 			.sum()
 			.toString()
 
-	private fun toListOfPresents(input: String): List<List<Int>> = input.split('\n')
+	private fun toListOfPresents(input: String): List<List<Int>> = input.lines()
 			.filter(String::isNotBlank)
 			.map { it.split("x").map { it.toInt() }.sorted() }
 

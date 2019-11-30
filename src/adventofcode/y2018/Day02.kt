@@ -6,7 +6,7 @@ import adventofcode.util.cartesian
 object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
     override fun solvePartOne(input: String): Int {
-        val frequencies = input.split("\n")
+        val frequencies = input.lines()
                 .map { id ->
                     id.groupingBy { it }
                             .eachCount()
@@ -20,7 +20,7 @@ object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
     }
 
     override fun solvePartTwo(input: String): String {
-        val boxes = input.split("\n")
+        val boxes = input.lines()
         val l = boxes[0].length
         return boxes
                 .cartesian()

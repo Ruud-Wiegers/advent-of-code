@@ -42,7 +42,7 @@ object Day18 : AdventSolution(2017, 18, "Duet") {
 		return ec1.sendCount.toString()
 	}
 
-	private fun parseInstructions(input: String) = input.split("\n")
+	private fun parseInstructions(input: String) = input.lines()
 			.map { row -> row.split(" ") + "" }
 }
 

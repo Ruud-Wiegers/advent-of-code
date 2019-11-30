@@ -21,7 +21,7 @@ object Day13 : AdventSolution(2017, 13, "Packet Scanners") {
 		return shortestSafeDelay.toString()
 	}
 
-	private fun parseInput(input: String) = input.split("\n")
+	private fun parseInput(input: String) = input.lines()
 			.map { it.split(": ") }
 			.associate { (depth, range) -> depth.toInt() to range.toInt() }
 }

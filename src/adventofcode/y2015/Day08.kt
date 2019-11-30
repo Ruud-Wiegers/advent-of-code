@@ -5,12 +5,12 @@ import adventofcode.AdventSolution
 object Day08 : AdventSolution(2015, 8, "Matchsticks") {
 
 	override fun solvePartOne(input: String) = input
-			.split("\n")
+			.lines()
 			.sumBy { it.length - unescape(it).length }
 			.toString()
 
 	override fun solvePartTwo(input: String): String = input
-			.split("\n")
+			.lines()
 			.sumBy { escape(it).length - it.length }
 			.toString()
 

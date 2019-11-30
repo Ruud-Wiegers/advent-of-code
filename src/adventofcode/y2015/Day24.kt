@@ -34,6 +34,6 @@ object Day24 : AdventSolution(2015, 24, "It Hangs in the Balance") {
 				.toString()
 	}
 
-	private fun list(input: String) = input.split("\n").map { it.toInt() }
+	private fun list(input: String) = input.lines().map { it.toInt() }
 
 }

@@ -32,7 +32,7 @@ object Day22 : AdventSolution(2016, 22, "Grid Computing") {
 					.joinToString("\n")
 
 	private fun parseInput(input: String): List<Node> = input
-			.split("\n")
+			.lines()
 			.drop(2)
 			.map { it.split(Regex("\\s+")) }
 			.map {

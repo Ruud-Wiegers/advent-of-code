@@ -35,7 +35,7 @@ object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
 
 
 	private fun buildDistanceTable(input: String): List<List<Int>> {
-		val lines = input.split("\n")
+		val lines = input.lines()
 
 		maze = lines.map { row -> row.map { it != '#' }.toBooleanArray() }
 

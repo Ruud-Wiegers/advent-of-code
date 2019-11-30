@@ -4,8 +4,8 @@ import adventofcode.AdventSolution
 
 
 object Day07 : AdventSolution(2016, 7, "Internet Protocol Version 7") {
-	override fun solvePartOne(input: String) = input.splitToSequence("\n").count(::isValidTLS).toString()
-	override fun solvePartTwo(input: String) = input.splitToSequence("\n").count(::isValidSSL).toString()
+	override fun solvePartOne(input: String) = input.lineSequence().count(::isValidTLS).toString()
+	override fun solvePartTwo(input: String) = input.lineSequence().count(::isValidSSL).toString()
 
 
 	private fun isValidTLS(s: String): Boolean = splitHypernet(s).let { (main, hypernet) ->

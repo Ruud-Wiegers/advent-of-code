@@ -9,7 +9,7 @@ object Day02 : AdventSolution(2016, 2, "Bathroom Security") {
 	override fun solvePartTwo(input: String) = solve(input, Day02::stepOnDiamondPad)
 
 	private fun solve(input: String, function: (Int, Char) -> Int): String = input
-			.splitToSequence("\n")
+			.lineSequence()
 			.fold(listOf(5)) { result, line ->
 				result + line.asSequence().fold(result.last(), function)
 			}

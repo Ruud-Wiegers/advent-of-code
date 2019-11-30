@@ -39,7 +39,7 @@ object Day06 : AdventSolution(2015, 6, "Probably a Fire Hazard") {
 
     private fun parse(input: String): Sequence<Instruction> {
         val regex = "(.*) (\\d+),(\\d+) through (\\d+),(\\d+)".toRegex()
-        return input.splitToSequence("\n")
+        return input.lineSequence()
                 .map { regex.matchEntire(it)!!.destructured }
                 .map { (a, x1, y1, x2, y2) ->
                     val act = when (a) {

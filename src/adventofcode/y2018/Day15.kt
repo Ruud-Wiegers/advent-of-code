@@ -139,7 +139,7 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
     }
 
     private fun parse(input: String): MutableList<MutableList<Tile>> {
-        return input.split("\n").map {
+        return input.lines().map {
             it.map { tile ->
                 when (tile) {
                     '#' -> Tile.Closed

@@ -21,7 +21,7 @@ object Day20 : AdventSolution(2016, 20, "Firewall Rules") {
 }
 
 private fun coalesceIpRanges(input: String): List<LongRange> {
-	return input.split("\n")
+	return input.lines()
 			.map { it.substringBefore('-').toLong()..it.substringAfter('-').toLong() }
 			.sortedBy { it.first }
 			.fold(listOf(), ::combineOverlapping)

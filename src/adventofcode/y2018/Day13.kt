@@ -64,7 +64,7 @@ object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {
     }
 
     private fun parse(input: String): Pair<List<String>, MutableList<Cart>> {
-        val track = input.split("\n")
+        val track = input.lines()
 
         val carts = mutableListOf<Cart>()
         track.forEachIndexed { y, r ->

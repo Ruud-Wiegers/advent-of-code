@@ -32,7 +32,7 @@ object Day09 : AdventSolution(2015, 9, "All in a Single Night") {
 					.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
 
 
-	private fun parseInput(distances: String) = distances.splitToSequence("\n")
+	private fun parseInput(distances: String) = distances.lineSequence()
 			.mapNotNull { Regex("([a-zA-Z]+) to ([a-zA-Z]+) = (\\d+)").matchEntire(it) }
 			.map { it.destructured }
 			.map { (start, end, distance) -> start to end to distance.toInt() }

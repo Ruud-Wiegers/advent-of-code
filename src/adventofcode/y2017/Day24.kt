@@ -30,7 +30,7 @@ object Day24 : AdventSolution(2017, 24, "Electromagnetic Moat") {
 
 
 	private fun parseInput(input: String): List<Pair<Int, Int>> = input
-			.split("\n")
+			.lines()
 			.map { it.split("/") }
 			.map { it[0].toInt() to it[1].toInt() }
 

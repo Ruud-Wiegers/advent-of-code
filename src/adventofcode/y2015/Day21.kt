@@ -36,7 +36,7 @@ object Day21 : AdventSolution(2015, 21, "RPG Simulator 20XX") {
 
 
 	private fun parseInput(input: String) =
-			input.split("\n").map { it.substringAfter(": ").toInt() }.let { (hp, dmg, ar) -> Character(hp, dmg, ar) }
+			input.lines().map { it.substringAfter(": ").toInt() }.let { (hp, dmg, ar) -> Character(hp, dmg, ar) }
 }
 
 private fun combat(player: Character, monster: Character): Boolean {

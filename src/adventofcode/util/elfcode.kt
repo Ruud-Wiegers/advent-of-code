@@ -4,7 +4,7 @@ package adventofcode.util.elfcode
 
 
 fun parseToElfcode(input: String): Pair<Int, List<Instruction>> {
-    val lines = input.split("\n")
+    val lines = input.lines()
     val ip = lines[0].substringAfter("#ip ").toInt()
     val instructions = lines
             .drop(1)

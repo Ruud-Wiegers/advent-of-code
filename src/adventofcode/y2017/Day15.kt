@@ -24,7 +24,7 @@ object Day15 : AdventSolution(2017, 15, "Dueling Generators") {
 		return judge(genA, genB, 5_000_000).toString()
 	}
 
-	private fun parseInput(input: String): List<Long> = input.split("\n")
+	private fun parseInput(input: String): List<Long> = input.lines()
 			.map { it.substringAfter("starts with ").toLong() }
 
 	// This one's a bit subtle. A JVM Short has 16 bits, but is interpreted as signed two's complement.

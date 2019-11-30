@@ -54,7 +54,7 @@ object Day22 : AdventSolution(2017, 22, "Sporifica Virus") {
 		protected abstract fun action(health: Health): Pair<Health, Direction>
 	}
 
-	fun parseInput(input: String): MutableMap<Point, Health> = input.split("\n")
+	fun parseInput(input: String): MutableMap<Point, Health> = input.lines()
 			.mapIndexed { y, row ->
 				row.mapIndexed { x, char ->
 					val position = Point(x - row.length / 2, y - row.length / 2)

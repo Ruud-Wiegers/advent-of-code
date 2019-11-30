@@ -10,7 +10,7 @@ object Day10 : AdventSolution(2018, 10, "The Stars Align") {
     override fun solvePartTwo(input: String) = parse(input).findMessage().index
 
     private fun parse(input: String) =
-            input.splitToSequence("\n")
+            input.lineSequence()
                     .map {
                         it
                                 .split("position=<", ",", "> velocity=<", ">")

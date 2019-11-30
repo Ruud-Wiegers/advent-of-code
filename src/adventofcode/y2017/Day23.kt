@@ -32,7 +32,7 @@ object Day23 : AdventSolution(2017, 23, "Coprocessor Conflagration") {
 
 	private fun isComposite(n: Int) = (2 until n).any { n % it == 0 }
 
-	private fun parseInstructions(input: String) = input.split("\n")
+	private fun parseInstructions(input: String) = input.lines()
 			.map { row -> row.split(" ") + "" }
 }
 
