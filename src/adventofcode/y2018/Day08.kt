@@ -4,34 +4,28 @@ import adventofcode.AdventSolution
 
 object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
 
-    override fun solvePartOne(input: String) = parse(input).simpleChecksum()
+    override fun solvePartOne(input: String) = parseToIterator(input).parseToTree().simpleChecksum()
 
-    override fun solvePartTwo(input: String) = parse(input).complexChecksum()
+    override fun solvePartTwo(input: String) = parseToIterator(input).parseToTree().complexChecksum()
 
-    private fun parse(input: String) = input
-            .splitToSequence(" ")
-            .map(String::toInt)
-            .iterator()
-            .let(::Node)
+    private fun parseToIterator(input: String) = input.splitToSequence(' ').map(String::toInt).iterator()
 
-    private class Node(iter: Iterator<Int>) {
-        private val children: List<Node>
-        private val metadata: List<Int>
+    private fun Iterator<Int>.parseToTree(): Node {
+        val childrenCount = next()
+        val metadataCount = next()
+        return Node(
+                List(childrenCount) { parseToTree() },
+                List(metadataCount) { next() }
+        )
+    }
 
-        init {
-            val childrenCount = iter.next()
-            val metadataCount = iter.next()
-            children = List(childrenCount) { Node(iter) }
-            metadata = List(metadataCount) { iter.next() }
-        }
+    private data class Node(private val children: List<Node>, private val metadata: List<Int>) {
 
         fun simpleChecksum(): Int = metadata.sum() + children.sumBy(Node::simpleChecksum)
 
         fun complexChecksum(): Int = if (children.isEmpty())
             metadata.sum()
         else
-            metadata.map { it - 1 }
-                    .filter { it in children.indices }
-                    .sumBy { children[it].complexChecksum() }
+            metadata.sumBy { children.getOrNull(it - 1)?.complexChecksum() ?: 0 }
     }
 }
