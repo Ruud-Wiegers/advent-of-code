@@ -8,11 +8,11 @@ fun main() = Day04.solve()
 object Day04 : AdventSolution(2019, 4, "Secure Container") {
 
     override fun solvePartOne(input: String) = parseFast(input).count { c ->
-         c.toString().zipWithNext().any { (a, b) -> a == b }
+        c.toString().zipWithNext().any { (a, b) -> a == b }
     }
 
     override fun solvePartTwo(input: String) = parseFast(input).count { c ->
-         c.toString().groupBy { it }.any { it.value.size == 2 }
+        c.toString().groupBy { it }.any { it.value.size == 2 }
     }
 
     private fun parseFast(input: String): Sequence<Int> {
@@ -28,17 +28,7 @@ object Day04 : AdventSolution(2019, 4, "Secure Container") {
                     for (d in c..9)
                         for (e in d..9)
                             for (f in e..9) {
-                                var res = a
-                                res *= 10
-                                res += b
-                                res *= 10
-                                res += c
-                                res *= 10
-                                res += d
-                                res *= 10
-                                res += e
-                                res *= 10
-                                res += f
+                                val res = a * 100_000 + b * 10_000 + c * 1_000 + d * 100 + e * 10 + f
                                 if (res > bound) break@outer
                                 yield(res)
                             }
