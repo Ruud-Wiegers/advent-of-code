@@ -12,12 +12,12 @@ object Day05 : AdventSolution(2019, 5, "Sunny with a Chance of Asteroids") {
 
     override fun solvePartTwo(input: String) = run(input, 5)
 
-    private fun run(input: String, program: Int) = input
+    private fun run(input: String, moduleId: Int) = input
             .split(',')
             .map(String::toInt)
             .toIntArray()
             .let(::IntProgram)
-            .apply { inputChannel += program }
+            .apply { inputChannel += moduleId }
             .run()
             .outputChannel
             .last()
