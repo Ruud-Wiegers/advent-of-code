@@ -2,6 +2,7 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.util.IntProgram
 import adventofcode.util.cartesian
 
 fun main() = Day02.solve()
@@ -26,27 +27,4 @@ object Day02 : AdventSolution(2019, 2, "1202 Program Alarm") {
             .let(::IntProgram)
             .run()
             .mem[0]
-}
-
-class IntProgram(val mem: IntArray) {
-    private var pc: Int = 0
-
-    fun run(): IntProgram {
-        while (true) {
-            when (mem[pc]) {
-                1 -> addI()
-                2 -> mulI()
-                99 -> return this
-                else -> throw IllegalStateException("mem[$pc] == ${mem[pc]}. Not a valid opcode.")
-            }
-        }
-    }
-
-    private val addI = { setA(3, getA(2) + getA(1)); pc += 4 }
-    private val mulI = { setA(3, getA(2) * getA(1)); pc += 4 }
-
-    private fun getA(i: Int) = mem[mem[pc + i]]
-    private fun setA(i: Int, v: Int) {
-        mem[mem[pc + i]] = v
-    }
 }

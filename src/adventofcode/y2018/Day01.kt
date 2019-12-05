@@ -15,7 +15,7 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 
         return generateSequence { changes }
                 .flatten()
-                .scan(0, Int::plus)
+                .scan(0, operation = Int::plus)
                 .find { !reached.add(it) }
     }
 }

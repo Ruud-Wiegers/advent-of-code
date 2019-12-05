@@ -12,11 +12,11 @@ object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum")
         val route2 = input.filterIndexed { i, _ -> i % 2 != 0 }.visitEach()
         val visited = route1 + route2
 
-        return visited.size
+        return visited.size +1
     }
 
     private fun String.visitEach() = asSequence()
-            .scan(Pos(0, 0), Pos::next, includeInitial = true)
+            .scan(Pos(0, 0), Pos::next)
             .toSet()
 
     data class Pos(val x: Int, val y: Int) {

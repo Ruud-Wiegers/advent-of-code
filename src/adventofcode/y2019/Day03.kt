@@ -10,48 +10,37 @@ fun main() = Day03.solve()
 object Day03 : AdventSolution(2019, 3, "Crossed Wires") {
 
     override fun solvePartOne(input: String): Int? {
-        val (a, b) = input.lines()
+        val (a, b) = input.lines().map(this::parseWire)
 
-        val visited = parseWire(a).toSet()
+        val visited = a.toSet()
 
-        return parseWire(b)
-                .filter { it in visited }
+        return b.filter { it in visited }
                 .map { it.x.absoluteValue + it.y.absoluteValue }
                 .min()
     }
 
     override fun solvePartTwo(input: String): Int? {
-        val (a, b) = input.lines()
+        val (a, b) = input.lines().map(this::parseWire)
 
         val visited = mutableMapOf<Point, Int>()
-        parseWire(a).forEachIndexed { d, p -> visited.putIfAbsent(p, d) }
+        a.forEachIndexed { d, p -> visited.putIfAbsent(p, d) }
 
-        return parseWire(b)
-                .withIndex()
-                .filter { it.value in visited }
-                .map { it.index + visited.getValue(it.value) + 2 }
+        return b.withIndex()
+                .mapNotNull { (dist, v) -> visited[v]?.let { it + dist + 2 } }
                 .min()
     }
 
-    private fun parseWire(a: String) = a.splitToSequence(',')
-            .flatMap {
-                val dir = parseDirection(it[0])
-                val dist = it.drop(1).toInt()
-                generateSequence { dir }.take(dist)
-            }
-            .scan(Point(0, 0), Point::plus)
+    private fun parseWire(input: String) = input.splitToSequence(',')
+            .flatMap { it.substring(0, 1).repeat(it.substring(1).toInt()).asSequence() }
+            .scan(Point(0, 0), { p, ch ->
+                when (ch) {
+                    'U'  -> p.copy(x = p.x - 1)
+                    'D'  -> p.copy(x = p.x + 1)
+                    'L'  -> p.copy(y = p.y - 1)
+                    'R'  -> p.copy(y = p.y + 1)
+                    else -> throw IllegalStateException()
+                }
+            })
 
-
-    private fun parseDirection(ch: Char): Point = when (ch) {
-        'U' -> Point(0, -1)
-        'D' -> Point(0, 1)
-        'L' -> Point(-1, 0)
-        'R' -> Point(1, 0)
-        else -> throw IllegalStateException()
-    }
-}
-
-
-private data class Point(val x: Int, val y: Int) {
-    operator fun plus(o: Point) = Point(x + o.x, y + o.y)
+    private data class Point(val x: Int, val y: Int)
 }

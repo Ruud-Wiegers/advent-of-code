@@ -1,6 +1,9 @@
 package adventofcode.y2017
 
 import adventofcode.AdventSolution
+import adventofcode.solve
+
+fun main() =Day14.solve()
 
 object Day14 : AdventSolution(2017, 14, "Disk Defragmentation") {
 
