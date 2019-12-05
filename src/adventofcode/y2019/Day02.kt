@@ -42,11 +42,11 @@ class IntProgram(val mem: IntArray) {
         }
     }
 
-    private val addI = { setI(3, getI(2) + getI(1)); pc += 4 }
-    private val mulI = { setI(3, getI(2) * getI(1)); pc += 4 }
+    private val addI = { setA(3, getA(2) + getA(1)); pc += 4 }
+    private val mulI = { setA(3, getA(2) * getA(1)); pc += 4 }
 
-    private fun getI(i: Int) = mem[mem[pc + i]]
-    private fun setI(i: Int, v: Int) {
+    private fun getA(i: Int) = mem[mem[pc + i]]
+    private fun setA(i: Int, v: Int) {
         mem[mem[pc + i]] = v
     }
 }
