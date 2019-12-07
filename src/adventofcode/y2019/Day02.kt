@@ -24,7 +24,7 @@ object Day02 : AdventSolution(2019, 2, "1202 Program Alarm") {
     private fun List<Int>.runProgram(n: Int, v: Int): Int = toIntArray()
             .also { it[1] = n }
             .also { it[2] = v }
-            .let(::IntProgram)
+            .let {  IntProgram(it) }
             .run()
             .mem[0]
 }

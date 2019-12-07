@@ -1,7 +1,7 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import adventofcode.util.permute
+import adventofcode.util.permutations
 
 
 object Day09 : AdventSolution(2015, 9, "All in a Single Night") {
@@ -28,7 +28,7 @@ object Day09 : AdventSolution(2015, 9, "All in a Single Night") {
 
 
 	private fun routes(locations: List<String>, distanceTable: List<List<Int>>) =
-			permute(locations.indices.toList())
+			permutations(locations.indices)
 					.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
 
 

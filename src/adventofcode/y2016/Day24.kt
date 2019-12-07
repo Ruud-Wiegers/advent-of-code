@@ -3,82 +3,81 @@ package adventofcode.y2016
 import adventofcode.AdventSolution
 import adventofcode.util.IState
 import adventofcode.util.aStar
-import adventofcode.util.permute
+import adventofcode.util.permutations
 import kotlin.math.abs
 
 object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
 
-	lateinit var maze: List<BooleanArray>
-	private lateinit var checkPoints: Array<Pair<Int, Int>>
+    lateinit var maze: List<BooleanArray>
+    private lateinit var checkPoints: Array<Pair<Int, Int>>
 
-	override fun solvePartOne(input: String): String {
-		val distanceTable = buildDistanceTable(input)
+    override fun solvePartOne(input: String): String {
+        val distanceTable = buildDistanceTable(input)
 
-		val checkpointPermutations = permute((1..7).toList())
-		val routes = checkpointPermutations.map { listOf(0) + it }
-		val costOfRoutes = routes.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
-		val cheapestRoute = costOfRoutes.min()
+        val checkpointPermutations = permutations(1..7)
+        val routes = checkpointPermutations.map { listOf(0) + it }
+        val costOfRoutes = routes.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
+        val cheapestRoute = costOfRoutes.min()
 
-		return cheapestRoute.toString()
-	}
+        return cheapestRoute.toString()
+    }
 
-	override fun solvePartTwo(input: String): String {
-		val distanceTable = buildDistanceTable(input)
+    override fun solvePartTwo(input: String): Int? {
+        val distanceTable = buildDistanceTable(input)
 
-		val checkpointPermutations = permute((1..7).toList())
-		val routes = checkpointPermutations.map { listOf(0) + it + listOf(0) }
-		val costOfRoutes = routes.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
-		val cheapestRoute = costOfRoutes.min()
+        return permutations(1..7)
+                .map { listOf(0) + it + listOf(0) }
+                .map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
+                .min()
 
-		return cheapestRoute.toString()
-	}
+    }
 
 
-	private fun buildDistanceTable(input: String): List<List<Int>> {
-		val lines = input.lines()
+    private fun buildDistanceTable(input: String): List<List<Int>> {
+        val lines = input.lines()
 
-		maze = lines.map { row -> row.map { it != '#' }.toBooleanArray() }
+        maze = lines.map { row -> row.map { it != '#' }.toBooleanArray() }
 
-		checkPoints = buildCheckpoints(lines)
+        checkPoints = buildCheckpoints(lines)
 
-		return checkPoints.indices.map { start ->
-			checkPoints.indices.map { end ->
-				val path = aStar(MazeState(checkPoints[start], checkPoints[end])) ?: throw IllegalStateException()
-				path.cost
-			}
-		}
-	}
+        return checkPoints.indices.map { start ->
+            checkPoints.indices.map { end ->
+                val path = aStar(MazeState(checkPoints[start], checkPoints[end])) ?: throw IllegalStateException()
+                path.cost
+            }
+        }
+    }
 
-	data class MazeState(private val x: Int,
-						 private val y: Int,
-						 private val gX: Int,
-						 private val gY: Int) : IState {
+    data class MazeState(private val x: Int,
+                         private val y: Int,
+                         private val gX: Int,
+                         private val gY: Int) : IState {
 
-		constructor(start: Pair<Int, Int>, goal: Pair<Int, Int>) : this(start.first, start.second, goal.first, goal.second)
+        constructor(start: Pair<Int, Int>, goal: Pair<Int, Int>) : this(start.first, start.second, goal.first, goal.second)
 
-		override val isGoal: Boolean
-			get() = x == gX && y == gY
+        override val isGoal: Boolean
+            get() = x == gX && y == gY
 
-		override val heuristic: Int
-			get() = abs(gX - x) + abs(gY - y)
+        override val heuristic: Int
+            get() = abs(gX - x) + abs(gY - y)
 
-		override fun getNeighbors() = sequenceOf(
-				copy(y = y - 1),
-				copy(y = y + 1),
-				copy(x = x - 1),
-				copy(x = x + 1)
-		).filter { maze[it.y][it.x] }
-	}
+        override fun getNeighbors() = sequenceOf(
+                copy(y = y - 1),
+                copy(y = y + 1),
+                copy(x = x - 1),
+                copy(x = x + 1)
+        ).filter { maze[it.y][it.x] }
+    }
 
-	private fun buildCheckpoints(lines: List<String>): Array<Pair<Int, Int>> {
-		val checkpoints = mutableMapOf<Int, Pair<Int, Int>>()
-		lines.forEachIndexed { y, line ->
-			line.forEachIndexed { x, ch ->
-				if (ch in '0'..'7')
-					checkpoints[ch.toString().toInt()] = Pair(x, y)
-			}
-		}
+    private fun buildCheckpoints(lines: List<String>): Array<Pair<Int, Int>> {
+        val checkpoints = mutableMapOf<Int, Pair<Int, Int>>()
+        lines.forEachIndexed { y, line ->
+            line.forEachIndexed { x, ch ->
+                if (ch in '0'..'7')
+                    checkpoints[ch.toString().toInt()] = Pair(x, y)
+            }
+        }
 
-		return Array(8) { checkpoints[it] ?: throw IllegalStateException() }
-	}
+        return Array(8) { checkpoints[it] ?: throw IllegalStateException() }
+    }
 }
