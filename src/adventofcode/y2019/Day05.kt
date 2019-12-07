@@ -16,9 +16,11 @@ object Day05 : AdventSolution(2019, 5, "Sunny with a Chance of Asteroids") {
             .split(',')
             .map(String::toInt)
             .toIntArray()
-            .let{ IntProgram(it, mutableListOf(moduleId))}
-            .run()
-            .outputChannel
-            .last()
+            .let(::IntProgram)
+            .run {
+                input(moduleId)
+                execute()
+                generateSequence(this::output).last()
+            }
 
 }

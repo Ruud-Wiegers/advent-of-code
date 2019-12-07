@@ -21,10 +21,13 @@ object Day02 : AdventSolution(2019, 2, "1202 Program Alarm") {
 
     private fun parse(input: String): List<Int> = input.split(',').map(String::toInt)
 
-    private fun List<Int>.runProgram(n: Int, v: Int): Int = toIntArray()
-            .also { it[1] = n }
-            .also { it[2] = v }
-            .let {  IntProgram(it) }
-            .run()
-            .mem[0]
+    private fun List<Int>.runProgram(n: Int, v: Int): Int {
+        val programData = this.toIntArray()
+        programData[1] = n
+        programData[2] = v
+
+        return IntProgram(programData)
+                .apply(IntProgram::execute)
+                .mem[0]
+    }
 }

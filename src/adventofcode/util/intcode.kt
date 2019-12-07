@@ -1,24 +1,26 @@
 package adventofcode.util
 
-import java.nio.channels.spi.AbstractInterruptibleChannel
-
-
-class IntProgram(val mem: IntArray, var inputChannel: MutableList<Int> = mutableListOf()) {
+class IntProgram(val mem: IntArray) {
     private var pc: Int = 0
 
-    var halt = false
-    val outputChannel = mutableListOf<Int>()
+    var state = State.Ready; private set
+    private val inputChannel = mutableListOf<Int>()
+    private val outputChannel = mutableListOf<Int>()
 
-    fun run(): IntProgram {
-        while (!halt) {
+    fun input(i: Int) {
+        inputChannel += i
+    }
+
+    fun output() = outputChannel.takeIf { it.isNotEmpty() }?.removeAt(0)
+
+    fun execute() {
+        do {
             step()
-        }
-        return this
+        } while (state == State.Ready)
     }
 
 
-
-    fun step() {
+    private fun step() {
         when (mem[pc] % 100) {
             1 -> add()
             2 -> multiply()
@@ -28,16 +30,19 @@ class IntProgram(val mem: IntArray, var inputChannel: MutableList<Int> = mutable
             6 -> jumpIfZero()
             7 -> lessThan()
             8 -> equal()
-            99 -> halt = true
+            99 -> state = State.Halted
             else -> throw IllegalStateException("mem[$pc] == ${mem[pc]}. Not a valid opcode.")
         }
     }
 
 
     private fun readInput() {
-        val value = inputChannel.removeAt(0)
-        store(1, value)
-        pc += 2
+        state = if (inputChannel.isEmpty()) State.WaitingForInput else {
+            val value = inputChannel.removeAt(0)
+            store(1, value)
+            pc += 2
+            State.Ready
+        }
     }
 
     private fun writeOutput() {
@@ -80,4 +85,6 @@ class IntProgram(val mem: IntArray, var inputChannel: MutableList<Int> = mutable
         repeat(offset + 1) { mode /= 10 }
         return mode and 1 == 0
     }
+
+    enum class State { Ready, WaitingForInput, Halted }
 }
