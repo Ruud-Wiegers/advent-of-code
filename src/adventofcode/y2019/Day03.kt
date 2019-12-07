@@ -2,7 +2,7 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.scan
+import adventofcode.util.collections.scan
 import kotlin.math.absoluteValue
 
 fun main() = Day03.solve()

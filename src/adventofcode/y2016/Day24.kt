@@ -3,7 +3,7 @@ package adventofcode.y2016
 import adventofcode.AdventSolution
 import adventofcode.util.IState
 import adventofcode.util.aStar
-import adventofcode.util.permutations
+import adventofcode.util.collections.permutations
 import kotlin.math.abs
 
 object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
@@ -14,7 +14,7 @@ object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
     override fun solvePartOne(input: String): String {
         val distanceTable = buildDistanceTable(input)
 
-        val checkpointPermutations = permutations(1..7)
+        val checkpointPermutations = (1..7).permutations()
         val routes = checkpointPermutations.map { listOf(0) + it }
         val costOfRoutes = routes.map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
         val cheapestRoute = costOfRoutes.min()
@@ -25,7 +25,7 @@ object Day24 : AdventSolution(2016, 24, "Air Duct Spelunking") {
     override fun solvePartTwo(input: String): Int? {
         val distanceTable = buildDistanceTable(input)
 
-        return permutations(1..7)
+        return (1..7).permutations()
                 .map { listOf(0) + it + listOf(0) }
                 .map { it.zipWithNext { a, b -> distanceTable[a][b] }.sum() }
                 .min()

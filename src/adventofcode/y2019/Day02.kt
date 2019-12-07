@@ -3,7 +3,7 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntProgram
-import adventofcode.util.cartesian
+import adventofcode.util.collections.cartesian
 
 fun main() = Day02.solve()
 

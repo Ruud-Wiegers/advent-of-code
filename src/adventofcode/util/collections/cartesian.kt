@@ -1,4 +1,4 @@
-package adventofcode.util
+package adventofcode.util.collections
 
 /**
  * Generates a the cartesian product of a list with itself, as a sequence of pairs

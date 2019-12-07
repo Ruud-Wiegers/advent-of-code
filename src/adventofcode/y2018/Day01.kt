@@ -1,7 +1,8 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.util.scan
+import adventofcode.util.collections.cycle
+import adventofcode.util.collections.scan
 
 
 object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
@@ -13,8 +14,7 @@ object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {
 
         val reached = mutableSetOf<Int>()
 
-        return generateSequence { changes }
-                .flatten()
+        return changes.cycle()
                 .scan(0, operation = Int::plus)
                 .find { !reached.add(it) }
     }

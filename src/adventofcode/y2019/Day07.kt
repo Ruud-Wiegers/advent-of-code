@@ -3,7 +3,8 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntProgram
-import adventofcode.util.permutations
+import adventofcode.util.collections.cycle
+import adventofcode.util.collections.permutations
 
 fun main() = Day07.solve()
 
@@ -15,7 +16,7 @@ object Day07 : AdventSolution(2019, 7, "Amplification Circuit") {
 
     private fun solve(input: String, phases: IntRange): Int? {
         val data = input.split(',').map(String::toInt)
-        val permutations = permutations(phases)
+        val permutations = phases.permutations()
 
         return permutations
                 .map { permutation -> setupPrograms(permutation, data) }
@@ -23,12 +24,12 @@ object Day07 : AdventSolution(2019, 7, "Amplification Circuit") {
                 .max()
     }
 
-    private fun setupPrograms(permutation: List<Int>, data: List<Int>) = permutation
+    private fun setupPrograms(permutation: List<Int>, data: List<Int>): List<IntProgram> = permutation
             .map { phase ->
                 IntProgram(data.toIntArray()).apply { input(phase) }
             }
 
-    private fun runLoop(programs: List<IntProgram>) = generateSequence { programs.asSequence() }.flatten()
+    private fun runLoop(programs: List<IntProgram>): Int = programs.cycle()
             .takeWhile { it.state != IntProgram.State.Halted }
             .fold(0) { power, program ->
                 program.input(power)

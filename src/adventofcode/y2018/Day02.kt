@@ -1,7 +1,7 @@
 package adventofcode.y2018
 
 import adventofcode.AdventSolution
-import adventofcode.util.cartesian
+import adventofcode.util.collections.cartesian
 
 object Day02 : AdventSolution(2018, 2, "Inventory Management System") {
 
