@@ -15,16 +15,16 @@ object Day08 : AdventSolution(2019, 8, "Space Image Format") {
 
     override fun solvePartTwo(input: String) = input
             .chunked(6 * 25)
-            .reduce(this::mergeLayer)
+            .reduce(this::mergeLayers)
             .replace('1', '█')
             .replace('0', ' ')
             .chunked(25)
-            .joinToString("\n", "\n")
+            .joinToString(separator = "\n", prefix = "\n")
 
-    private fun mergeLayer(image: String, layer: String): String = image
-            .zip(layer) { imagePixel, backgroundPixel ->
-                if (imagePixel == '2') backgroundPixel else imagePixel
-            }
-            .joinToString("")
+    private fun mergeLayers(foreground: String, background: String): String =
+            foreground.zip(background, this::mergePixels).joinToString("")
+
+    private fun mergePixels(foreground: Char, background: Char): Char =
+            if (foreground != '2') foreground else background
 
 }
