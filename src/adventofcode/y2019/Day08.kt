@@ -9,10 +9,9 @@ object Day08 : AdventSolution(2019, 8, "Space Image Format") {
 
     override fun solvePartOne(input: String) = input
             .chunked(6 * 25)
-            .map { l -> l.groupingBy { it }.eachCount() }
-            .minBy { it.getValue('0') }
-            ?.let { it.getValue('1') * it.getValue('2') }
-
+            .map { layer -> layer.groupingBy { it }.eachCount() }
+            .minBy { it['0'] ?: 0 }
+            ?.let { (it['1'] ?: 0) * (it['2'] ?: 0) }
 
     override fun solvePartTwo(input: String) = input
             .chunked(6 * 25)
