@@ -1,109 +1,77 @@
 package adventofcode.util
 
-class IntCodeProgram(mem: List<Int>) {
-    private var pc: Long = 0L
-    private var relativeBase: Long = 0L
+import adventofcode.util.IntCodeProgram.State.*
+import java.util.*
 
-    private val mem = mem.withIndex().associate { it.index.toLong() to it.value.toLong() }.toMutableMap()
+class IntCodeProgram(input: List<Int>) {
 
-    var state = State.Ready; private set
-    private val inputChannel = mutableListOf<Long>()
-    private val outputChannel = mutableListOf<Long>()
+    private val memory = input.withIndex()
+            .associate { it.index.toLong() to it.value.toLong() }
+            .toMutableMap()
+            .let(::Memory)
+    var state = Ready; private set
+    private val inputChannel: Queue<Long> = LinkedList()
+    private val outputChannel: Queue<Long> = LinkedList()
 
+    fun input(i: Long) = inputChannel.offer(i)
 
-    fun input(i: Long) {
-        inputChannel += i
-    }
-
-    fun output() = outputChannel.takeIf { it.isNotEmpty() }?.removeAt(0)
+    fun output(): Long? = outputChannel.poll()
 
     fun execute() {
         do {
-            step()
-        } while (state == State.Ready)
+            memory.nextInstruction()
+            when (memory.currentOperation) {
+                1 -> memory[2] = memory[0] + memory[1]
+                2 -> memory[2] = memory[0] * memory[1]
+                3 -> state = if (inputChannel.isEmpty()) WaitingForInput else Ready.also { memory[0] = inputChannel.poll() }
+                4 -> outputChannel.offer(memory[0])
+                5 -> if (memory[0] != 0L) memory.pc = memory[1] - 3
+                6 -> if (memory[0] == 0L) memory.pc = memory[1] - 3
+                7 -> memory[2] = if (memory[0] < memory[1]) 1 else 0
+                8 -> memory[2] = if (memory[0] == memory[1]) 1 else 0
+                9 -> memory.relativeBase += memory[0]
+                99 -> state = Halted
+                else -> throw IllegalStateException()
+            }
+            memory.pc += when (memory.currentOperation) {
+                99 -> 0
+                3, 4, 9 -> 2
+                5, 6 -> 3
+                1, 2, 7, 8 -> 4
+                else -> throw IllegalStateException()
+            }
+        } while (state == Ready)
     }
 
+    private class Memory(private val memory: MutableMap<Long, Long>) {
+        var pc: Long = 0L
+        var relativeBase: Long = 0L
+        var currentOperation: Int = 0; private set
 
-    private fun step() {
-        val op = (loadImmediate(0).toInt())
-        when (op % 100) {
-            1    -> add()
-            2    -> multiply()
-            3    -> readInput()
-            4    -> writeOutput()
-            5    -> jumpNonZero()
-            6    -> jumpIfZero()
-            7    -> lessThan()
-            8    -> equal()
-            9    -> rebase()
-            99   -> state = State.Halted
-            else -> throw IllegalStateException("mem[$pc] == ${mem[pc]}. Not a valid opcode.")
+        private var instruction: Int = 0
+        private var modes: List<Mode> = emptyList()
+        private var params: List<Long> = emptyList()
+
+        fun nextInstruction() {
+            instruction = memory.getValue(pc).toInt()
+            currentOperation = instruction % 100
+            modes = listOf(instruction / 100 % 10, instruction / 1000 % 10, instruction / 10000 % 10).map { Mode.values()[it] }
+            params = (1..3).map { memory[pc + it] ?: 0L }
         }
-    }
 
-
-    private fun readInput() {
-        state = if (inputChannel.isEmpty()) State.WaitingForInput else {
-            val value = inputChannel.removeAt(0)
-            store(1, value)
-            pc += 2
-            State.Ready
+        operator fun get(offset: Int) = when (modes[offset]) {
+            Mode.Positional -> memory[params[offset]] ?: 0L
+            Mode.Direct -> params[offset]
+            Mode.Relative -> memory[relativeBase + params[offset]] ?: 0L
         }
-    }
 
-    private fun writeOutput() {
-        outputChannel += load(1)
-        pc += 2
-    }
-
-    private fun jumpIfZero() {
-        pc = if (load(1) == 0L) load(2)
-        else pc + 3
-    }
-
-    private fun jumpNonZero() {
-        pc = if (load(1) != 0L) load(2)
-        else pc + 3
-    }
-
-    private fun rebase() {
-        relativeBase += load(1)
-        pc += 2
-    }
-
-    private fun add() = binaryOperation { a, b -> a + b }
-    private fun multiply() = binaryOperation { a, b -> a * b }
-    private fun lessThan() = binaryOperation { a, b -> if (a < b) 1 else 0 }
-    private fun equal() = binaryOperation { a, b -> if (a == b) 1 else 0 }
-
-    private inline fun binaryOperation(operator: (Long, Long) -> Long) {
-        val value = operator(load(1), load(2))
-        store(3, value)
-        pc += 4
-    }
-
-    private fun store(offset: Int, value: Long) {
-        when (mode(loadImmediate(0), offset)) {
-            0    -> mem[loadImmediate(offset)] = value
-            2    -> mem[relativeBase + loadImmediate(offset)] = value
-            else -> throw IllegalStateException("unknown addressing mode: $value")
+        operator fun set(offset: Int, value: Long) = when (modes[offset]) {
+            Mode.Positional -> memory[params[offset]] = value
+            Mode.Direct -> throw IllegalStateException("unknown addressing mode: $value")
+            Mode.Relative -> memory[relativeBase + params[offset]] = value
         }
-    }
-
-    private fun load(offset: Int) = when (mode(loadImmediate(0), offset)) {
-        0    -> mem[loadImmediate(offset)] ?: 0L
-        1    -> loadImmediate(offset)
-        2    -> mem[relativeBase + loadImmediate(offset)] ?: 0L
-        else -> throw IllegalStateException("unknown addressing mode")
-    }
-
-    private fun loadImmediate( offset: Int) = mem[pc + offset] ?: 0L
-
-    private fun mode(op: Long, offset: Int): Int {
-        var mode = op
-        repeat(offset + 1) { mode /= 10 }
-        return (mode % 10).toInt()
     }
 
     enum class State { Ready, WaitingForInput, Halted }
+    enum class Mode { Positional, Direct, Relative }
 }

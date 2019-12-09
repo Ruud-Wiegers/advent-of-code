@@ -4,7 +4,7 @@ import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntCodeProgram
 
-fun main() = Day09.solve()
+fun main() = repeat(5){ Day09.solve()}
 
 object Day09 : AdventSolution(2019, 9, "Sensor Boost") {
 
@@ -20,5 +20,7 @@ object Day09 : AdventSolution(2019, 9, "Sensor Boost") {
                 input(input)
                 execute()
             }
-            .output()
-}
+            .let {
+                generateSequence { it.output() }
+                        .toList()
+            }}
