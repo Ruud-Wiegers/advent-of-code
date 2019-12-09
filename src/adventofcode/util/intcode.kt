@@ -48,11 +48,11 @@ class IntCodeProgram(input: List<Int>) {
 }
 
 private class Memory(private val memory: MutableMap<Long, Long>) {
-    var pc: Long = 0L
-    var relativeBase: Long = 0L
-    var currentOperation: Int = 0; private set
+    var pc = 0L
+    var relativeBase = 0L
+    var currentOperation = 0 ; private set
 
-    private var instruction: Int = 0
+    private var instruction = 0
     private var modes: List<Mode> = emptyList()
     private var params: List<Long> = emptyList()
 
@@ -60,13 +60,13 @@ private class Memory(private val memory: MutableMap<Long, Long>) {
         instruction = memory.getValue(pc).toInt()
         currentOperation = instruction % 100
         modes = listOf(instruction / 100 % 10, instruction / 1000 % 10, instruction / 10000 % 10).map { Mode.values()[it] }
-        params = (1..3).map { memory[pc + it] ?: 0L }
+        params = (1L..3L).map { memory.getOrDefault(pc + it, 0L) }
     }
 
     operator fun get(offset: Int) = when (modes[offset]) {
         Mode.Direct -> params[offset]
-        Mode.Positional -> memory[params[offset]] ?: 0L
-        Mode.Relative -> memory[relativeBase + params[offset]] ?: 0L
+        Mode.Positional -> memory.getOrDefault(params[offset] , 0L)
+        Mode.Relative -> memory.getOrDefault(relativeBase + params[offset], 0L)
     }
 
     operator fun set(offset: Int, value: Long) = when (modes[offset]) {
