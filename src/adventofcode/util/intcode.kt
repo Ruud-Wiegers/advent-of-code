@@ -26,8 +26,8 @@ class IntCodeProgram(input: List<Int>) {
                 else
                     State.Ready.also { data[0] = inputChannel.removeAt(0) }
                 4 -> outputChannel.add(data[0])
-                5 -> if (data[0] != 0L) data.pc = data[1] - 3
-                6 -> if (data[0] == 0L) data.pc = data[1] - 3
+                5 -> data.pc = if (data[0] != 0L) data[1] else data.pc + 3
+                6 -> data.pc = if (data[0] == 0L) data[1] else data.pc + 3
                 7 -> data[2] = if (data[0] < data[1]) 1 else 0
                 8 -> data[2] = if (data[0] == data[1]) 1 else 0
                 9 -> data.relativeBase += data[0]
@@ -36,9 +36,9 @@ class IntCodeProgram(input: List<Int>) {
             }
             if (state == State.Ready)
                 data.pc += when (data.currentOperation) {
-                    3, 4, 9 -> 2
-                    5, 6 -> 3
                     1, 2, 7, 8 -> 4
+                    3, 4, 9 -> 2
+                    5, 6, 99 -> 0
                     else -> throw IllegalStateException()
                 }
         } while (state == State.Ready)
