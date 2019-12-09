@@ -2,7 +2,6 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.IntProgram
 import adventofcode.util.collections.cartesian
 
 fun main() = Day02.solve()
@@ -26,8 +25,29 @@ object Day02 : AdventSolution(2019, 2, "1202 Program Alarm") {
         programData[1] = n
         programData[2] = v
 
-        return IntProgram(programData)
-                .apply(IntProgram::execute)
-                .mem[0]
+        val p = IntProgram(programData)
+        p.run()
+        return p.mem[0]
     }
 }
+
+private class IntProgram(val mem: IntArray, private var pc: Int = 0) {
+    fun run() {
+        while (true) {
+            when (mem[pc]) {
+                1    -> store(3, load(2) + load(1))
+                2    -> store(3, load(2) * load(1))
+                99   -> return
+                else -> throw IllegalStateException()
+            }
+            pc += 4
+        }
+    }
+
+    private fun load(offset: Int) = mem[mem[pc + offset]]
+    private fun store(offset: Int, v: Int) {
+        mem[mem[pc + offset]] = v
+    }
+}
+
+
