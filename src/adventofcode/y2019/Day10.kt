@@ -11,21 +11,17 @@ object Day10 : AdventSolution(2019, 10, "Monitoring Station") {
     override fun solvePartOne(input: String) = losPerAsteroid(parseToAsteroids(input.lines())).values.max()
 
     override fun solvePartTwo(input: String): Int {
-        val counts = losPerAsteroid(parseToAsteroids(input.lines()))
-        val station = counts.maxBy { it.value }!!.key
+        val asteroids = parseToAsteroids(input.lines())
+        val station = losPerAsteroid(asteroids).maxBy { it.value }!!.key
 
-        val vectorsToOtherAsteroids = counts.keys
+        val vectorsToOtherAsteroids = asteroids
                 .filter { it != station }
-                .filter { lineOfSight(station, it, counts.keys) }
+                .filter { lineOfSight(station, it, asteroids) }
                 .map { it - station }
                 .sortedBy { it.y.toDouble() / it.x.toDouble() }
+                .sortedBy { it.x < 0 }
 
-        val (w, e) = vectorsToOtherAsteroids.partition { it.x < 0 }
-        val (nw, sw) = w.partition { it.y < 0 }
-        val (ne, se) = e.partition { it.y < 0 }
-
-        val sortedVectorsToOtherAsteroids = (ne + se + sw + nw)
-        val targetAsteroid = sortedVectorsToOtherAsteroids[199] + station
+        val targetAsteroid = vectorsToOtherAsteroids[199] + station
         return targetAsteroid.x * 100 + targetAsteroid.y
     }
 
