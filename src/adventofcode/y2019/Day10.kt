@@ -2,48 +2,59 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.collections.cartesian
 import kotlin.math.absoluteValue
-import kotlin.math.sqrt
 
 fun main() = Day10.solve()
 
 object Day10 : AdventSolution(2019, 10, "Monitoring Station") {
 
-    override fun solvePartOne(input: String): Int? {
-        val asteroids = input.lines().mapIndexed { rownum, row ->
-            row.withIndex().filter { it.value == '#' }.map { Point(rownum, it.index) }
+    override fun solvePartOne(input: String) = losPerAsteroid(parseToAsteroids(input.lines())).values.max()
+
+    override fun solvePartTwo(input: String): Int {
+        val counts = losPerAsteroid(parseToAsteroids(input.lines()))
+        val station = counts.maxBy { it.value }!!.key
+
+        val vectorsToOtherAsteroids = counts.keys
+                .filter { it != station }
+                .filter { lineOfSight(station, it, counts.keys) }
+                .map { it - station }
+                .sortedBy { it.y.toDouble() / it.x.toDouble() }
+
+        val (w, e) = vectorsToOtherAsteroids.partition { it.x < 0 }
+        val (nw, sw) = w.partition { it.y < 0 }
+        val (ne, se) = e.partition { it.y < 0 }
+
+        val sortedVectorsToOtherAsteroids = (ne + se + sw + nw)
+        val targetAsteroid = sortedVectorsToOtherAsteroids[199] + station
+        return targetAsteroid.x * 100 + targetAsteroid.y
+    }
+
+    private fun parseToAsteroids(grid: List<String>): Set<Point> = sequence {
+        for (y in grid.indices)
+            for (x in grid[0].indices)
+                if (grid[y][x] == '#')
+                    yield(Point(x, y))
+    }.toSet()
+
+    private fun losPerAsteroid(asteroids: Set<Point>) = asteroids.associateWith { k ->
+        asteroids.filter { it != k }.count { other ->
+            lineOfSight(k, other, asteroids)
         }
-                .flatten()
-
-        val counts = asteroids.associateWith { 0 }.toMutableMap()
-
-        asteroids.cartesian(asteroids).cartesian(asteroids)
-                .map { (ab, c) -> listOf(ab.first, ab.second, c) }
-                .filterNot { (a, b, c) -> a == b || b == c || c == a }
-                .filterNot { (a, b, c) -> inBetween(a, b, c) }
-                .forEach { counts.merge(it[0], 1, Int::plus) }
-
-        return counts.values.max()
     }
 
-    private fun inBetween(a: Point, b: Point, c: Point): Boolean {
-
-        fun reduce(point: Point) = point / gcd(point.x.absoluteValue, point.y.absoluteValue)
-        fun magnitude(p: Point) = sqrt((p.x * p.x + p.y * p.y).toDouble())
-        return reduce(b - a) == reduce(c - a) && magnitude(b - a) < magnitude(c - a)
-
+    private fun lineOfSight(from: Point, to: Point, blockingPoints: Set<Point>): Boolean {
+        val step = (from - to).reducedAngle()
+        return generateSequence(from - step) { it - step }
+                .takeWhile { it != to }
+                .none { it in blockingPoints }
     }
-
-    private tailrec fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
-
-    override fun solvePartTwo(input: String) = 0
 
     data class Point(val x: Int, val y: Int) {
         operator fun plus(o: Point) = Point(x + o.x, y + o.y)
         operator fun minus(o: Point) = Point(x - o.x, y - o.y)
         operator fun div(o: Int) = Point(x / o, y / o)
+        fun reducedAngle() = this / gcd(x.absoluteValue, y.absoluteValue)
     }
 
-
+    private tailrec fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 }
