@@ -1,8 +1,8 @@
 package adventofcode.util
 
-class IntCodeProgram(input: List<Int>) {
+class IntCodeProgram(input: List<Long>) {
     private val data = input.withIndex()
-            .associate { it.index.toLong() to it.value.toLong() }
+            .associate { it.index.toLong() to it.value }
             .toMutableMap()
             .let(::Memory)
 

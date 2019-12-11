@@ -14,7 +14,7 @@ object Day05 : AdventSolution(2019, 5, "Sunny with a Chance of Asteroids") {
 
     private fun run(input: String, moduleId: Long) = input
             .split(',')
-            .map(String::toInt)
+            .map(String::toLong)
             .let(::IntCodeProgram)
             .run {
                 input(moduleId)

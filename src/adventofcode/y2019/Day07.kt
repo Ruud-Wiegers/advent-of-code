@@ -15,7 +15,7 @@ object Day07 : AdventSolution(2019, 7, "Amplification Circuit") {
     override fun solvePartTwo(input: String) = solve(input, 5L..9L)
 
     private fun solve(input: String, phases: LongRange): Long? {
-        val data = input.split(',').map(String::toInt)
+        val data = input.split(',').map(String::toLong)
         val permutations = phases.permutations()
 
         return permutations
@@ -24,7 +24,7 @@ object Day07 : AdventSolution(2019, 7, "Amplification Circuit") {
                 .max()
     }
 
-    private fun setupPrograms(permutation: List<Long>, data: List<Int>): List<IntCodeProgram> = permutation
+    private fun setupPrograms(permutation: List<Long>, data: List<Long>): List<IntCodeProgram> = permutation
             .map { phase ->
                 IntCodeProgram(data).apply { input(phase) }
             }

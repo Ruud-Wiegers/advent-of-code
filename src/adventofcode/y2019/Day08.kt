@@ -16,10 +16,9 @@ object Day08 : AdventSolution(2019, 8, "Space Image Format") {
     override fun solvePartTwo(input: String) = input
             .chunked(6 * 25)
             .reduce(this::mergeLayers)
-            .replace('1', '█')
-            .replace('0', ' ')
+            .map { if (it == '1') "██" else "  " }
             .chunked(25)
-            .joinToString(separator = "\n", prefix = "\n")
+            .joinToString(separator = "\n", prefix = "\n") { it.joinToString("") }
 
     private fun mergeLayers(foreground: String, background: String): String =
             foreground.zip(background, this::mergePixels).joinToString("")

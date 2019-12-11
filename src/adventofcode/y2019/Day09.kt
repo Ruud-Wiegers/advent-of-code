@@ -14,7 +14,7 @@ object Day09 : AdventSolution(2019, 9, "Sensor Boost") {
 
     private fun runProgram(data: String, input: Long) = data
             .split(',')
-            .map(String::toInt)
+            .map(String::toLong)
             .let(::IntCodeProgram)
             .run {
                 input(input)
