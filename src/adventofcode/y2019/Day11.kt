@@ -11,13 +11,10 @@ object Day11 : AdventSolution(2019, 11, "Space Police") {
     override fun solvePartOne(input: String): Int {
         val hull = mutableMapOf<Point, Long>()
         paint(input, hull)
-
-
         return hull.size
     }
     override fun solvePartTwo(input: String): String {
         val hull = mutableMapOf(Point(0,0)to 1L)
-
         paint(input, hull)
 
         val maxX= hull.keys.maxBy{it.x}!!.x
