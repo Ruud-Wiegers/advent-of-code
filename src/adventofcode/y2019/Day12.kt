@@ -2,7 +2,6 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.y2017.takeWhileDistinct
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -11,12 +10,7 @@ fun main() = Day12.solve()
 object Day12 : AdventSolution(2019, 12, "The N-body problem") {
 
     override fun solvePartOne(input: String): Int {
-        val moons = listOf(
-                Vec3(17, -12, 13),
-                Vec3(x = 2, y = 1, z = 1),
-                Vec3(x = -1, y = -17, z = 7),
-                Vec3(x = 12, y = -14, z = 18)
-        ).map { Moon(it, Vec3(0, 0, 0)) }
+        val moons = parse(input).map { Moon(it, Vec3(0, 0, 0)) }
 
         repeat(1000) {
             moons.forEach { m ->
@@ -27,55 +21,48 @@ object Day12 : AdventSolution(2019, 12, "The N-body problem") {
         return moons.sumBy { it.energy() }
     }
 
-    override fun solvePartTwo(input: String):Long {
-        val moons = listOf(
-                Vec3(17, -12, 13),
-                Vec3(x = 2, y = 1, z = 1),
-                Vec3(x = -1, y = -17, z = 7),
-                Vec3(x = 12, y = -14, z = 18)
-        )
+    override fun solvePartTwo(input: String): Long {
+        val positions = parse(input)
 
-        val sx = solveDirection(moons.map { it.x }).toLong()
-        val sy = solveDirection(moons.map { it.y }).toLong()
-        val sz = solveDirection(moons.map { it.z }).toLong()
-
-        tailrec fun gcd(a: Long, b: Long): Long = if (b == 0L) a else gcd(b, a % b)
-
-        val a = sx * sy / gcd(sx, sy)
-        return a * sz / gcd(a, sz)
+        return listOf(Vec3::x, Vec3::y, Vec3::z)
+                .map { positions.map(it) }
+                .map { 2 * findHalfCycle(it).toLong() }
+                .reduce(::lcm)
     }
 
-    private fun solveDirection(p: List<Int>): Int {
+    private fun findHalfCycle(positions: List<Int>): Int {
+        val pv = positions.map { it to 0 }
 
-        val state = p to listOf(0, 0, 0, 0)
+        fun still(state: List<Pair<Int, Int>>) = state.all { it.second == 0 }
 
-        val seq = evolve(state)
-
-        return seq.takeWhileDistinct().count()
+        return evolve(pv).drop(1).takeWhile { !still(it) }.count() + 1
     }
 
-    private fun evolve(state: Pair<List<Int>, List<Int>>): Sequence<Pair<List<Int>, List<Int>>> {
-        return generateSequence(state) { (p, v) ->
-            val pn = p.toIntArray()
-            val vn = v.toIntArray()
-            for (a in 0..3) {
-                for (b in 0..3)
-                    vn[a] += (p[b] - p[a]).sign
-                pn[a] += vn[a]
-            }
-            pn.toList() to vn.toList()
+    private fun evolve(state: List<Pair<Int, Int>>) = generateSequence(state) { old ->
+        old.map { (p, v) ->
+            val vn = v + old.sumBy { (it.first - p).sign }
+            p + vn to vn
         }
     }
 
+    private fun lcm(a: Long, b: Long) = a * b / gcd(a, b)
 
-    data class Vec3(val x: Int, val y: Int, val z: Int) {
+    private tailrec fun gcd(a: Long, b: Long): Long = if (b == 0L) a else gcd(b, a % b)
+
+    private fun parse(input: String): List<Vec3> = input
+            .lines()
+            .map { """<x=(-?\d+), y=(-?\d+), z=(-?\d+)>""".toRegex().matchEntire(it)!!.destructured }
+            .map { (x, y, z) -> Vec3(x.toInt(), y.toInt(), z.toInt()) }
+
+
+    private data class Vec3(val x: Int, val y: Int, val z: Int) {
         operator fun plus(o: Vec3) = Vec3(x + o.x, y + o.y, z + o.z)
         operator fun minus(o: Vec3) = Vec3(x - o.x, y - o.y, z - o.z)
         fun sign() = Vec3(x.sign, y.sign, z.sign)
         fun energy() = listOf(x, y, z).map { it.absoluteValue }.sum()
     }
 
-    data class Moon(var p: Vec3, var v: Vec3) {
+    private data class Moon(var p: Vec3, var v: Vec3) {
         fun move() {
             p += v
         }
@@ -86,5 +73,4 @@ object Day12 : AdventSolution(2019, 12, "The N-body problem") {
 
         fun energy() = p.energy() * v.energy()
     }
-
 }
