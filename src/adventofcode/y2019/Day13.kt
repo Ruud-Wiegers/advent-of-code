@@ -8,49 +8,40 @@ fun main() = Day13.solve()
 
 object Day13 : AdventSolution(2019, 13, "Arcade") {
 
-    override fun solvePartOne(input: String): Int {
-        val arcade = parseProgram(input)
-        arcade.execute()
-       val b =  generateSequence {  arcade.output()}
-                .chunked(3)
-               .associate {  Pair(it[0],it[1]) to  it[2] }
-
-
-
-
-return 0
-
+    override fun solvePartOne(input: String) = parseProgram(input).run {
+        execute()
+        generateSequence { output() }.chunked(3).count { it[2] == 2L }
     }
-    override fun solvePartTwo(input: String):Long{
-        val arcade = parseProgram("2"+input.drop(1))
 
-        while (arcade.state != IntCodeProgram.State.Halted) {
-            arcade.execute()
-            val board = generateSequence {  arcade.output()}
+    override fun solvePartTwo(input: String): Long {
+        val arcadeProgram: IntCodeProgram = parseProgram("2" + input.drop(1))
+
+        var score = 0L
+        val blocks = mutableSetOf<Pair<Long, Long>>()
+        var ballX = 0L
+        var paddleX = 0L
+
+        while (true) {
+            arcadeProgram.execute()
+            generateSequence { arcadeProgram.output() }
                     .chunked(3)
-                    .associate { Pair(it[0],it[1]) to it[2] }
-
-            for (y in 0..23L){
-                for (x in 0..36L){
-                    print(board[x to y]?:'?')
-                }
-                println()
-            }
-
-            println(board.count { it.value == 2L })
-            val ball = board.entries.first{it.value==4L}.key
-            val paddle = board.entries.first{it.value==3L}.key
-
-            arcade.input(ball.first.compareTo(paddle.first).toLong())
+                    .forEach { (x, y, value) ->
+                        when {
+                            x < 0       -> score = value
+                            value == 0L -> blocks -= Pair(x, y)
+                            value == 2L -> blocks += Pair(x, y)
+                            value == 3L -> paddleX = x
+                            value == 4L -> ballX = x
+                        }
+                    }
+            if (blocks.isEmpty()) return score
+            val joystickCommand = ballX.compareTo(paddleX).toLong()
+            arcadeProgram.input(joystickCommand)
         }
-        return 0
     }
-
-
 
     private fun parseProgram(data: String) = data
             .split(',')
             .map(String::toLong)
-            .let{ IntCodeProgram(it) }
-
+            .let { IntCodeProgram(it) }
 }
