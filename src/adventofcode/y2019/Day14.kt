@@ -8,57 +8,60 @@ fun main() = Day14.solve()
 
 object Day14 : AdventSolution(2019, 14, "Space Stoichiometry") {
 
-    override fun solvePartOne(input: String) = calculateOre(input, 1L)
-
+    override fun solvePartOne(input: String) = calculateOre(1L, parse(input))
 
     override fun solvePartTwo(input: String): Long {
-        var low = 1L
-        var high = 3000000L
+        val reactions = parse(input)
+        val target = 1_000_000_000_000
+        val bounds = 1..10_000_000L
+        return bounds.binarySearch { calculateOre(it, reactions) < target }.first
+    }
 
-        while (low+1 < high) {
+    private inline fun LongRange.binarySearch(isBelowTarget: (Long) -> Boolean): LongRange {
+        check(isBelowTarget(first))
+        check(!isBelowTarget(last))
+
+        var low = first
+        var high: Long = last
+
+        while (low + 1 < high) {
             val mid = (low + high) / 2
-            val calculateOre = calculateOre(input, mid)
-            if (calculateOre > 1000000000000)
-                high = mid
-            else low = mid
+            if (isBelowTarget(mid)) low = mid else high = mid
         }
 
-        return low
+        return low..high
     }
 
 
-    private fun calculateOre(input: String, fuel: Long): Long {
-        val parsed = parse(input)
-        val amounts = parsed.keys.associate { it.unit to it.amount }
-        val createdBy = parsed.mapKeys { it.key.unit }
-        val products = sortedMapOf("FUEL" to fuel)
+    private fun calculateOre(fuel: Long, reactions: Map<String, Pair<Int, List<Term>>>): Long {
+        val requirements = mutableMapOf("FUEL" to fuel)
+        var requiredOreCount = 0L
 
-        var ORE = 0L
+        while (requirements.any { it.value > 0L }) {
+            val productToCreate = requirements.asIterable().first { it.value > 0L }.key
+            val required = requirements.remove(productToCreate)!!
+            val (amount, reagents) = reactions.getValue(productToCreate)
+            val times = ceil(required / amount.toDouble()).toLong()
 
-        while (products.any { it.value > 0L }) {
-            val type = products.filter { it.value > 0L }.asIterable().first().key
-            val required = products.remove(type)!!
+            requirements[productToCreate] = required - amount * times
 
-            val times = ceil(required / amounts.getValue(type).toDouble()).toInt()
-            val (ore, rem) = createdBy.getValue(type)
-                    .map { it.copy(amount = it.amount * times) }
-                    .partition { it.unit == "ORE" }
-            ORE += ore.map { it.amount }.sum()
+            reagents.forEach { requirements.merge(it.unit, it.amount * times, Long::plus) }
 
-            products[type] = required - times * amounts.getValue(type)
-
-            rem.forEach { (u, a) -> products.merge(a, u, Long::plus) }
+            requiredOreCount += requirements.remove("ORE") ?: 0
         }
-        return ORE
+        return requiredOreCount
     }
 
 
-    private fun parse(input: String) =
-            input.lineSequence().map { it.split(" => ") }
-                    .associate { (r, p) -> parseTerm(p) to r.split(", ").map { parseTerm(it) } }
+    private fun parse(input: String) = input
+            .lineSequence()
+            .map { it.split(" => ") }
+            .associate { (reagents, result) ->
+                val (amount, unit) = parseTerm(result)
+                unit to Pair(amount, reagents.split(", ").map(this::parseTerm))
+            }
 
-
-    private fun parseTerm(input: String) = input.split(" ").let { Term(it[0].toLong(), it[1]) }
-    private data class Term(val amount: Long, val unit: String)
+    private fun parseTerm(input: String) = input.split(" ").let { Term(it[0].toInt(), it[1]) }
+    private data class Term(val amount: Int, val unit: String)
 
 }
