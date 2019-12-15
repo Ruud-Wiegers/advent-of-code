@@ -8,13 +8,13 @@ fun main() = Day13.solve()
 
 object Day13 : AdventSolution(2019, 13, "Arcade") {
 
-    override fun solvePartOne(input: String) = parseProgram(input).run {
+    override fun solvePartOne(input: String) = IntCodeProgram.fromData(input).run {
         execute()
         generateSequence { output() }.chunked(3).count { it[2] == 2L }
     }
 
     override fun solvePartTwo(input: String): Long {
-        val arcadeProgram: IntCodeProgram = parseProgram("2" + input.drop(1))
+        val arcadeProgram: IntCodeProgram = IntCodeProgram.fromData("2" + input.drop(1))
 
         var score = 0L
         val blocks = mutableSetOf<Pair<Long, Long>>()
@@ -40,8 +40,4 @@ object Day13 : AdventSolution(2019, 13, "Arcade") {
         }
     }
 
-    private fun parseProgram(data: String) = data
-            .split(',')
-            .map(String::toLong)
-            .let { IntCodeProgram(it) }
 }

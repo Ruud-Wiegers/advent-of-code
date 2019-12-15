@@ -12,10 +12,7 @@ object Day09 : AdventSolution(2019, 9, "Sensor Boost") {
 
     override fun solvePartTwo(input: String) = runProgram(input, 2)
 
-    private fun runProgram(data: String, input: Long) = data
-            .split(',')
-            .map(String::toLong)
-            .let(::IntCodeProgram)
+    private fun runProgram(data: String, input: Long) = IntCodeProgram.fromData(data)
             .run {
                 input(input)
                 execute()

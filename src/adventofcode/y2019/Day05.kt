@@ -12,10 +12,7 @@ object Day05 : AdventSolution(2019, 5, "Sunny with a Chance of Asteroids") {
 
     override fun solvePartTwo(input: String) = run(input, 5)
 
-    private fun run(input: String, moduleId: Long) = input
-            .split(',')
-            .map(String::toLong)
-            .let(::IntCodeProgram)
+    private fun run(data: String, moduleId: Long) = IntCodeProgram.fromData(data)
             .run {
                 input(moduleId)
                 execute()

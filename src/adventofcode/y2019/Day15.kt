@@ -3,39 +3,35 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntCodeProgram
+import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.toGrid
 
 fun main() = Day15.solve()
 
 object Day15 : AdventSolution(2019, 15, "Sunday") {
 
-    override fun solvePartOne(input: String): Any? {
-        val droidcontrol: IntCodeProgram = parseProgram(input)
-
-        val (map, score) = exploreMaze(droidcontrol)
-        printMap(map)
-        return score
-    }
+    override fun solvePartOne(input: String) = IntCodeProgram.fromData(input).let(::exploreMaze).first
 
     override fun solvePartTwo(input: String): Any? {
-        val droidcontrol: IntCodeProgram = parseProgram(input)
+        val map = IntCodeProgram.fromData(input).let(::exploreMaze).second
 
-        val map = exploreMaze(droidcontrol).first
         val oxygen = map.asSequence().first { it.value == 2 }.key
 
         val open = map.filterValues { it != 0 }.keys.toMutableSet()
 
-        return generateSequence(listOf(oxygen)) {
-            open -= it
-            it.flatMap { p -> Direction.values().map { p + it.vector } }
+        return generateSequence(listOf(oxygen)) { candidates ->
+            open -= candidates
+            candidates.flatMap { p -> Direction.values().map { p + it.vector } }
                     .filter { it in open }
         }
                 .takeWhile { it.isNotEmpty() }
                 .count() - 1
     }
 
-    private fun exploreMaze(droidcontrol: IntCodeProgram): Pair<MutableMap<Point, Int>, Int> {
-        val map = mutableMapOf(Point(21, 21) to 1)
-        val path = mutableListOf(Point(21, 21))
+    private fun exploreMaze(droidcontrol: IntCodeProgram): Pair<Int, MutableMap<Vec2, Int>> {
+        val map = mutableMapOf(Vec2.origin to 1)
+        val path = mutableListOf(Vec2.origin)
         val steps = mutableListOf<Direction>()
         var score = 0
 
@@ -46,24 +42,16 @@ object Day15 : AdventSolution(2019, 15, "Sunday") {
                 val n = path.last() + it.vector
                 path += n
                 steps += it
-                droidcontrol.input(when (it) {
-                    Direction.UP -> 1
-                    Direction.RIGHT -> 4
-                    Direction.DOWN -> 2
-                    Direction.LEFT -> 3
-                })
+                droidcontrol.input(it.toInput())
             }
 
             if (dir == null) {
                 path.removeAt(path.lastIndex)
                 if (path.isEmpty()) break
 
-                droidcontrol.input(when (steps.removeAt(steps.lastIndex)) {
-                    Direction.UP -> 2
-                    Direction.RIGHT -> 3
-                    Direction.DOWN -> 1
-                    Direction.LEFT -> 4
-                })
+                val reverse = steps.removeAt(steps.lastIndex).reverse
+
+                droidcontrol.input(reverse.toInput())
             }
             droidcontrol.execute()
             val out = droidcontrol.output()!!.toInt()
@@ -77,36 +65,30 @@ object Day15 : AdventSolution(2019, 15, "Sunday") {
                 2 -> score = path.size - 1
             }
         }
-        return Pair(map, score)
+        return Pair(score, map)
     }
 
-    private fun printMap(map: MutableMap<Point, Int>) {
-        map[Point(21, 21)] = 3
-        for (y in 0..map.maxBy { it.key.y }!!.key.y) {
-            for (x in 0..map.maxBy { it.key.x }!!.key.x) {
-                print(when (map[Point(x, y)]) {
-                    1 -> "  "
-                    2 -> "()"
-                    3 -> "<>"
-                    else -> "██"
-                })
+    private fun Direction.toInput() = when (this) {
+        Direction.UP -> 1L
+        Direction.RIGHT -> 4L
+        Direction.DOWN -> 2L
+        Direction.LEFT -> 3L
+    }
+
+    private fun printMap(map: MutableMap<Vec2, Int>) {
+        map[Vec2.origin] = 3
+
+        map.mapValues { (_, v) ->
+            when (v) {
+                1 -> "  "
+                2 -> "OX"
+                3 -> "ST"
+                else -> "██"
             }
-            println()
-
         }
-    }
+                .toGrid("??")
+                .joinToString("\n") { it.joinToString("") }
+                .let(::println)
 
-    private fun parseProgram(data: String) = data
-            .split(',')
-            .map(String::toLong)
-            .let { IntCodeProgram(it) }
-
-    private data class Point(val x: Int, val y: Int) {
-        operator fun plus(o: Point) = Point(x + o.x, y + o.y)
-        operator fun minus(o: Point) = Point(x - o.x, y - o.y)
-    }
-
-    private enum class Direction(val vector: Point) {
-        UP(Point(0, -1)), RIGHT(Point(1, 0)), DOWN(Point(0, 1)), LEFT(Point(-1, 0));
     }
 }

@@ -2,6 +2,7 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.util.vector.Vec2
 import kotlin.math.absoluteValue
 
 fun main() = Day10.solve()
@@ -25,32 +26,27 @@ object Day10 : AdventSolution(2019, 10, "Monitoring Station") {
         return targetAsteroid.x * 100 + targetAsteroid.y
     }
 
-    private fun parseToAsteroids(grid: List<String>): Set<Point> = sequence {
+    private fun parseToAsteroids(grid: List<String>): Set<Vec2> = sequence {
         for (y in grid.indices)
             for (x in grid[0].indices)
                 if (grid[y][x] == '#')
-                    yield(Point(x, y))
+                    yield(Vec2(x, y))
     }.toSet()
 
-    private fun losPerAsteroid(asteroids: Set<Point>) = asteroids.associateWith { k ->
+    private fun losPerAsteroid(asteroids: Set<Vec2>) = asteroids.associateWith { k ->
         asteroids.filter { it != k }.count { other ->
             lineOfSight(k, other, asteroids)
         }
     }
 
-    private fun lineOfSight(from: Point, to: Point, blockingPoints: Set<Point>): Boolean {
+    private fun lineOfSight(from: Vec2, to: Vec2, blockingPoints: Set<Vec2>): Boolean {
         val step = (from - to).reducedAngle()
         return generateSequence(from - step) { it - step }
                 .takeWhile { it != to }
                 .none { it in blockingPoints }
     }
 
-    data class Point(val x: Int, val y: Int) {
-        operator fun plus(o: Point) = Point(x + o.x, y + o.y)
-        operator fun minus(o: Point) = Point(x - o.x, y - o.y)
-        operator fun div(o: Int) = Point(x / o, y / o)
-        fun reducedAngle() = this / gcd(x.absoluteValue, y.absoluteValue)
-    }
+    private fun Vec2.reducedAngle() = this / gcd(x.absoluteValue, y.absoluteValue)
 
     private tailrec fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 }

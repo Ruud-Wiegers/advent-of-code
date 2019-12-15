@@ -45,12 +45,20 @@ class IntCodeProgram(input: List<Long>) {
     }
 
     enum class State { Ready, WaitingForInput, Halted }
+
+    companion object {
+        fun fromData(data: String) = data
+                .split(',')
+                .map(String::toLong)
+                .let { IntCodeProgram(it) }
+
+    }
 }
 
 private class Memory(private val memory: MutableMap<Long, Long>) {
     var pc = 0L
     var relativeBase = 0L
-    var currentOperation = 0 ; private set
+    var currentOperation = 0; private set
 
     private var instruction = 0
     private var modes: List<Mode> = emptyList()
@@ -65,7 +73,7 @@ private class Memory(private val memory: MutableMap<Long, Long>) {
 
     operator fun get(offset: Int) = when (modes[offset]) {
         Mode.Direct -> params[offset]
-        Mode.Positional -> memory.getOrDefault(params[offset] , 0L)
+        Mode.Positional -> memory.getOrDefault(params[offset], 0L)
         Mode.Relative -> memory.getOrDefault(relativeBase + params[offset], 0L)
     }
 
