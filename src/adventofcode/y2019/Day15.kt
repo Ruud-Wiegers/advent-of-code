@@ -20,22 +20,17 @@ object Day15 : AdventSolution(2019, 15, "Sunday") {
         val droidcontrol: IntCodeProgram = parseProgram(input)
 
         val map = exploreMaze(droidcontrol).first
+        val oxygen = map.asSequence().first { it.value == 2 }.key
 
-        var candidates = listOf(map.asSequence().first { it.value == 2 }.key)
         val open = map.filterValues { it != 0 }.keys.toMutableSet()
 
-        var count = 0
-
-        while (open.isNotEmpty()) {
-            val new = candidates
-                    .flatMap { p -> Direction.values().map { p + it.vector } }
+        return generateSequence(listOf(oxygen)) {
+            open -= it
+            it.flatMap { p -> Direction.values().map { p + it.vector } }
                     .filter { it in open }
-            open -= new
-            candidates = new
-            count++
         }
-
-        return count
+                .takeWhile { it.isNotEmpty() }
+                .count() - 1
     }
 
     private fun exploreMaze(droidcontrol: IntCodeProgram): Pair<MutableMap<Point, Int>, Int> {
