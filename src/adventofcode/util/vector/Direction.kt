@@ -32,3 +32,4 @@ enum class Direction(val vector: Vec2) {
 
 }
 
+fun Vec2.neighbors() = Direction.values().map { this + it.vector }
