@@ -7,3 +7,11 @@ inline fun <T, R> Sequence<T>.scan(initial: R, crossinline operation: (R, T) -> 
         result
     }
 }
+
+inline fun <T, R> Iterable<T>.scan(initial: R, crossinline operation: (R, T) -> R): List<R> {
+    var result: R = initial
+    return this.map {
+        result = operation(result, it)
+        result
+    }
+}

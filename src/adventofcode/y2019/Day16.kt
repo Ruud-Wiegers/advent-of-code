@@ -2,7 +2,6 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.collections.cycle
 import adventofcode.util.collections.scan
 import kotlin.math.absoluteValue
 
@@ -11,43 +10,32 @@ fun main() = Day16.solve()
 object Day16 : AdventSolution(2019, 16, "Flawed Frequency Transmission") {
 
     override fun solvePartOne(input: String) =
-            generateSequence(input.map { it - '0' }) { fft(it) }
-                    .take(101)
-                    .last()
+            generateSequence(input.map(Character::getNumericValue), this::fft)
+                    .drop(100)
+                    .first()
                     .take(8)
                     .joinToString("")
 
-    private fun fft(digits: List<Int>) = List(digits.size) {
-        pattern(it)
-                .take(digits.size)
-                .zip(digits.asSequence(), Int::times)
-                .sum()
-                .let { (it % 10).absoluteValue }
-    }
+    private fun fft(digits: List<Int>) = List(digits.size) { index ->
+        val period = 4 * (index + 1)
 
-    private fun pattern(i: Int) = sequenceOf(0, 1, 0, -1)
-            .flatMap { generateSequence { it }.take(i + 1) }
-            .toList()
-            .cycle()
-            .drop(1)
+        fun sum(start: Int) = (start..digits.lastIndex step period).sumBy { blockStart ->
+            val blockEnd = (blockStart + index).coerceAtMost(digits.lastIndex)
+            (blockStart..blockEnd).sumBy { digits[it] }
+        }
+
+        (sum(index) - sum(3 * index + 2)).absoluteValue % 10
+    }
 
     override fun solvePartTwo(input: String): String {
-
         val offset = input.take(7).toInt()
+        val reverseOffset = 10000 * input.length - offset - 8
 
-        val repsToSkip = offset / input.length
+        val res = input.repeat(10000 - offset / input.length).reversed().map { it - '0' }
+        val transformed = generateSequence(res) {
+            it.scan(0, { a, b -> (a + b) % 10 })
+        }.drop(100).first()
 
-        val rr = repsToSkip until 10000
-
-        var res = rr.flatMap { input.map { it - '0' } }.reversed()
-
-        repeat(100) {
-            res = res.asSequence().scan(0, Int::plus).map { it % 10 }.toList()
-        }
-        res = res.reversed()
-
-        return res.drop(offset - (repsToSkip * input.length)).take(8).joinToString("")
-
+        return transformed.drop(reverseOffset).take(8).joinToString("").reversed()
     }
-
 }
