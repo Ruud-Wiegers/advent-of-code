@@ -31,8 +31,8 @@ object Day16 : AdventSolution(2019, 16, "Flawed Frequency Transmission") {
         val offset = input.take(7).toInt()
         val reverseOffset = 10000 * input.length - offset - 8
 
-        val res = input.repeat(10000 - offset / input.length).reversed().map { it - '0' }
-        val transformed = generateSequence(res) {
+        val relevantInput = input.repeat(10000 - offset / input.length).reversed().map { it - '0' }
+        val transformed = generateSequence(relevantInput) {
             it.scan(0, { a, b -> (a + b) % 10 })
         }.drop(100).first()
 
