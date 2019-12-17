@@ -37,39 +37,32 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
                 .flatten()
                 .joinToString(",")
 
-        val (main, a, b, c) = findSubroutines(route)
-
-        return program.runProgram(main, a, b, c)
+        return program.runProgram(findSubroutines(route))
     }
 
-    private fun findSubroutines(route: String): List<String> {
-        prefixes(route.split(",")).forEach { a ->
-            val routeWithoutA = route.replace(a, "").split(",").filter { it.isNotEmpty() }
-            prefixes(routeWithoutA).forEach { b ->
-                val routeWithoutAB = routeWithoutA.joinToString(",").replace(b, "").split(",").filter { it.isNotEmpty() }
-                prefixes(routeWithoutAB).forEach { c ->
-                    val main = route.replace(a, "A").replace(b, "B").replace(c, "C")
-                    if (main.all { it in "ABC," } && main.length <= 20)
-                        return listOf(main, a, b, c)
-                }
+    private fun findSubroutines(route: String) = "ABC"
+            .fold(sequenceOf(listOf(route))) { acc, n -> acc.flatMap { compressWithCandidatePrefixes(it, n) } }
+            .first { (main) -> main.all { it in "ABC," } && main.length <= 20 }
+
+    private fun compressWithCandidatePrefixes(sections: List<String>, newtoken: Char): Sequence<List<String>> =
+            generateCandidatePrefixes(sections[0]).map { substring ->
+                listOf(sections[0].replace(substring, newtoken.toString())) + sections.drop(1) + substring
             }
-        }
-        return emptyList()
-    }
 
-    private fun prefixes(fullRoute: List<String>) = fullRoute
+    private fun generateCandidatePrefixes(route: String): Sequence<String> = route
+            .splitToSequence(",")
+            .dropWhile { it in ("ABC") }
+            .takeWhile { it !in ("ABC") }
             .scan(emptyList<String>()) { a, n -> a + n }
             .map { it.joinToString(",") }
             .takeWhile { it.length <= 20 }
-            .asReversed()
 
 
-    private fun IntCodeProgram.runProgram(main: String, fa: String, fb: String, fc: String): Long {
-        val instructions = listOf(main, fa, fb, fc, "n")
+    private fun IntCodeProgram.runProgram(instructions: List<String>): Long {
 
         check(instructions.all { it.length <= 20 })
 
-        instructions.joinToString("\n", postfix = "\n").forEach { input(it.toLong()) }
+        (instructions + "n").joinToString("\n", postfix = "\n").forEach { input(it.toLong()) }
         execute()
         return generateSequence { output() }.last()
     }
