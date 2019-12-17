@@ -11,8 +11,9 @@ class IntCodeProgram(input: List<Long>) {
     private val inputChannel = mutableListOf<Long>()
     private val outputChannel = mutableListOf<Long>()
 
-    fun input(i: Long) = inputChannel.add(i)
-
+    fun input(i: Long) {
+        inputChannel.add(i)
+    }
     fun output(): Long? = if (outputChannel.isNotEmpty()) outputChannel.removeAt(0) else null
 
     fun execute() {
