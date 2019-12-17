@@ -33,8 +33,6 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
         val program = IntCodeProgram.fromData(data)
         val map: List<String> = readMap(program)
         val route = findRoute(map)
-                .zipWithNext { (_, d0), (c1, d1) -> listOf(if (d0.turnLeft == d1) "L" else "R", c1.toString()) }
-                .flatten()
                 .joinToString(",")
 
         val v = CompressedRoute(route).fullCompress("ABC").first { it.fitsInMemory() && it.fullyCompressed() }
@@ -79,38 +77,34 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
     }
             .lines().filter { it.isNotBlank() }
 
-    private fun findRoute(map: List<String>): MutableList<Pair<Int, Direction>> {
+    private fun findRoute(map: List<String>): List<String> {
         operator fun List<String>.get(p: Vec2) = this.getOrNull(p.y)?.getOrNull(p.x)
+        fun path(v:Vec2)=map[v]=='#'
 
         val y = map.indexOfFirst { '^' in it }
         val x = map[y].indexOf('^')
 
 
-        var position = Vec2(x, y)
-        var direction = Direction.UP
-        val steps = mutableListOf<Pair<Int, Direction>>()
-        var count = 0
+        val position = Vec2(x, y)
+        val direction = Direction.UP
 
-
-        while (true) {
-            if (map[position + direction.vector] == '#') {
-                count += 1
-            } else if (map[position + direction.turnLeft.vector] == '#') {
-                steps += count to direction
-                count = 1
-                direction = direction.turnLeft
-
-            } else if (map[position + direction.turnRight.vector] == '#') {
-                steps += (count to direction)
-                count = 1
-                direction = direction.turnRight
-
-            } else {
-                steps += (count to direction)
-                break
+        return generateSequence<Pair<Direction?,Vec2>>(direction to position) { (od,op)->
+            when {
+                od==null->null
+                path(op+od.vector) -> od to op+od.vector
+                path(op+od.turnLeft.vector) ->  od.turnLeft to op
+                path(op+od.turnRight.vector) ->  od.turnRight to op
+                else ->   null to op
             }
-            position += direction.vector
         }
-        return steps
+                .zipWithNext { a, b -> a.takeIf { a.second==b.second } }
+                .filterNotNull()
+                .zipWithNext { a, b ->
+                    sequenceOf(
+                        if (a.first?.turnLeft==b.first) "L" else "R" ,
+                        a.second.distance(b.second).toString() )
+                }
+                .flatten()
+                .toList()
     }
 }
