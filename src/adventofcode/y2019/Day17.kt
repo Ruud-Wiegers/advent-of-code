@@ -37,35 +37,41 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
                 .flatten()
                 .joinToString(",")
 
-        return program.runProgram(findSubroutines(route))
+        val v = CompressedRoute(route).fullCompress("ABC").first { it.fitsInMemory() && it.fullyCompressed() }
+
+        val instructions = listOf(v.main) + v.functions + "n"
+        instructions.joinToString("\n", postfix = "\n").forEach { program.input(it.toLong()) }
+        program.execute()
+        return generateSequence { program.output() }.last()
     }
 
-    private fun findSubroutines(route: String) = "ABC"
-            .fold(sequenceOf(listOf(route))) { acc, n -> acc.flatMap { compressWithCandidatePrefixes(it, n) } }
-            .first { (main) -> main.all { it in "ABC," } && main.length <= 20 }
+    data class CompressedRoute(val main: String, val functions: List<String>, val compressionTokens: String) {
 
-    private fun compressWithCandidatePrefixes(sections: List<String>, newtoken: Char): Sequence<List<String>> =
-            generateCandidatePrefixes(sections[0]).map { substring ->
-                listOf(sections[0].replace(substring, newtoken.toString())) + sections.drop(1) + substring
-            }
+        constructor(route: String) : this(route, emptyList(), "")
 
-    private fun generateCandidatePrefixes(route: String): Sequence<String> = route
-            .splitToSequence(",")
-            .dropWhile { it in ("ABC") }
-            .takeWhile { it !in ("ABC") }
-            .scan(emptyList<String>()) { a, n -> a + n }
-            .map { it.joinToString(",") }
-            .takeWhile { it.length <= 20 }
+        fun fullCompress(tokens: String) =
+                tokens.fold(sequenceOf(this)) { possibleCompressions, token ->
+                    possibleCompressions.flatMap { comp -> comp.greedyCompressionCandidates(token) }
+                }
 
+        private fun greedyCompressionCandidates(compressTo: Char): Sequence<CompressedRoute> =
+                generateCandidatePrefixes().map { newFunction ->
+                    CompressedRoute(main.replace(newFunction, compressTo.toString()),
+                            functions + newFunction,
+                            compressionTokens + compressTo)
+                }
 
-    private fun IntCodeProgram.runProgram(instructions: List<String>): Long {
+        private fun generateCandidatePrefixes(): Sequence<String> = main
+                .splitToSequence(",")
+                .dropWhile { it in compressionTokens }
+                .takeWhile { it !in compressionTokens }
+                .scan(emptyList<String>()) { a, n -> a + n }
+                .map { it.joinToString(",") }
 
-        check(instructions.all { it.length <= 20 })
-
-        (instructions + "n").joinToString("\n", postfix = "\n").forEach { input(it.toLong()) }
-        execute()
-        return generateSequence { output() }.last()
+        fun fullyCompressed() = main.all { it in "$compressionTokens," }
+        fun fitsInMemory() = (functions + main).all { it.length <= 20 }
     }
+
 
     private fun readMap(program: IntCodeProgram): List<String> = program.run {
         execute()
@@ -78,6 +84,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
 
         val y = map.indexOfFirst { '^' in it }
         val x = map[y].indexOf('^')
+
 
         var position = Vec2(x, y)
         var direction = Direction.UP
