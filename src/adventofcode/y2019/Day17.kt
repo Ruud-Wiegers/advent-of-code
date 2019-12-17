@@ -3,6 +3,7 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntCodeProgram
+import adventofcode.util.collections.scan
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 
@@ -27,24 +28,41 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
                     && this[y + 1][x] == '#'
                     && this[y][x + 1] == '#'
 
-
     override fun solvePartTwo(input: String): Long? {
         val data = "2" + input.drop(1)
         val program = IntCodeProgram.fromData(data)
         val map: List<String> = readMap(program)
+        val route = findRoute(map)
+                .zipWithNext { (_, d0), (c1, d1) -> listOf(if (d0.turnLeft == d1) "L" else "R", c1.toString()) }
+                .flatten()
+                .joinToString(",")
 
-        val steps = findRoute(map)
+        val (main, a, b, c) = findSubroutines(route)
 
-        val route = steps.zipWithNext { (_, d0), (c1, d1) -> if (d0.turnLeft == d1) "L, $c1" else "R, $c1" }.joinToString()
-
-        println(route)
-
-        return program.runProgram(
-                "B,A,B,C,A,C,B,A,B,C",
-                "R,12,L,8,L,10",
-                "R,6,L,10,R,8,R,8",
-                "R,12,L,10,R,6,L,10")
+        return program.runProgram(main, a, b, c)
     }
+
+    private fun findSubroutines(route: String): List<String> {
+        prefixes(route.split(",")).forEach { a ->
+            val routeWithoutA = route.replace(a, "").split(",").filter { it.isNotEmpty() }
+            prefixes(routeWithoutA).forEach { b ->
+                val routeWithoutAB = routeWithoutA.joinToString(",").replace(b, "").split(",").filter { it.isNotEmpty() }
+                prefixes(routeWithoutAB).forEach { c ->
+                    val main = route.replace(a, "A").replace(b, "B").replace(c, "C")
+                    if (main.all { it in "ABC," } && main.length <= 20)
+                        return listOf(main, a, b, c)
+                }
+            }
+        }
+        return emptyList()
+    }
+
+    private fun prefixes(fullRoute: List<String>) = fullRoute
+            .scan(emptyList<String>()) { a, n -> a + n }
+            .map { it.joinToString(",") }
+            .takeWhile { it.length <= 20 }
+            .asReversed()
+
 
     private fun IntCodeProgram.runProgram(main: String, fa: String, fb: String, fc: String): Long {
         val instructions = listOf(main, fa, fb, fc, "n")
@@ -96,5 +114,3 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
         return steps
     }
 }
-
-
