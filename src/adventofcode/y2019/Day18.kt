@@ -52,7 +52,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
                         .map { (ks, cost) ->
                             (ks + oldPos) to (startFrom[np]!! + cost)
                         }
-                        .filter { (k, v) -> new[k] ?: 0 > v }
+                        .filter { (k, v) -> new[k] ?: 10000 > v }
                         .forEach { (k, v) -> new[k] = v }
             }
 
@@ -68,8 +68,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         }
         completion.let(::println)
 
-        return null
-        // return completion.filter { it.key in dependencies['@']!! }.mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.first }
+         return completion.filter { it.key in dependencies['@']!! }.mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.values.first() }
     }
 
     private fun keyRequirements(dependencies: Map<Char, Set<Char>>): Map<Char, SortedSet<Char>> {
