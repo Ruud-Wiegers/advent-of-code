@@ -17,9 +17,9 @@ fun main() {
 }
 
 object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
-   private val alphabet = 'a'..'g'
+    private val alphabet = 'a'..'g'
 
-    override fun solvePartOne(input: String): Map<Char, Int> {
+    override fun solvePartOne(input: String): Any? {
         val (floor, objectAtLocation) = readMaze(input)
 
         val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
@@ -30,33 +30,46 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
 
         val keyRequiredBy = alphabet.associateWith { k -> alphabet.filter { k in keyRequirements[it]!! }.toSet() }
 
-        var completion = alphabet.associateWith { Pair(0, emptyList<Char>()) }
+        var completion = alphabet.associateWith { mapOf(setOf(it) to 0) }
 
 
         dependencies.forEach(::println)
         keyRequirements.forEach(::println)
 
 
-        fun lookup(oldPos: Char): Pair<Char, Pair<Int, List<Char>>>? {
+        fun lookup(oldPos: Char): Map<Set<Char>, Int> {
             val required = keyRequirements[oldPos]!!
             val requiredBy = keyRequiredBy[oldPos]!!
 
             val startFrom = keyDistancesWithOpenDoors[oldPos]!!
-            return completion.filter { (_, nv) -> oldPos !in nv.second && required.none { it in nv.second } && requiredBy.all { it in nv.second } }
-                    .minBy { it.value.first + startFrom[it.key]!! }
-                    ?.let { oldPos to Pair(it.value.first + startFrom[it.key]!!, it.value.second + oldPos) }
 
+
+            val new = mutableMapOf<Set<Char>, Int>()
+
+            completion.map { (np, nv) ->
+                nv.filter { (ks, _) -> oldPos !in ks && required.none { it in ks } && requiredBy.all { it in ks } }
+                        .asSequence()
+                        .map { (ks, cost) ->
+                            (ks + oldPos) to (startFrom[np]!! + cost)
+                        }
+                        .filter { (k, v) -> new[k] ?: 0 > v }
+                        .forEach { (k, v) -> new[k] = v }
+            }
+
+            return new
         }
 
-        //TODO it's possible to paint yourself into a corner, by
 
-        repeat(alphabet.last - alphabet.first) {
-            completion = alphabet.mapNotNull { oldPos -> lookup(oldPos) }.toMap()
+        repeat(alphabet.last - alphabet.first - 1) {
             completion.let(::println)
 
-        }
+            completion = alphabet.associateWith { oldPos -> lookup(oldPos) }
 
-        return completion.filter { it.key in dependencies['@']!! }.mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.first }
+        }
+        completion.let(::println)
+
+        return null
+        // return completion.filter { it.key in dependencies['@']!! }.mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.first }
     }
 
     private fun keyRequirements(dependencies: Map<Char, Set<Char>>): Map<Char, SortedSet<Char>> {
