@@ -79,7 +79,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
 
     private fun findRoute(map: List<String>): List<String> {
         operator fun List<String>.get(p: Vec2) = this.getOrNull(p.y)?.getOrNull(p.x)
-        fun path(v:Vec2)=map[v]=='#'
+        fun path(v: Vec2) = map[v] == '#'
 
         val y = map.indexOfFirst { '^' in it }
         val x = map[y].indexOf('^')
@@ -88,21 +88,21 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
         val position = Vec2(x, y)
         val direction = Direction.UP
 
-        return generateSequence<Pair<Direction?,Vec2>>(direction to position) { (od,op)->
+        return generateSequence<Pair<Direction?, Vec2>>(direction to position) { (od, op) ->
             when {
-                od==null->null
-                path(op+od.vector) -> od to op+od.vector
-                path(op+od.turnLeft.vector) ->  od.turnLeft to op
-                path(op+od.turnRight.vector) ->  od.turnRight to op
-                else ->   null to op
+                od == null                     -> null
+                path(op + od.vector)           -> od to op + od.vector
+                path(op + od.turnLeft.vector)  -> od.turnLeft to op
+                path(op + od.turnRight.vector) -> od.turnRight to op
+                else                           -> null to op
             }
         }
-                .zipWithNext { a, b -> a.takeIf { a.second==b.second } }
+                .zipWithNext { a, b -> a.takeIf { a.second == b.second } }
                 .filterNotNull()
                 .zipWithNext { a, b ->
                     sequenceOf(
-                        if (a.first?.turnLeft==b.first) "L" else "R" ,
-                        a.second.distance(b.second).toString() )
+                            if (a.first?.turnLeft == b.first) "L" else "R",
+                            a.second.distance(b.second).toString())
                 }
                 .flatten()
                 .toList()
