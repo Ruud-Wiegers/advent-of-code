@@ -8,16 +8,11 @@ import adventofcode.util.vector.neighbors
 import java.util.*
 
 fun main() {
-    Day18.solvePartOne("""########################
-#...............b.C.D.f#
-#.######################
-#.....@.a.B.c.d.A.e.F.g#
-########################""")
-            .let(::println)
+    Day18.solve()
 }
 
 object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
-    private val alphabet = 'a'..'g'
+    private val alphabet = 'a'..'z'
 
     override fun solvePartOne(input: String): Any? {
         val (floor, objectAtLocation) = readMaze(input)
@@ -52,7 +47,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
                         .map { (ks, cost) ->
                             (ks + oldPos) to (startFrom[np]!! + cost)
                         }
-                        .filter { (k, v) -> new[k] ?: 10000 > v }
+                        .filter { (k, v) -> new[k]?.let {  it > v}?:true }
                         .forEach { (k, v) -> new[k] = v }
             }
 
@@ -60,15 +55,16 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         }
 
 
-        repeat(alphabet.last - alphabet.first - 1) {
-            completion.let(::println)
+        repeat(alphabet.last - alphabet.first ) {
+            println(it)
 
             completion = alphabet.associateWith { oldPos -> lookup(oldPos) }
 
         }
         completion.let(::println)
 
-         return completion.filter { it.key in dependencies['@']!! }.mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.values.first() }
+         return completion.filter { it.key in dependencies['@']!! }
+                 .mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.values.first() }
     }
 
     private fun keyRequirements(dependencies: Map<Char, Set<Char>>): Map<Char, SortedSet<Char>> {
@@ -82,11 +78,6 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         }
 
         return alphabet.associateWith { dependencies.find('@', it)!!.let { it.map { it.toLowerCase() } - '@' }.toSortedSet() }
-    }
-
-
-    private fun pathfinder(distances: Map<Char, Map<Char, Int>>) {
-
     }
 
     private fun readMaze(input: String): Pair<MutableSet<Vec2>, MutableMap<Vec2, Char>> {
