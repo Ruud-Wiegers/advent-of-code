@@ -17,6 +17,11 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
     override fun solvePartOne(input: String): Any? {
         val (floor, objectAtLocation) = readMaze(input)
 
+
+        //TODO bitsets
+        //TODO transitive closure on requirements
+        //TODO key = also a door opened by itself
+
         val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
         val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet + '@' })
 
@@ -25,7 +30,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
 
         val keyRequiredBy = alphabet.associateWith { k -> alphabet.filter { k in keyRequirements[it]!! }.toSet() }
 
-        var completion = alphabet.associateWith { mapOf(setOf(it) to 0) }
+        var completion: Map<Char, Map<Set<Char>, Int>> = alphabet.associateWith { mapOf(setOf(it) to 0) }
 
 
         dependencies.forEach(::println)
@@ -61,10 +66,11 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
             completion = alphabet.associateWith { oldPos -> lookup(oldPos) }
 
         }
-        completion.let(::println)
-
-         return completion.filter { it.key in dependencies['@']!! }
+         return completion
+                 .filter { it.key in dependencies['@']!! }
                  .mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.values.first() }
+                 .values
+                 .min()
     }
 
     private fun keyRequirements(dependencies: Map<Char, Set<Char>>): Map<Char, SortedSet<Char>> {
