@@ -1,7 +1,7 @@
 package adventofcode.util
 
-data class IntCodeProgram(
-        val data: Memory,
+class IntCodeProgram(
+        private val data: Memory,
         var state: State,
         private val inputChannel: MutableList<Long>,
         private val outputChannel: MutableList<Long>
@@ -10,6 +10,8 @@ data class IntCodeProgram(
             .associate { it.index.toLong() to it.value }
             .toMutableMap()
             .let { Memory(it) }, State.Ready, mutableListOf(), mutableListOf())
+
+    fun duplicate(): IntCodeProgram = IntCodeProgram(data.duplicate(), state, inputChannel, outputChannel)
 
     fun input(i: Long) {
         inputChannel.add(i)
@@ -57,7 +59,7 @@ data class IntCodeProgram(
     }
 }
 
-data class Memory(val memory: MutableMap<Long, Long>,
+class Memory(private val memory: MutableMap<Long, Long>,
                   var pc: Long = 0L,
                   var relativeBase: Long = 0L,
                   var currentOperation: Int = 0
@@ -65,6 +67,9 @@ data class Memory(val memory: MutableMap<Long, Long>,
     private var instruction = 0
     private var modes: List<Mode> = emptyList()
     private var params: List<Long> = emptyList()
+
+    fun duplicate() = Memory(memory.toMutableMap(), pc, relativeBase, currentOperation)
+
 
     fun nextInstruction() {
         instruction = memory.getValue(pc).toInt()

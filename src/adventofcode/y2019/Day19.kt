@@ -14,7 +14,6 @@ object Day19 : AdventSolution(2019, 19, "Tractor Beam") {
     override fun solvePartOne(input: String): Int {
         val baseprogram = IntCodeProgram.fromData(input)
 
-
         return (0 until 50).cartesian().count { baseprogram.isPartOfBeam(Vec2(it.first, it.second)) }
     }
 
@@ -29,7 +28,7 @@ object Day19 : AdventSolution(2019, 19, "Tractor Beam") {
 
         fun startOfBeam(a: Vec2) = walk(a, Vec2(1, -1), true).lastOrNull() ?: Vec2.origin
 
-        fun beamSizeAtLeast(a: Vec2, target: Int) = isPartOfBeam(startOfBeam(a) + Vec2(target, -target))
+        fun beamSizeAtLeast(a: Vec2, target: Int) = baseprogram.isPartOfBeam(startOfBeam(a) + Vec2(target, -target))
 
         fun approximation(start: Vec2, step: Int) = generateSequence(startOfBeam(start)) { startOfBeam(it + Vec2(0, step)) }
                 .takeWhile { !beamSizeAtLeast(it, 99) }
@@ -46,7 +45,7 @@ object Day19 : AdventSolution(2019, 19, "Tractor Beam") {
     }
 
     private fun IntCodeProgram.isPartOfBeam(p: Vec2) =
-            copy(data = data.copy(memory = data.memory.toMutableMap())).run {
+            duplicate().run {
                 input(p.x.toLong())
                 input(p.y.toLong())
                 execute()
