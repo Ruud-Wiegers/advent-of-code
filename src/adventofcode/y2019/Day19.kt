@@ -33,19 +33,19 @@ object Day19 : AdventSolution(2019, 19, "Tractor Beam") {
 
         fun startOfBeam(a: Vec2) = walk(a, Vec2(1, -1), true).lastOrNull() ?: Vec2.origin
 
-        fun beamSizeAt(a: Vec2) = walk(startOfBeam(a) + Vec2(1, -1), Vec2(1, -1), false).count()
+        fun beamSizeAtLeast(a: Vec2, target: Int) = isPartOfBeam(startOfBeam(a) + Vec2(target, -target))
 
-        fun approximation(start: Vec2, step: Int) = generateSequence(start) { it + Vec2(step, step * 2) }
-                .takeWhile { beamSizeAt(it) < 99 }.last()
+        fun approximation(start: Vec2, step: Int) = generateSequence(startOfBeam(start)) { startOfBeam(it + Vec2(0, step)) }
+                .takeWhile { !beamSizeAtLeast(it, 99) }
+                .last()
 
-        val approx = generateSequence(256) { it / 2 }
+        val approx = generateSequence(1024) { it / 2 }
                 .takeWhile { it > 0 }
                 .fold(Vec2(0, 5)) { acc, step -> approximation(acc, step) }
 
-        return generateSequence(approx) { it + Direction.DOWN.vector }
+        return generateSequence(startOfBeam(approx)) { it + Direction.DOWN.vector }
                 .map { startOfBeam(it) }
-                .dropWhile { beamSizeAt(it) < 100 }
-                .first()
+                .first { beamSizeAtLeast(it, 100) }
                 .let { 10000 * (it.x + 1) + it.y - 100 }
     }
 
