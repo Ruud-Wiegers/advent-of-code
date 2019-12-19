@@ -19,21 +19,21 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
 
 
         //TODO bitsets
-        //TODO transitive closure on requirements
         //TODO key = also a door opened by itself
 
         val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
         val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet + '@' })
 
         val dependencies: Map<Char, Set<Char>> = buildDependencyTree(distancesWithClosedDoors)
-        val keyRequirements = keyRequirements(dependencies)
-
+        var keyRequirements: Map<Char, Set<Char>> = keyRequirements(dependencies)
+        repeat(5) {
+            keyRequirements = keyRequirements.mapValues { (_, deps) -> deps + deps.flatMap { keyRequirements[it].orEmpty() } }
+        }
         val keyRequiredBy = alphabet.associateWith { k -> alphabet.filter { k in keyRequirements[it]!! }.toSet() }
 
         var completion: Map<Char, Map<Set<Char>, Int>> = alphabet.associateWith { mapOf(setOf(it) to 0) }
 
 
-        dependencies.forEach(::println)
         keyRequirements.forEach(::println)
 
 
