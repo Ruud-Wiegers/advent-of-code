@@ -7,41 +7,18 @@ import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
 import java.lang.IllegalStateException
 
-fun main() {
-    Day18.solve()
-}
+fun main() =    Day18.solve()
 
 object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
     private val alphabet = 'a'..'z'
 
     override fun solvePartOne(input: String): Int? {
         val (floor, objectAtLocation) = readMaze(input)
-        val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
-        val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet + '@' })
-
-        val keysNeededFor: Map<Char, Set<Char>> = requiredKeysForKey(distancesWithClosedDoors, listOf('@'))
-
-        return memoizedPath(keysNeededFor, keyDistancesWithOpenDoors)
-
-    }
-
-    private fun memoizedPath(keysNeededFor: Map<Char, Set<Char>>, keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>>): Int? {
-        val bestPaths = mutableMapOf<Pair<Char, Set<Char>>, Int?>()
-
-        fun bestPaths(from: Char, collected: Set<Char>): Int? = bestPaths.getOrPut(from to collected) {
-            if (collected.size > 25) 0
-            else alphabet.asSequence()
-                    .filter { it !in collected }
-                    .filter { keysNeededFor[it].orEmpty().all { it in collected } }
-                    .mapNotNull { to -> bestPaths(to, collected + to)?.let { it + keyDistancesWithOpenDoors[from]!![to]!! } }
-                    .min()
-
-        }
-        return bestPaths('@', emptySet())
+        return solve(floor, objectAtLocation, "@".toSet())
     }
 
     override fun solvePartTwo(input: String): Any? {
-        val (floor, objectAtLocation) = readMaze(input)
+        val (floor: MutableSet<Vec2>, objectAtLocation: MutableMap<Vec2, Char>) = readMaze(input)
         val center = objectAtLocation.asSequence().first { it.value == '@' }.key
         floor.apply {
             remove(center)
@@ -53,30 +30,18 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         objectAtLocation[center + Vec2(-1, 1)] = '3'
         objectAtLocation[center + Vec2(1, 1)] = '4'
 
+        return solve(floor, objectAtLocation, "1234".toSet())
+    }
+
+    private fun solve(floor: Set<Vec2>, objectAtLocation: Map<Vec2, Char>, startSymbols: Set<Char>): Int? {
         val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
-        val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet || it in '1'..'4' })
 
-        val keysNeededFor: Map<Char, Set<Char>> = requiredKeysForKey(distancesWithClosedDoors, "1234".toList())
+        val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys,
+                objectAtLocation.filterValues { it in alphabet || it in startSymbols })
 
+        val keysNeededFor: Map<Char, Set<Char>> = requiredKeysForKey(distancesWithClosedDoors, startSymbols)
 
-        val bestPaths = mutableMapOf<Pair<Set<Char>, Set<Char>>, Int?>()
-
-        fun bestPaths(from: Set<Char>, collected: Set<Char>): Int? = bestPaths.getOrPut(from to collected) {
-            if (collected.size == alphabet.last - alphabet.first + 1) 0
-            else alphabet.asSequence()
-                    .filter { it !in collected }
-                    .filter { keysNeededFor[it].orEmpty().all { it in collected } }
-                    .mapNotNull { to ->
-
-                        val toRemove = from.intersect(keyDistancesWithOpenDoors[to]!!.keys).single()
-
-                        bestPaths(from - toRemove + to, collected + to)?.let { it + keyDistancesWithOpenDoors[toRemove]!![to]!! }
-                    }
-                    .min()
-        }
-
-
-        return bestPaths("1234".toSet(), emptySet())
+        return memoizedPath(keysNeededFor, keyDistancesWithOpenDoors, startSymbols)
     }
 
 
@@ -121,10 +86,10 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         return objectAtLocation.asSequence().associate { it.value to findOpenPaths(it.value, it.key) }
     }
 
-    private fun requiredKeysForKey(directDistances: Map<Char, Map<Char, Int>>, start: List<Char>): Map<Char, Set<Char>> {
+    private fun requiredKeysForKey(directDistances: Map<Char, Map<Char, Int>>, start: Set<Char>): Map<Char, Set<Char>> {
         val requiredKeysForKey = start.associateWith { emptySet<Char>() }.toMutableMap()
 
-        var open = start.toSet()
+        var open = start
 
         while (open.isNotEmpty()) {
             val new = mutableSetOf<Char>()
@@ -138,6 +103,25 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
             }
             open = new
         }
-        return requiredKeysForKey.mapValues { it.value.filter { it in alphabet }.toSet() }.filterKeys { it in alphabet }
+        return requiredKeysForKey
+                .mapValues { it.value.filter { it in alphabet }.toSet() }
+                .filterKeys { it in alphabet }
+    }
+
+    private fun memoizedPath(keysNeededFor: Map<Char, Set<Char>>, keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>>, startSymbols: Set<Char>): Int? {
+        val bestPaths = mutableMapOf<Pair<Set<Char>, Set<Char>>, Int?>()
+
+        fun bestPaths(from: Set<Char>, collected: Set<Char>): Int? = bestPaths.getOrPut(from to collected) {
+            if (collected.size == alphabet.last - alphabet.first + 1) 0
+            else alphabet.asSequence()
+                    .filter { it !in collected }
+                    .filter { new -> keysNeededFor[new].orEmpty().all { it in collected } }
+                    .mapNotNull { to ->
+                        val toRemove = from.intersect(keyDistancesWithOpenDoors.getValue(to).keys).single()
+                        bestPaths(from - toRemove + to, collected + to)?.let { it + keyDistancesWithOpenDoors.getValue(toRemove).getValue(to) }
+                    }
+                    .min()
+        }
+        return bestPaths(startSymbols, emptySet())
     }
 }
