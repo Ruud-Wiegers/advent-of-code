@@ -5,7 +5,6 @@ import adventofcode.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
-import java.lang.IllegalStateException
 
 fun main() =    Day18.solve()
 
@@ -104,7 +103,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
             open = new
         }
         return requiredKeysForKey
-                .mapValues { it.value.filter { it in alphabet }.toSet() }
+                .mapValues { (_, reqs)-> reqs.filter { it in alphabet }.toSet() }
                 .filterKeys { it in alphabet }
     }
 
