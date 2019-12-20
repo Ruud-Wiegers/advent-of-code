@@ -5,6 +5,7 @@ import adventofcode.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
+import java.lang.IllegalStateException
 
 fun main() {
     Day18.solve()
@@ -13,37 +14,119 @@ fun main() {
 object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
     private val alphabet = 'a'..'z'
 
-    override fun solvePartOne(input: String): Any? {
+    override fun solvePartOne(input: String): Int? {
         val (floor, objectAtLocation) = readMaze(input)
 
         val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
         val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet + '@' })
 
-        val dependencies: Map<Char, Set<Char>> = buildDependencyTree(distancesWithClosedDoors)
+        val dependencies: Map<Char, Set<Char>> = buildDependencyTree(distancesWithClosedDoors, listOf('@'))
 
-        val keysNeededFor: Map<Char, Set<Char>> = keyRequirements(dependencies)
-        val keysThatNeed = alphabet.associateWith { k -> alphabet.filter { k in keysNeededFor[it]!! }.toSet() }
+        val keysNeededFor: Map<Char, Set<Char>> = keyRequirements(dependencies, listOf('@'))
+        val keysThatNeed = alphabet.associateWith { k -> alphabet.filter { k in keysNeededFor[it].orEmpty() }.toSet() }
 
-        val completion: Map<Char, Map<Set<Char>, Int>> = dijkstraStylePathbuilding(keysNeededFor, keysThatNeed, keyDistancesWithOpenDoors)
+        val completion: Map<Char, Map<Set<Char>, Int>> = dijkstraStylePathbuilding(keysThatNeed, keyDistancesWithOpenDoors)
 
-        return completion
-                 .filter { it.key in dependencies['@']!! }
-                 .mapValues { keyDistancesWithOpenDoors['@']!![it.key]!! + it.value.values.first() }
-                 .values
-                 .min()
+
+        return completion['@']?.values?.min()
     }
 
-    private fun dijkstraStylePathbuilding(keysNeededFor: Map<Char, Set<Char>>, keysThatNeed: Map<Char, Set<Char>>, keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>>): Map<Char, Map<Set<Char>, Int>> {
-        var completion: Map<Char, Map<Set<Char>, Int>> = alphabet.associateWith { mapOf(setOf(it) to 0) }
+    override fun solvePartTwo(input: String): Any? {
+        val (floor, objectAtLocation) = readMaze(input)
+        val center = objectAtLocation.asSequence().first { it.value == '@' }.key
+        floor.apply {
+            remove(center)
+            Direction.values().map { it.vector + center }.forEach { remove(it) }
+        }
+        objectAtLocation.remove(center)
+        objectAtLocation[center + Vec2(-1, -1)] = '1'
+        objectAtLocation[center + Vec2(1, -1)] = '2'
+        objectAtLocation[center + Vec2(-1, 1)] = '3'
+        objectAtLocation[center + Vec2(1, 1)] = '4'
+
+        val distancesWithClosedDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor, objectAtLocation)
+        val keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>> = generateDistanceMap(floor + objectAtLocation.keys, objectAtLocation.filterValues { it in alphabet || it in '1'..'4' })
+
+        val dependencies: Map<Char, Set<Char>> = buildDependencyTree(distancesWithClosedDoors, ('1'..'4').toList())
+
+        val keysNeededFor: Map<Char, Set<Char>> = keyRequirements(dependencies, ('1'..'4').toList())
+
+        val keysThatNeed = alphabet.associateWith { k -> alphabet.filter { k in keysNeededFor[it].orEmpty() }.toSet() }
+
+        val result = dijkstraStylePathbuildingV2(keysNeededFor, keysThatNeed, keyDistancesWithOpenDoors)
+
+
+        val magic = result.map { it.key.positions to it.key.positions.sumBy { keyDistancesWithOpenDoors[it]!!.asSequence().single { it.key in "1234" }.value } + it.value }
+
+
+        keysNeededFor.forEach(::println)
+        keysThatNeed.forEach(::println)
+        magic.forEach { println("${it.first}: ${it.second}") }
+
+        return result
+    }
+
+    private data class State(val positions: Set<Char>, val keys: Set<Char>)
+
+    private fun dijkstraStylePathbuildingV2(
+            keysNeededFor: Map<Char, Set<Char>>,
+            keysThatNeed: Map<Char, Set<Char>>,
+            keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>>
+    ): Map<State, Int> {
+
+
+        val starts = ('1'..'4').map { (keyDistancesWithOpenDoors[it]!!.keys - it) }
+
+        val candidates = sequence {
+            for (a in starts[0])
+                for (b in starts[1])
+                    for (c in starts[2])
+                        for (d in starts[3])
+                            yield(setOf(a, b, c, d))
+        }.toList()
+
+
+        fun Map<State, Int>.lookup(oldPos: Char): Sequence<Pair<State, Int>> {
+
+            val keysNeeded = keysNeededFor[oldPos].orEmpty()
+            val keysNeeding = keysThatNeed[oldPos].orEmpty()
+            val startFrom = keyDistancesWithOpenDoors[oldPos].orEmpty()
+
+            return this
+                    .asSequence()
+                    .filter { (newState) -> oldPos !in newState.keys && keysNeeded.none { it in newState.keys } && keysNeeding.all { it in newState.keys } }
+                    .map { (newState, cost) ->
+                        val (posToReplace, distance) = newState.positions.map { it to startFrom[it] }.single { it.second != null }
+                        State(newState.positions - posToReplace + oldPos, newState.keys + oldPos) to distance!! + cost
+                    }
+        }
+
+        var distances: Map<State, Int> = candidates.map { State(it, it) }.associateWith { 0 }
+
+
+        repeat(22)
+        {
+            val new: MutableMap<State, Int> = mutableMapOf()
+            ( alphabet.asSequence()).flatMap { oldPos -> distances.lookup(oldPos) }.forEach { (k, v) ->
+                new.merge(k, v, ::minOf)
+            }
+            distances = new
+        }
+
+        return distances
+    }
+
+
+    private fun dijkstraStylePathbuilding(keysThatNeed: Map<Char, Set<Char>>, keyDistancesWithOpenDoors: Map<Char, Map<Char, Int>>): Map<Char, Map<Set<Char>, Int>> {
+        var completion: Map<Char, Map<Set<Char>, Int>> = alphabet.filter { keysThatNeed[it].orEmpty().isEmpty() }.associateWith { mapOf(setOf(it) to 0) }
 
         fun lookup(oldPos: Char): Map<Set<Char>, Int> {
-            val keysNeeded = keysNeededFor[oldPos]!!
-            val keysNeeding = keysThatNeed[oldPos]!!
+            val keysNeeding = keysThatNeed[oldPos].orEmpty()
             val startFrom = keyDistancesWithOpenDoors[oldPos]!!
             val new = mutableMapOf<Set<Char>, Int>()
 
             completion.map { (np, nv) ->
-                nv.filter { (laterKeys, _) -> oldPos !in laterKeys && keysNeeded.none { it in laterKeys } && keysNeeding.all { it in laterKeys } }
+                nv.filter { (laterKeys, _) -> oldPos !in laterKeys && keysNeeding.all { it in laterKeys } }
                         .asSequence()
                         .map { (ks, cost) ->
                             (ks + oldPos) to (startFrom[np]!! + cost)
@@ -54,23 +137,30 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
             return new
         }
 
-        repeat(alphabet.last - alphabet.first) {
-            completion = alphabet.associateWith { oldPos -> lookup(oldPos) }
+        repeat(alphabet.last - alphabet.first +1) {
+            completion = (alphabet+'@').associateWith { oldPos -> lookup(oldPos) }
         }
 
         return completion
     }
 
-    private fun keyRequirements(dependencies: Map<Char, Set<Char>>): Map<Char, Set<Char>> {
-        fun Map<Char, Set<Char>>.find(current: Char, target: Char): List<Char>? = when {
-            target in this[current]!! -> listOf(current)
-            else                      -> this[current]!!
+    private fun keyRequirements(dependencies: Map<Char, Set<Char>>, start: List<Char>): Map<Char, Set<Char>> {
+        fun Map<Char, Set<Char>>.find(current: Char, target: Char): List<Char>? = when (target) {
+            in this[current]!! -> listOf(current)
+            else               -> this[current]!!
                     .mapNotNull { this.find(it, target) }
                     .firstOrNull()
                     ?.let { it + current }
         }
 
-        var keyRequirements =  alphabet.associateWith { dependencies.find('@', it)!!.let { it.map { it.toLowerCase() } - '@' }.toSet() }
+        var keyRequirements: Map<Char, Set<Char>> = start.map { st ->
+            (alphabet).associateWith {
+                dependencies.find(st, it).orEmpty().map { it.toLowerCase() }.filter { it !in start }.toSet()
+            }
+                    .filterValues { it.isNotEmpty() }
+        }
+                .fold(mutableMapOf()) { acc, map -> acc.putAll(map); acc }
+
         repeat(15) {
             keyRequirements = keyRequirements.mapValues { (_, deps) -> deps + deps.flatMap { keyRequirements[it].orEmpty() } }
         }
@@ -121,15 +211,15 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         return distances.toSortedMap()
     }
 
-    private fun buildDependencyTree(distances: Map<Char, Map<Char, Int>>): Map<Char, Set<Char>> {
+    private fun buildDependencyTree(distances: Map<Char, Map<Char, Int>>, start: List<Char>): Map<Char, Set<Char>> {
         val tree = mutableMapOf<Char, Set<Char>>()
 
-        val visited = mutableSetOf('@')
-        var open = setOf('@')
+        var open = start.toSet()
+        val visited = open.toMutableSet()
 
         while (open.isNotEmpty()) {
             open = open.flatMap {
-                val new = distances[it]!!.keys.filter { it !in visited }.toSet()
+                val new = distances[it].orEmpty().keys.filter { it !in visited }.toSet()
                 tree += it to new
                 visited += new
                 new
@@ -138,5 +228,4 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
         return tree.toSortedMap()
     }
 
-    override fun solvePartTwo(input: String): String = "todo"
 }
