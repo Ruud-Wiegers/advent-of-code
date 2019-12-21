@@ -116,26 +116,29 @@ object Day20 : AdventSolution(2019, 20, "Donut maze") {
         val start = portals.asSequence().first { it.value == "AA" }.key
         val goal = portals.asSequence().first { it.value == "ZZ" }.key
 
-        data class State(val pos: Vec2, val floor: Int, val distance: Int)
 
-        val open = PriorityQueue<State>(compareBy { it.distance })
-        val closed = mutableSetOf<Pair<Vec2, Int>>()
+        val open = PriorityQueue<Pair<State, Int>>(compareBy { it.second })
+        val closed = mutableSetOf<State>()
 
-        open.add(State(start, 0, 0))
+        open.add(State(start, 0) to 0)
 
         while (open.isNotEmpty()) {
-            val candidate = open.poll()
-            closed += candidate.pos to candidate.floor
-            open.addAll(candidate.let { (p, f, d) ->
-                distanceMap[p].orEmpty().mapNotNull { (entrance, delta) ->
-                    if (entrance == goal && candidate.floor == 0) return candidate.distance + delta
-                    val (exit, fDelta) = links[entrance] ?: return@mapNotNull null
-                    State(exit, f + fDelta, d + delta + 1).takeUnless { it.floor < 0 }
-                }
-            })
+            val (candidate, distance) = open.poll()
+            closed += candidate
+
+            distanceMap[candidate.pos].orEmpty().mapNotNull { (entrance, delta) ->
+                if (entrance == goal && candidate.floor == 0) return distance + delta
+                val (exit, fDelta) = links[entrance] ?: return@mapNotNull null
+                if (candidate.floor + fDelta < 0) return@mapNotNull null
+                State(exit, candidate.floor + fDelta) to distance + delta + 1
+            }
+
+                    .forEach { open += it }
         }
 
 
         return -closed.size
     }
 }
+
+data class State(val pos: Vec2, val floor: Int)
