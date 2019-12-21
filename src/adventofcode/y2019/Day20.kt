@@ -4,6 +4,7 @@ import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
+import java.util.*
 
 fun main() {
     Day20.solve()
@@ -47,6 +48,17 @@ object Day20 : AdventSolution(2019, 20, "Donut maze") {
         return "failed"
     }
 
+    private fun findPortalLinks(portals: Map<Vec2, String>): Map<Vec2, Vec2> = portals
+            .asSequence()
+            .mapNotNull { (entrance, entranceName) ->
+                portals.asSequence()
+                        .find { (exit, exitName) -> entrance != exit && entranceName == exitName }
+                        ?.key
+                        ?.let { entrance to it }
+            }
+            .toMap()
+
+
     private fun labelPortals(floor: Set<Vec2>, labels: Map<Vec2, Char>, direction: Direction): Map<Vec2, String> = labels
             .filterKeys { k -> k + direction.vector in labels }
             .mapValues { (k, v) -> v.toString() + labels.getValue(k + direction.vector) }
@@ -69,6 +81,26 @@ object Day20 : AdventSolution(2019, 20, "Donut maze") {
     }
 
 
+    private fun bfs(floor: Set<Vec2>, portals: Map<Vec2, String>, start: Vec2): Map<Vec2, Int> {
+        val vs = Direction.values().map { it.vector }
+        fun neighbors(p: Vec2) = vs.map { it + p }
+                .filter { it in floor }
+
+        val found = mutableMapOf<Vec2, Int>()
+
+        var open = listOf(start)
+        val closed = mutableSetOf<Vec2>()
+        var count = 0
+        while (open.isNotEmpty()) {
+            count++
+            closed += open
+            open = open.flatMap { neighbors(it) }.filter { it !in closed }
+            open.filter { it in portals.keys }.forEach { found[it] = count }
+        }
+        return found
+    }
+
+
     override fun solvePartTwo(input: String): Int {
         val (floor, labels) = readMaze(input)
 
@@ -76,39 +108,34 @@ object Day20 : AdventSolution(2019, 20, "Donut maze") {
 
 
         fun Vec2.isInside() = x == 34 || y == 34 || x == 92 || y == 92
-
-        val links = portals.asSequence()
-                .mapNotNull { (entrance, entranceName) ->
-                    portals.asSequence()
-                            .find { (exit, exitName) -> entrance != exit && entranceName == exitName }
-                            ?.key?.let { entrance to it }
-                }
-                .toMap()
+        val links = findPortalLinks(portals)
                 .mapValues { (entrance, exit) -> if (entrance.isInside()) Pair(exit, 1) else Pair(exit, -1) }
 
-        links.forEach(::println)
+        val distanceMap = portals.keys.associateWith { bfs(floor, portals, it) }
 
-        fun portalNeighbors(p: Vec2, level: Int) = links[p]?.let { listOf(it.first to it.second + level) }.orEmpty()
-                .filter { it.second >= 0 }
-        val vs = Direction.values().map { it.vector }
-        fun floorNeighbors(p: Vec2, level: Int) = vs.map { (it + p) to level }.filter { it.first in floor }
-        fun neighbors(p: Vec2, level: Int) = portalNeighbors(p, level) + floorNeighbors(p, level)
+        val start = portals.asSequence().first { it.value == "AA" }.key
+        val goal = portals.asSequence().first { it.value == "ZZ" }.key
 
+        data class State(val pos: Vec2, val floor: Int, val distance: Int)
 
-        val start = portals.asSequence().first { it.value == "AA" }.key to 0
-        val goal = portals.asSequence().first { it.value == "ZZ" }.key to 0
-
-
-        var open = listOf(start)
+        val open = PriorityQueue<State>(compareBy { it.distance })
         val closed = mutableSetOf<Pair<Vec2, Int>>()
-        var count = 0
+
+        open.add(State(start, 0, 0))
+
         while (open.isNotEmpty()) {
-            count++
-            closed += open
-            open = open.flatMap { neighbors(it.first, it.second) }.filter { it !in closed }
-            if (goal in open) return count
+            val candidate = open.poll()
+            closed += candidate.pos to candidate.floor
+            open.addAll(candidate.let { (p, f, d) ->
+                distanceMap[p].orEmpty().mapNotNull { (entrance, delta) ->
+                    if (entrance == goal && candidate.floor == 0) return candidate.distance + delta
+                    val (exit, fDelta) = links[entrance] ?: return@mapNotNull null
+                    State(exit, f + fDelta, d + delta + 1).takeUnless { it.floor < 0 }
+                }
+            })
         }
 
-        return -1
+
+        return -closed.size
     }
 }
