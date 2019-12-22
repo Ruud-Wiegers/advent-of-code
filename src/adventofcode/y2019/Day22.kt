@@ -4,64 +4,48 @@ import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.SimpleParser
 import java.math.BigInteger
+import java.math.BigInteger.ONE
+import java.math.BigInteger.ZERO
 
 fun main() = Day22.solve()
 
 object Day22 : AdventSolution(2019, 22, "Magic") {
 
     override fun solvePartOne(input: String) =
-            shufflingRoutine(input, 10007L)
-                    .apply(2019.toBigInteger())
+            shufflingRoutine(input, 10007)
+                    .evaluate(2019.toBigInteger())
 
     override fun solvePartTwo(input: String) =
             shufflingRoutine(input, 119315717514047)
                     .pow(101741582076661)
-                    .applyInverse(2020.toBigInteger())
+                    .evaluateInverse(2020.toBigInteger())
 
-    private fun shufflingRoutine(input: String, deckSize: Long) = parseInput(input)
-            .map { it.asLinExp(deckSize) }
-            .fold(LinExp(1, 0, deckSize)) { acc, exp -> exp.compose(acc) }
+    private fun shufflingRoutine(input: String, deckSize: Long) = parseInput(input, deckSize.toBigInteger())
+            .fold(LinearEquation(ONE, ZERO, deckSize.toBigInteger())) { acc, exp -> exp.compose(acc) }
 
-    private fun parseInput(input: String): List<Action> {
-        val p = SimpleParser<Action>()
+    private fun parseInput(input: String, deckSize: BigInteger): List<LinearEquation> {
+        val p = SimpleParser<LinearEquation>()
                 .apply {
-                    rule("deal into new stack") { Action.Reverse }
-                    rule("cut (\\d+)") { (n) -> Action.Cut(n.toInt()) }
-                    rule("cut -(\\d+)") { (n) -> Action.Cut(-n.toInt()) }
-                    rule("deal with increment (\\d+)") { (n) -> Action.Increment(n.toInt()) }
+                    rule("deal into new stack") { LinearEquation(deckSize - ONE, deckSize - ONE, deckSize) }
+                    rule("cut (-?\\d+)") { (n) -> LinearEquation(ONE, deckSize - n.toBigInteger(), deckSize) }
+                    rule("deal with increment (\\d+)") { (n) -> LinearEquation(n.toBigInteger(), ZERO, deckSize) }
                 }
-
         return input.lines().mapNotNull { p.parse(it) }
     }
 
-    private fun Action.asLinExp(deckSize: Long) = when (this) {
-        Action.Reverse      -> LinExp(-1, -1, deckSize)
-        is Action.Cut       -> LinExp(1, -n.toLong(), deckSize)
-        is Action.Increment -> LinExp(n.toLong(), 0, deckSize)
-    }
+    private data class LinearEquation(val a: BigInteger, val b: BigInteger, val m: BigInteger) {
+        fun evaluate(s: BigInteger) = (s * a + b) % m
+        fun evaluateInverse(s: BigInteger) = (s - b).mod(m) * a.modInverse(m) % m
 
-    data class LinExp(val a: BigInteger, val b: BigInteger, val m: BigInteger) {
-        constructor(a: Long, b: Long, m: Long) : this(a.toBigInteger().mod(m.toBigInteger()), b.toBigInteger().mod(m.toBigInteger()), m.toBigInteger())
+        fun compose(other: LinearEquation) = LinearEquation((a * other.a) % m, (a * other.b + b) % m, m)
 
-        fun compose(o: LinExp) = LinExp((a * o.a) % m, (a * o.b + b) % m, m)
-        fun apply(s: BigInteger) = (s * a + b) % m
-        fun applyInverse(s: BigInteger) = (s - b).mod(m) * a.modInverse(m) % m
-
-        fun squared() = compose(this)
-
-        fun pow(exp: Long): LinExp {
+        fun pow(exp: Long): LinearEquation {
             val binaryExpansion = generateSequence(exp) { it / 2 }.takeWhile { it > 0 }.map { it % 2 == 1L }
-            val repeatedSquaring = generateSequence(this, LinExp::squared)
+            val repeatedSquaring = generateSequence(this, { it.compose(it) })
 
             return binaryExpansion.zip(repeatedSquaring) { b, o -> o.takeIf { b } }
                     .filterNotNull()
-                    .reduce(LinExp::compose)
+                    .reduce(LinearEquation::compose)
         }
-    }
-
-    private sealed class Action {
-        data class Cut(val n: Int) : Action()
-        object Reverse : Action()
-        data class Increment(val n: Int) : Action()
     }
 }
