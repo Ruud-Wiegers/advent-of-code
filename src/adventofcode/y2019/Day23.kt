@@ -23,7 +23,7 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
                 onNatReceive = { lastPacket = it },
                 onNatSend = {
                     if (sentByNat.add(lastPacket))
-                        lastPacket
+                        lastPacket.copy(destination = 0)
                     else
                         return@solvePartTwo lastPacket.y
                 })
@@ -37,11 +37,11 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
         val network = (0..49).map { NIC(input, it) }
 
         while (true) {
-            if (network.none(NIC::active))
+            if (network.none(NIC::isActive))
                 network[0].receive(onNatSend())
 
             network.asSequence()
-                    .filter(NIC::active)
+                    .filter(NIC::isActive)
                     .mapNotNull(NIC::step)
                     .forEach {
                         if (it.destination == 255) onNatReceive(it)
@@ -52,28 +52,30 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
 
     private data class Packet(val destination: Int, val x: Long, val y: Long)
 
-    private class NIC(input: String, id: Int) {
+    private class NIC(input: String, val id: Int) {
         private val program = IntCodeProgram.fromData(input).apply {
             input(id.toLong())
-            input(-1)
-            input(-1)
         }
+        private var missedInputs: Int = 0
 
-        var active: Boolean = true; private set
-
+        fun isActive() = missedInputs < 2
 
         fun receive(packet: Packet) {
-            active = true
+            missedInputs = 0
             program.input(packet.x)
             program.input(packet.y)
         }
 
         fun step(): Packet? {
             program.executeStep()
-            if (program.state == WaitingForInput) active = false
-            return if (program.outputSize() == 3)
+            if (program.state == WaitingForInput) {
+                missedInputs++
+                program.input(-1)
+            }
+            return if (program.outputSize() == 3) {
+                missedInputs = 0
                 Packet(program.output()!!.toInt(), program.output()!!, program.output()!!)
-            else null
+            } else null
         }
     }
 }
