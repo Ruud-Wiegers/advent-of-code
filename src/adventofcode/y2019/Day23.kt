@@ -41,20 +41,22 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
 
         val idle = BooleanArray(50)
 
-
-        var lastPacket:Pair<Long,Long> = 0L to 0L
-        val seen = mutableSetOf<Pair<Long,Long>>()
+        var lastPacket: Pair<Long, Long> = -1L to -1L
+        val sentByNat = mutableSetOf<Pair<Long, Long>>()
 
         while (true) {
             if (idle.all { it }) {
                 idle[0] = false
+                if (!sentByNat.add(lastPacket)) {
+                    return lastPacket.second
+                }
                 network[0].input(lastPacket.first)
                 network[0].input(lastPacket.second)
             }
-            network.forEachIndexed { address,p ->
+            network.forEachIndexed { address, p ->
 
                 //RR scheduler
-                repeat(500) {
+                repeat(100) {
                     p.executeStep()
                     if (p.state == IntCodeProgram.State.WaitingForInput) {
                         idle[address] = true
@@ -69,9 +71,6 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
                     val destination = p.output()!!.toInt()
                     if (destination == 255) {
                         lastPacket = p.output()!! to p.output()!!
-                        if (!seen.add(lastPacket)){
-                            return lastPacket.second
-                        }
                     } else {
                         idle[destination] = false
                         network[destination].let { other ->
