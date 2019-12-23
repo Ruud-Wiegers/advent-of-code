@@ -3,71 +3,72 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntCodeProgram
+import adventofcode.util.IntCodeProgram.State.WaitingForInput
 
 fun main() = Day23.solve()
 
 object Day23 : AdventSolution(2019, 23, "Category Six") {
 
     override fun solvePartOne(input: String): Any? {
-        runNetwork(
-                input,
-                sendToNat = { _, y -> return@solvePartOne y },
-                activateNat = { return@solvePartOne "Failed" })
-        return "Failed"
+        runNetwork(input,
+                natReceive = { return@solvePartOne it.y },
+                natSend = { return@solvePartOne "Failed" })
     }
 
     override fun solvePartTwo(input: String): Any? {
-        var lastPacket: Pair<Long, Long> = -1L to -1L
-        val sentByNat = mutableSetOf<Pair<Long, Long>>()
+        lateinit var lastPacket: Packet
+        val sentByNat = mutableSetOf<Packet>()
 
         runNetwork(input,
-                sendToNat = { x, y -> lastPacket = x to y },
-                activateNat = { if (sentByNat.add(lastPacket)) lastPacket else return@solvePartTwo lastPacket.second })
-        return "Failed"
+                natReceive = { lastPacket = it },
+                natSend = {
+                    if (sentByNat.add(lastPacket)) return@runNetwork lastPacket
+                    else return@solvePartTwo lastPacket.y
+                })
     }
 
-    private inline fun runNetwork(input: String, sendToNat: (Long, Long) -> Unit, activateNat: () -> Pair<Long, Long>) {
-        val network = (0..49).map { IntCodeProgram.fromData(input).apply { input(it.toLong()) } }
-
-        val idle = IntArray(50)
+    private inline fun runNetwork(
+            input: String,
+            natReceive: (Packet) -> Unit,
+            natSend: () -> Packet
+    ): Nothing {
+        val network = (0..49).map { NIC(input, it) }
 
         while (true) {
-            if (idle.all { it > 1 }) {
-                val (x, y) = activateNat()
-                idle[0] = 0
-                network[0].input(x)
-                network[0].input(y)
-            }
+            if (network.none(NIC::isActive))
+                network[0].receive(natSend())
+
             network.asSequence()
-                    .withIndex()
-                    .filter { idle[it.index] <= 1 }
-                    .forEach { (address, p) ->
-
-                        //RR scheduler
-                        repeat(200) {
-                            p.executeStep()
-                            if (p.state == IntCodeProgram.State.WaitingForInput) {
-                                idle[address]++
-                                p.input(-1)
-                                p.input(-1)
-                                p.executeStep()
-                            }
-                        }
-
-                        while (p.outputSize() >= 3) {
-                            idle[address] = 0
-                            val destination = p.output()!!.toInt()
-                            if (destination == 255) {
-                                sendToNat(p.output()!!, p.output()!!)
-                            } else {
-                                idle[destination] = 0
-                                network[destination].let { other ->
-                                    other.input(p.output()!!)
-                                    other.input(p.output()!!)
-                                }
-                            }
-                        }
+                    .filter(NIC::isActive)
+                    .mapNotNull(NIC::step)
+                    .forEach {
+                        if (it.dest == 255) natReceive(it)
+                        else network[it.dest].receive(it)
                     }
+        }
+    }
+
+    private data class Packet(val dest: Int, val x: Long, val y: Long)
+
+    private class NIC(input: String, val id: Int) {
+        private val program = IntCodeProgram.fromData(input).apply { input(id.toLong()) }
+        private var missedInputs: Int = 0
+
+        fun isActive() = missedInputs < 2
+
+        fun receive(packet: Packet) {
+            missedInputs = if (packet.x < 0 && packet.y < 0) missedInputs + 1 else 0
+            program.input(packet.x)
+            program.input(packet.y)
+        }
+
+        fun step(): Packet? {
+            program.executeStep()
+            return when {
+                program.state == WaitingForInput -> Packet(id, -1, -1)
+                program.outputSize() == 3        -> Packet(program.output()!!.toInt(), program.output()!!, program.output()!!)
+                else                             -> null
+            }
         }
     }
 }

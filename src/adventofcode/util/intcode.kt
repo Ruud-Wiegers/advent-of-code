@@ -4,7 +4,7 @@ class IntCodeProgram(
         private val data: Memory,
         var state: State,
         private val inputChannel: MutableList<Long>,
-        private val outputChannel: MutableList<Long>
+        val outputChannel: MutableList<Long>
 ) {
     constructor(input: List<Long>) : this(input.withIndex()
             .associate { it.index.toLong() to it.value }
