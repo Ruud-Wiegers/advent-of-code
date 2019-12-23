@@ -18,34 +18,40 @@ class IntCodeProgram(
     }
 
     fun output(): Long? = if (outputChannel.isNotEmpty()) outputChannel.removeAt(0) else null
+    fun outputSize() = outputChannel.size
+
 
     fun execute() {
         do {
-            data.nextInstruction()
-            when (data.currentOperation) {
-                1    -> data[2] = data[0] + data[1]
-                2    -> data[2] = data[0] * data[1]
-                3    -> state = if (inputChannel.isEmpty())
-                    State.WaitingForInput
-                else
-                    State.Ready.also { data[0] = inputChannel.removeAt(0) }
-                4    -> outputChannel.add(data[0])
-                5    -> data.pc = if (data[0] != 0L) data[1] else data.pc + 3
-                6    -> data.pc = if (data[0] == 0L) data[1] else data.pc + 3
-                7    -> data[2] = if (data[0] < data[1]) 1 else 0
-                8    -> data[2] = if (data[0] == data[1]) 1 else 0
-                9    -> data.relativeBase += data[0]
-                99   -> state = State.Halted
-                else -> throw IllegalStateException()
-            }
-            if (state == State.Ready)
-                data.pc += when (data.currentOperation) {
-                    1, 2, 7, 8 -> 4
-                    3, 4, 9    -> 2
-                    5, 6, 99   -> 0
-                    else       -> throw IllegalStateException()
-                }
+            executeStep()
         } while (state == State.Ready)
+    }
+
+    fun executeStep() {
+        data.nextInstruction()
+        when (data.currentOperation) {
+            1    -> data[2] = data[0] + data[1]
+            2    -> data[2] = data[0] * data[1]
+            3    -> state = if (inputChannel.isEmpty())
+                State.WaitingForInput
+            else
+                State.Ready.also { data[0] = inputChannel.removeAt(0) }
+            4    -> outputChannel.add(data[0])
+            5    -> data.pc = if (data[0] != 0L) data[1] else data.pc + 3
+            6    -> data.pc = if (data[0] == 0L) data[1] else data.pc + 3
+            7    -> data[2] = if (data[0] < data[1]) 1 else 0
+            8    -> data[2] = if (data[0] == data[1]) 1 else 0
+            9    -> data.relativeBase += data[0]
+            99   -> state = State.Halted
+            else -> throw IllegalStateException()
+        }
+        if (state == State.Ready)
+            data.pc += when (data.currentOperation) {
+                1, 2, 7, 8 -> 4
+                3, 4, 9    -> 2
+                5, 6, 99   -> 0
+                else       -> throw IllegalStateException()
+            }
     }
 
     enum class State { Ready, WaitingForInput, Halted }
