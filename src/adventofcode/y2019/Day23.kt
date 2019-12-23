@@ -11,8 +11,8 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
 
     override fun solvePartOne(input: String): Any? {
         runNetwork(input,
-                natReceive = { return@solvePartOne it.y },
-                natSend = { return@solvePartOne "Failed" })
+                onNatReceive = { return@solvePartOne it.y },
+                onNatSend = { throw IllegalStateException() })
     }
 
     override fun solvePartTwo(input: String): Any? {
@@ -20,55 +20,60 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
         val sentByNat = mutableSetOf<Packet>()
 
         runNetwork(input,
-                natReceive = { lastPacket = it },
-                natSend = {
-                    if (sentByNat.add(lastPacket)) return@runNetwork lastPacket
-                    else return@solvePartTwo lastPacket.y
+                onNatReceive = { lastPacket = it },
+                onNatSend = {
+                    if (sentByNat.add(lastPacket))
+                        lastPacket
+                    else
+                        return@solvePartTwo lastPacket.y
                 })
     }
 
     private inline fun runNetwork(
             input: String,
-            natReceive: (Packet) -> Unit,
-            natSend: () -> Packet
+            onNatReceive: (Packet) -> Unit,
+            onNatSend: () -> Packet
     ): Nothing {
         val network = (0..49).map { NIC(input, it) }
 
         while (true) {
-            if (network.none(NIC::isActive))
-                network[0].receive(natSend())
+            if (network.none(NIC::active))
+                network[0].receive(onNatSend())
 
             network.asSequence()
-                    .filter(NIC::isActive)
+                    .filter(NIC::active)
                     .mapNotNull(NIC::step)
                     .forEach {
-                        if (it.dest == 255) natReceive(it)
-                        else network[it.dest].receive(it)
+                        if (it.destination == 255) onNatReceive(it)
+                        else network[it.destination].receive(it)
                     }
         }
     }
 
-    private data class Packet(val dest: Int, val x: Long, val y: Long)
+    private data class Packet(val destination: Int, val x: Long, val y: Long)
 
-    private class NIC(input: String, val id: Int) {
-        private val program = IntCodeProgram.fromData(input).apply { input(id.toLong()) }
-        private var missedInputs: Int = 0
+    private class NIC(input: String, id: Int) {
+        private val program = IntCodeProgram.fromData(input).apply {
+            input(id.toLong())
+            input(-1)
+            input(-1)
+        }
 
-        fun isActive() = missedInputs < 2
+        var active: Boolean = true; private set
+
 
         fun receive(packet: Packet) {
-            missedInputs = if (packet.x < 0 && packet.y < 0) missedInputs + 1 else 0
+            active = true
             program.input(packet.x)
             program.input(packet.y)
         }
 
         fun step(): Packet? {
             program.executeStep()
-            return when {
-                program.state == WaitingForInput -> Packet(id, -1, -1)
-                program.outputSize() == 3        -> Packet(program.output()!!.toInt(), program.output()!!, program.output()!!)
-                else                             -> null
-            }
+            if (program.state == WaitingForInput) active = false
+            return if (program.outputSize() == 3)
+                Packet(program.output()!!.toInt(), program.output()!!, program.output()!!)
+            else null
         }
     }
 }
