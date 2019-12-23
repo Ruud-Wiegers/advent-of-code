@@ -53,33 +53,36 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
                 network[0].input(lastPacket.first)
                 network[0].input(lastPacket.second)
             }
-            network.forEachIndexed { address, p ->
+            network.asSequence()
+                    .withIndex()
+                    .filter { !idle[it.index] }
+                    .forEach { (address, p) ->
 
-                //RR scheduler
-                repeat(100) {
-                    p.executeStep()
-                    if (p.state == IntCodeProgram.State.WaitingForInput) {
-                        idle[address] = true
-                        p.input(-1)
-                        p.input(-1)
-                        p.executeStep()
-                    }
-                }
+                        //RR scheduler
+                        repeat(100) {
+                            p.executeStep()
+                            if (p.state == IntCodeProgram.State.WaitingForInput) {
+                                idle[address] = true
+                                p.input(-1)
+                                p.input(-1)
+                                p.executeStep()
+                            }
+                        }
 
-                while (p.outputSize() >= 3) {
-                    idle[address] = false
-                    val destination = p.output()!!.toInt()
-                    if (destination == 255) {
-                        lastPacket = p.output()!! to p.output()!!
-                    } else {
-                        idle[destination] = false
-                        network[destination].let { other ->
-                            other.input(p.output()!!)
-                            other.input(p.output()!!)
+                        while (p.outputSize() >= 3) {
+                            idle[address] = false
+                            val destination = p.output()!!.toInt()
+                            if (destination == 255) {
+                                lastPacket = p.output()!! to p.output()!!
+                            } else {
+                                idle[destination] = false
+                                network[destination].let { other ->
+                                    other.input(p.output()!!)
+                                    other.input(p.output()!!)
+                                }
+                            }
                         }
                     }
-                }
-            }
         }
     }
 }
