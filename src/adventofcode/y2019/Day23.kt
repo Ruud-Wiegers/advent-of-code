@@ -11,8 +11,8 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
     override fun solvePartOne(input: String): Any? {
         runNetwork(
                 input,
-                sendToNat = { _, y -> return y },
-                activateNat = { return "Failed" })
+                sendToNat = { _, y -> return@solvePartOne y },
+                activateNat = { return@solvePartOne "Failed" })
         return "Failed"
     }
 
@@ -22,7 +22,7 @@ object Day23 : AdventSolution(2019, 23, "Category Six") {
 
         runNetwork(input,
                 sendToNat = { x, y -> lastPacket = x to y },
-                activateNat = { if (sentByNat.add(lastPacket)) lastPacket else return lastPacket.second })
+                activateNat = { if (sentByNat.add(lastPacket)) lastPacket else return@solvePartTwo lastPacket.second })
         return "Failed"
     }
 
