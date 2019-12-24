@@ -2,8 +2,7 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.vector.Direction
-import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.Vec3
 import adventofcode.y2017.takeWhileDistinct
 
 fun main() = Day24.solve()
@@ -40,62 +39,65 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
     }
 
 
-
-    override fun solvePartTwo(input: String) = generateSequence(ErisianGrid(input), ErisianGrid::next)
+    override fun solvePartTwo(input: String) = generateSequence(ErisianGrid(toGrid(input)), ErisianGrid::next)
             .drop(200)
             .first()
             .grid
-            .flatten()
-            .flatten()
-            .count { it }
+            .size
 
-    private fun emptyLevel() = List(5) { List(5) { false } }
+    private fun toGrid(input: String) = sequence {
+        val g = input.lines()
+        for (y in 0 until 5)
+            for (x in 0 until 5)
+                if (g[y][x] == '#') yield(Vec3(x, y, 0))
+    }.toSet()
 
-    private data class ErisianGrid(val grid: List<List<List<Boolean>>>) {
-        constructor(input: String) : this(listOf(emptyLevel()) +
-                listOf(input.lines().map { it.map { it == '#' } }) +
-                listOf(emptyLevel()))
+    private data class ErisianGrid(val grid: Set<Vec3>) {
+        val zs: IntRange by lazy { grid.minBy(Vec3::z)!!.z - 1..grid.maxBy(Vec3::z)!!.z + 1 }
 
-        fun next() = grid.indices.map { l ->
-            grid[0].indices.map { y ->
-                grid[0][0].indices.map { x ->
-                    next(Vec2(x, y), l)
-                }
-            }
+        fun next() = sequence {
+            for (z in zs)
+                for (y in 0..4)
+                    for (x in 0..4)
+                        yield(Vec3(x, y, z))
         }
-                .let { val e = emptyLevel(); if (it[0] == e) it else listOf(e) + it }
-                .let { val e = emptyLevel(); if (it.last() == e) it else it + listOf(e) }
+                .filter { next(it) }
+                .toSet()
                 .let { ErisianGrid(it) }
 
-        private fun next(sq: Vec2, level: Int): Boolean = neighbors(sq, level) in 1..(2 - countBugs(sq, level))
+        private fun next(sq: Vec3): Boolean = sq.neighbors() in if (sq in grid) 1..1 else 1..2
 
-        private fun neighbors(sq: Vec2, level: Int) = Direction.values().sumBy { neighborsInDirection(sq, level, it) }
 
-        private fun neighborsInDirection(sq: Vec2, level: Int, direction: Direction): Int {
-            val neighbor = sq + direction.vector
-            return when {
-                sq == center                               -> 0
-                neighbor == center                         -> direction.edges.sumBy { countBugs(it, level + 1) }
-                neighbor.x !in 0..4 || neighbor.y !in 0..4 -> countBugs(center + direction.vector, level - 1)
-                else                                       -> countBugs(neighbor, level)
-            }
+        private fun Vec3.neighbors() = left() + right() + up() + down()
+
+        private fun Vec3.left() = when {
+            x == 2 && y == 2 -> 0
+            x == 3 && y == 2 -> (0..4).sumBy { countBugs(Vec3(4, it, z + 1)) }
+            x == 0           -> countBugs(Vec3(1, 2, z - 1))
+            else             -> countBugs(copy(x = x - 1))
         }
 
-        private val Direction.edges: List<Vec2>
-            get() = (0..4).map {
-                when (this) {
-                    Direction.LEFT  -> Vec2(4, it)
-                    Direction.RIGHT -> Vec2(0, it)
-                    Direction.UP    -> Vec2(it, 4)
-                    Direction.DOWN  -> Vec2(it, 0)
-                }
-            }
+        private fun Vec3.right() = when {
+            x == 2 && y == 2 -> 0
+            x == 1 && y == 2 -> (0..4).sumBy { countBugs(Vec3(0, it, z + 1)) }
+            x == 4           -> countBugs(Vec3(3, 2, z - 1))
+            else             -> countBugs(copy(x = x + 1))
+        }
 
-        private fun countBugs(sq: Vec2, l: Int) = grid.getOrNull(l)
-                ?.getOrNull(sq.y)
-                ?.getOrNull(sq.x)
-                .let { if (it == true) 1 else 0 }
+        private fun Vec3.up() = when {
+            y == 2 && x == 2 -> 0
+            y == 3 && x == 2 -> (0..4).sumBy { countBugs(Vec3(it, 4, z + 1)) }
+            y == 0           -> countBugs(Vec3(2, 1, z - 1))
+            else             -> countBugs(copy(y = y - 1))
+        }
 
-        private val center = Vec2(2, 2)
+        private fun Vec3.down() = when {
+            y == 2 && x == 2 -> 0
+            y == 1 && x == 2 -> (0..4).sumBy { countBugs(Vec3(it, 0, z + 1)) }
+            y == 4           -> countBugs(Vec3(2, 3, z - 1))
+            else             -> countBugs(copy(y = y + 1))
+        }
+
+        private fun countBugs(sq: Vec3) = if (sq in grid) 1 else 0
     }
 }
