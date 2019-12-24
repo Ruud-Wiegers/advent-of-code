@@ -2,6 +2,8 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Vec2
 import adventofcode.y2017.takeWhileDistinct
 
 fun main() = Day24.solve()
@@ -38,6 +40,7 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
     }
 
 
+
     override fun solvePartTwo(input: String) = generateSequence(ErisianGrid(input), ErisianGrid::next)
             .drop(200)
             .first()
@@ -56,7 +59,7 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
         fun next() = grid.indices.map { l ->
             grid[0].indices.map { y ->
                 grid[0][0].indices.map { x ->
-                    next(l, y, x)
+                    next(Vec2(x, y), l)
                 }
             }
         }
@@ -64,43 +67,35 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
                 .let { val e = emptyLevel(); if (it.last() == e) it else it + listOf(e) }
                 .let { ErisianGrid(it) }
 
-        private fun next(l: Int, y: Int, x: Int): Boolean =
-                neighbors(l, y, x) in 1..(2 - countBugs(l, y, x))
+        private fun next(sq: Vec2, level: Int): Boolean = neighbors(sq, level) in 1..(2 - countBugs(sq, level))
 
-        private fun neighbors(l: Int, y: Int, x: Int) =
-                left(l, y, x) + right(l, y, x) + up(l, y, x) + down(l, y, x)
+        private fun neighbors(sq: Vec2, level: Int) = Direction.values().sumBy { neighborsInDirection(sq, level, it) }
 
-
-        private fun left(l: Int, y: Int, x: Int) = when {
-            x == 2 && y == 2 -> 0
-            x == 3 && y == 2 -> (0..4).sumBy { countBugs(l + 1, it, 4) }
-            x == 0           -> countBugs(l - 1, 2, 1)
-            else             -> countBugs(l, y, x - 1)
+        private fun neighborsInDirection(sq: Vec2, level: Int, direction: Direction): Int {
+            val neighbor = sq + direction.vector
+            return when {
+                sq == center                               -> 0
+                neighbor == center                         -> direction.edges.sumBy { countBugs(it, level + 1) }
+                neighbor.x !in 0..4 || neighbor.y !in 0..4 -> countBugs(center + direction.vector, level - 1)
+                else                                       -> countBugs(neighbor, level)
+            }
         }
 
-        private fun right(l: Int, y: Int, x: Int) = when {
-            x == 2 && y == 2 -> 0
-            x == 1 && y == 2 -> (0..4).sumBy { countBugs(l + 1, it, 0) }
-            x == 4           -> countBugs(l - 1, 2, 3)
-            else             -> countBugs(l, y, x + 1)
-        }
+        private val Direction.edges: List<Vec2>
+            get() = (0..4).map {
+                when (this) {
+                    Direction.LEFT  -> Vec2(4, it)
+                    Direction.RIGHT -> Vec2(0, it)
+                    Direction.UP    -> Vec2(it, 4)
+                    Direction.DOWN  -> Vec2(it, 0)
+                }
+            }
 
-        private fun up(l: Int, y: Int, x: Int) = when {
-            y == 2 && x == 2 -> 0
-            y == 3 && x == 2 -> (0..4).sumBy { countBugs(l + 1, 4, it) }
-            y == 0           -> countBugs(l - 1, 1, 2)
-            else             -> countBugs(l, y - 1, x)
-        }
+        private fun countBugs(sq: Vec2, l: Int) = grid.getOrNull(l)
+                ?.getOrNull(sq.y)
+                ?.getOrNull(sq.x)
+                .let { if (it == true) 1 else 0 }
 
-        private fun down(l: Int, y: Int, x: Int) = when {
-            y == 2 && x == 2 -> 0
-            y == 1 && x == 2 -> (0..4).sumBy { countBugs(l + 1, 0, it) }
-            y == 4           -> countBugs(l - 1, 3, 2)
-            else             -> countBugs(l, y + 1, x)
-        }
-
-        private fun countBugs(l: Int, y: Int, x: Int) =
-                grid.getOrNull(l)?.getOrNull(y)?.getOrNull(x).let { if (it == true) 1 else 0 }
-
+        private val center = Vec2(2, 2)
     }
 }
