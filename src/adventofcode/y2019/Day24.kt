@@ -61,7 +61,10 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
                     next(l, y, x)
                 }
             }
-        }.let { ErisianGrid(listOf(emptyLevel()) + it + listOf(emptyLevel())) }
+        }
+                .let { val e = emptyLevel(); if (it[0] == e) it else listOf(e) + it }
+                .let { val e = emptyLevel(); if (it.last() == e) it else it + listOf(e) }
+                .let { ErisianGrid(it) }
 
         private fun next(l: Int, y: Int, x: Int): Boolean = if (grid[l][y][x])
             neighbors(l, y, x).count { it } == 1
