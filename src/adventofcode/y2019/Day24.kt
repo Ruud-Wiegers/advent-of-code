@@ -2,8 +2,6 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.vector.Direction
-import adventofcode.util.vector.Vec2
 import adventofcode.y2017.takeWhileDistinct
 
 fun main() = Day24.solve()
@@ -34,9 +32,9 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
                 else
                     adjacentBugs(x, y) in 1..2
 
-        private fun adjacentBugs(x: Int, y: Int) = Direction.values().map { Vec2(x, y) + it.vector }.count { (a, b) -> isBug(a, b) }
+        private fun adjacentBugs(x: Int, y: Int) = bugCount(x + 1, y) + bugCount(x - 1, y) + bugCount(x, y + 1) + bugCount(x, y - 1)
 
-        private fun isBug(x: Int, y: Int) = grid.getOrNull(y)?.getOrNull(x) == true
+        private fun bugCount(x: Int, y: Int) = if (grid.getOrNull(y)?.getOrNull(x) == true) 1 else 0
     }
 
 
@@ -67,39 +65,45 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
                 .let { ErisianGrid(it) }
 
         private fun next(l: Int, y: Int, x: Int): Boolean = if (grid[l][y][x])
-            neighbors(l, y, x).count { it } == 1
+            neighbors(l, y, x) == 1
         else
-            neighbors(l, y, x).count { it } in 1..2
+            neighbors(l, y, x) in 1..2
 
 
-        private fun neighbors(l: Int, y: Int, x: Int): List<Boolean> = neighborsL(l, y, x) + neighborsR(l, y, x) + neighborsU(l, y, x) + neighborsD(l, y, x)
+        private fun neighbors(l: Int, y: Int, x: Int) =
+                left(l, y, x) + right(l, y, x) + up(l, y, x) + down(l, y, x)
 
-        private fun neighborsL(l: Int, y: Int, x: Int): List<Boolean> = when {
-            x == 0           -> grid.getOrNull(l - 1)?.let { listOf(it[2][1]) }.orEmpty()
-            x == 2 && y == 2 -> emptyList()
-            x == 3 && y == 2 -> grid.getOrNull(l + 1).orEmpty().map { it.last() }
-            else             -> listOf(grid[l][y][x - 1])
+
+        private fun left(l: Int, y: Int, x: Int) = when {
+            x == 2 && y == 2 -> 0
+            x == 3 && y == 2 -> (0..4).sumBy { hasBug(l + 1, it, 4) }
+            x == 0           -> hasBug(l - 1, 2, 1)
+            else             -> hasBug(l, y, x - 1)
         }
 
-        private fun neighborsR(l: Int, y: Int, x: Int): List<Boolean> = when {
-            x == 4           -> grid.getOrNull(l - 1)?.let { listOf(it[2][3]) }.orEmpty()
-            x == 2 && y == 2 -> emptyList()
-            x == 1 && y == 2 -> grid.getOrNull(l + 1).orEmpty().map { it.first() }
-            else             -> listOf(grid[l][y][x + 1])
+        private fun right(l: Int, y: Int, x: Int) = when {
+            x == 2 && y == 2 -> 0
+            x == 1 && y == 2 -> (0..4).sumBy { hasBug(l + 1, it, 0) }
+            x == 4           -> hasBug(l - 1, 2, 3)
+            else             -> hasBug(l, y, x + 1)
         }
 
-        private fun neighborsU(l: Int, y: Int, x: Int): List<Boolean> = when {
-            y == 0           -> grid.getOrNull(l - 1)?.let { listOf(it[1][2]) }.orEmpty()
-            x == 2 && y == 2 -> emptyList()
-            x == 2 && y == 3 -> grid.getOrNull(l + 1)?.last().orEmpty()
-            else             -> listOf(grid[l][y - 1][x])
+        private fun up(l: Int, y: Int, x: Int) = when {
+            y == 2 && x == 2 -> 0
+            y == 3 && x == 2 -> (0..4).sumBy { hasBug(l + 1, 4, it) }
+            y == 0           -> hasBug(l - 1, 1, 2)
+            else             -> hasBug(l, y - 1, x)
         }
 
-        private fun neighborsD(l: Int, y: Int, x: Int): List<Boolean> = when {
-            y == 4           -> grid.getOrNull(l - 1)?.let { listOf(it[3][2]) }.orEmpty()
-            x == 2 && y == 2 -> emptyList()
-            x == 2 && y == 1 -> grid.getOrNull(l + 1)?.first().orEmpty()
-            else             -> listOf(grid[l][y + 1][x])
+        private fun down(l: Int, y: Int, x: Int) = when {
+            y == 2 && x == 2 -> 0
+            y == 1 && x == 2 -> (0..4).sumBy { hasBug(l + 1, 0, it) }
+            y == 4           -> hasBug(l - 1, 3, 2)
+            else             -> hasBug(l, y + 1, x)
         }
+
+        private fun hasBug(l: Int, y: Int, x: Int) =
+                grid.getOrNull(l)?.getOrNull(y)?.getOrNull(x).let { if (it == true) 1 else 0 }
+
     }
 }
