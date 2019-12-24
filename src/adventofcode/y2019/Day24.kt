@@ -64,11 +64,8 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
                 .let { val e = emptyLevel(); if (it.last() == e) it else it + listOf(e) }
                 .let { ErisianGrid(it) }
 
-        private fun next(l: Int, y: Int, x: Int): Boolean = if (grid[l][y][x])
-            neighbors(l, y, x) == 1
-        else
-            neighbors(l, y, x) in 1..2
-
+        private fun next(l: Int, y: Int, x: Int): Boolean =
+                neighbors(l, y, x) in 1..(2 - countBugs(l, y, x))
 
         private fun neighbors(l: Int, y: Int, x: Int) =
                 left(l, y, x) + right(l, y, x) + up(l, y, x) + down(l, y, x)
@@ -76,33 +73,33 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
 
         private fun left(l: Int, y: Int, x: Int) = when {
             x == 2 && y == 2 -> 0
-            x == 3 && y == 2 -> (0..4).sumBy { hasBug(l + 1, it, 4) }
-            x == 0           -> hasBug(l - 1, 2, 1)
-            else             -> hasBug(l, y, x - 1)
+            x == 3 && y == 2 -> (0..4).sumBy { countBugs(l + 1, it, 4) }
+            x == 0           -> countBugs(l - 1, 2, 1)
+            else             -> countBugs(l, y, x - 1)
         }
 
         private fun right(l: Int, y: Int, x: Int) = when {
             x == 2 && y == 2 -> 0
-            x == 1 && y == 2 -> (0..4).sumBy { hasBug(l + 1, it, 0) }
-            x == 4           -> hasBug(l - 1, 2, 3)
-            else             -> hasBug(l, y, x + 1)
+            x == 1 && y == 2 -> (0..4).sumBy { countBugs(l + 1, it, 0) }
+            x == 4           -> countBugs(l - 1, 2, 3)
+            else             -> countBugs(l, y, x + 1)
         }
 
         private fun up(l: Int, y: Int, x: Int) = when {
             y == 2 && x == 2 -> 0
-            y == 3 && x == 2 -> (0..4).sumBy { hasBug(l + 1, 4, it) }
-            y == 0           -> hasBug(l - 1, 1, 2)
-            else             -> hasBug(l, y - 1, x)
+            y == 3 && x == 2 -> (0..4).sumBy { countBugs(l + 1, 4, it) }
+            y == 0           -> countBugs(l - 1, 1, 2)
+            else             -> countBugs(l, y - 1, x)
         }
 
         private fun down(l: Int, y: Int, x: Int) = when {
             y == 2 && x == 2 -> 0
-            y == 1 && x == 2 -> (0..4).sumBy { hasBug(l + 1, 0, it) }
-            y == 4           -> hasBug(l - 1, 3, 2)
-            else             -> hasBug(l, y + 1, x)
+            y == 1 && x == 2 -> (0..4).sumBy { countBugs(l + 1, 0, it) }
+            y == 4           -> countBugs(l - 1, 3, 2)
+            else             -> countBugs(l, y + 1, x)
         }
 
-        private fun hasBug(l: Int, y: Int, x: Int) =
+        private fun countBugs(l: Int, y: Int, x: Int) =
                 grid.getOrNull(l)?.getOrNull(y)?.getOrNull(x).let { if (it == true) 1 else 0 }
 
     }
