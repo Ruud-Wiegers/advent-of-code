@@ -4,64 +4,62 @@ import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.SimpleParser
 import java.math.BigInteger
+import java.math.BigInteger.ONE
+import java.math.BigInteger.ZERO
 
 fun main() = Day22.solve()
 
-object Day22 : AdventSolution(2019, 22, "Magic") {
+object Day22 : AdventSolution(2019, 22, "Slam Shuffle") {
 
-    override fun solvePartOne(input: String) =
-            shufflingRoutine(input, 10007L)
-                    .apply(2019.toBigInteger())
+    override fun solvePartOne(input: String) = parseInput(input)
+            .composeShufflingRoutine(10007.toBigInteger())
+            .evaluate(2019.toBigInteger())
 
-    override fun solvePartTwo(input: String) =
-            shufflingRoutine(input, 119315717514047)
-                    .pow(101741582076661)
-                    .applyInverse(2020.toBigInteger())
+    override fun solvePartTwo(input: String) = parseInput(input)
+            .composeShufflingRoutine(119315717514047.toBigInteger())
+            .repeat(101741582076661)
+            .evaluateInverse(2020.toBigInteger())
 
-    private fun shufflingRoutine(input: String, deckSize: Long) = parseInput(input)
-            .map { it.asLinExp(deckSize) }
-            .fold(LinExp(1, 0, deckSize)) { acc, exp -> exp.compose(acc) }
 
-    private fun parseInput(input: String): List<Action> {
-        val p = SimpleParser<Action>()
-                .apply {
-                    rule("deal into new stack") { Action.Reverse }
-                    rule("cut (\\d+)") { (n) -> Action.Cut(n.toInt()) }
-                    rule("cut -(\\d+)") { (n) -> Action.Cut(-n.toInt()) }
-                    rule("deal with increment (\\d+)") { (n) -> Action.Increment(n.toInt()) }
-                }
-
-        return input.lines().mapNotNull { p.parse(it) }
+    private val parser = SimpleParser<ShufflingStep>().apply {
+        rule("deal into new stack") { ShufflingStep.NewStack }
+        rule("cut (-?\\d+)") { (n) -> ShufflingStep.Cut(n.toBigInteger()) }
+        rule("deal with increment (\\d+)") { (n) -> ShufflingStep.Increment(n.toBigInteger()) }
     }
 
-    private fun Action.asLinExp(deckSize: Long) = when (this) {
-        Action.Reverse      -> LinExp(-1, -1, deckSize)
-        is Action.Cut       -> LinExp(1, -n.toLong(), deckSize)
-        is Action.Increment -> LinExp(n.toLong(), 0, deckSize)
+    private fun parseInput(input: String): Sequence<ShufflingStep> =
+            input.lineSequence().mapNotNull { parser.parse(it) }
+
+    private fun Sequence<ShufflingStep>.composeShufflingRoutine(deckSize: BigInteger): LinearEquation = this
+            .map { it.toLinearEquation(deckSize) }
+            .reduce { acc, exp -> exp.compose(acc) }
+
+    private fun ShufflingStep.toLinearEquation(deckSize: BigInteger) = when (this) {
+        ShufflingStep.NewStack     -> LinearEquation(deckSize - ONE, deckSize - ONE, deckSize)
+        is ShufflingStep.Cut       -> LinearEquation(ONE, deckSize - n, deckSize)
+        is ShufflingStep.Increment -> LinearEquation(n, ZERO, deckSize)
     }
 
-    data class LinExp(val a: BigInteger, val b: BigInteger, val m: BigInteger) {
-        constructor(a: Long, b: Long, m: Long) : this(a.toBigInteger().mod(m.toBigInteger()), b.toBigInteger().mod(m.toBigInteger()), m.toBigInteger())
 
-        fun compose(o: LinExp) = LinExp((a * o.a) % m, (a * o.b + b) % m, m)
-        fun apply(s: BigInteger) = (s * a + b) % m
-        fun applyInverse(s: BigInteger) = (s - b).mod(m) * a.modInverse(m) % m
+    private sealed class ShufflingStep {
+        object NewStack : ShufflingStep()
+        class Cut(val n: BigInteger) : ShufflingStep()
+        class Increment(val n: BigInteger) : ShufflingStep()
+    }
 
-        fun squared() = compose(this)
+    private data class LinearEquation(val a: BigInteger, val b: BigInteger, val m: BigInteger) {
+        fun evaluate(s: BigInteger) = (s * a + b) % m
+        fun evaluateInverse(s: BigInteger) = (s - b).mod(m) * a.modInverse(m) % m
 
-        fun pow(exp: Long): LinExp {
+        fun compose(other: LinearEquation) = LinearEquation((a * other.a) % m, (a * other.b + b) % m, m)
+
+        fun repeat(exp: Long): LinearEquation {
+            val repeatedSquaring = generateSequence(this) { it.compose(it) }
             val binaryExpansion = generateSequence(exp) { it / 2 }.takeWhile { it > 0 }.map { it % 2 == 1L }
-            val repeatedSquaring = generateSequence(this, LinExp::squared)
 
-            return binaryExpansion.zip(repeatedSquaring) { b, o -> o.takeIf { b } }
+            return repeatedSquaring.zip(binaryExpansion) { partial, occurs -> partial.takeIf { occurs } }
                     .filterNotNull()
-                    .reduce(LinExp::compose)
+                    .reduce(LinearEquation::compose)
         }
-    }
-
-    private sealed class Action {
-        data class Cut(val n: Int) : Action()
-        object Reverse : Action()
-        data class Increment(val n: Int) : Action()
     }
 }
