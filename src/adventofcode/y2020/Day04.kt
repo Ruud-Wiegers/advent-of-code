@@ -7,34 +7,28 @@ fun main() = Day04.solve()
 
 object Day04 : AdventSolution(2020, 4, "Passport Processing")
 {
-    override fun solvePartOne(input: String) =
-        input.splitToSequence("\n\n")
-            .map(::parseInput)
-            .count(Document::hasRequiredFields)
-
-    override fun solvePartTwo(input: String) =
-        input.splitToSequence("\n\n")
-            .map(::parseInput)
-            .count(Document::isCorrectlyFormatted)
-
-    private fun parseInput(input: String) = input
-        .splitToSequence(' ', '\n')
-        .map { it.split(':') }
-        .associate { (k, v) -> k to v }
-        .let(::Document)
-
-    class Document(private val map: Map<String, String>)
+    override fun solvePartOne(input: String): Int
     {
+        val keys = listOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
 
-        fun hasRequiredFields() = listOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
-            .all(map::containsKey)
+        return input
+            .splitToSequence("\n\n")
+            .map(::fromInput)
+            .count { keys.all(it::containsKey) }
+    }
 
-        fun isCorrectlyFormatted() = sequenceOf(
-            { map["byr"]?.toIntOrNull() ?: 0 in 1920..2002 },
-            { map["iyr"]?.toIntOrNull() ?: 0 in 2010..2020 },
-            { map["eyr"]?.toIntOrNull() ?: 0 in 2020..2030 },
+    override fun solvePartTwo(input: String): Int
+    {
+        val hclValidator = "#[a-f0-9]{6}".toRegex()
+        val eclValidator = "amb|blu|brn|gry|grn|hzl|oth".toRegex()
+        val pidValidator = "[0-9]{9}".toRegex()
+
+        val validators = sequenceOf<Validator>(
+            { it["byr"]?.toIntOrNull() ?: 0 in 1920..2002 },
+            { it["iyr"]?.toIntOrNull() ?: 0 in 2010..2020 },
+            { it["eyr"]?.toIntOrNull() ?: 0 in 2020..2030 },
             {
-                val hgt = map.getOrDefault("hgt", "")
+                val hgt = it.getOrDefault("hgt", "")
                 when (hgt.takeLast(2))
                 {
                     "cm" -> hgt.dropLast(2).toIntOrNull() ?: 0 in 150..193
@@ -42,14 +36,21 @@ object Day04 : AdventSolution(2020, 4, "Passport Processing")
                     else -> false
                 }
             },
-            { map.getOrDefault("hcl", "").let(hclValidator::matches) },
-            { map.getOrDefault("ecl", "").let(eclValidator::matches) },
-            { map.getOrDefault("pid", "").let(pidValidator::matches) }
+            { it.getOrDefault("hcl", "").let(hclValidator::matches) },
+            { it.getOrDefault("ecl", "").let(eclValidator::matches) },
+            { it.getOrDefault("pid", "").let(pidValidator::matches) }
         )
-            .all { validator -> validator() }
 
-        private val hclValidator = "#[a-f0-9]{6}".toRegex()
-        private val eclValidator = "amb|blu|brn|gry|grn|hzl|oth".toRegex()
-        private val pidValidator = "[0-9]{9}".toRegex()
+        return input
+            .splitToSequence("\n\n")
+            .map(::fromInput)
+            .count { document -> validators.all { v -> v(document) } }
     }
+
+    private fun fromInput(input: String) = input
+        .splitToSequence(' ', '\n')
+        .map { it.split(':') }
+        .associate { (k, v) -> k to v }
 }
+
+private typealias Validator = (Map<String, String>) -> Boolean
