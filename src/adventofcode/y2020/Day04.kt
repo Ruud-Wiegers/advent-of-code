@@ -13,7 +13,7 @@ object Day04 : AdventSolution(2020, 4, "Passport Processing")
 
         return input
             .splitToSequence("\n\n")
-            .map(::fromInput)
+            .map(::parseToDocument)
             .count { keys.all(it::containsKey) }
     }
 
@@ -43,11 +43,11 @@ object Day04 : AdventSolution(2020, 4, "Passport Processing")
 
         return input
             .splitToSequence("\n\n")
-            .map(::fromInput)
+            .map(::parseToDocument)
             .count { document -> validators.all { v -> v(document) } }
     }
 
-    private fun fromInput(input: String) = input
+    private fun parseToDocument(input: String) = input
         .splitToSequence(' ', '\n')
         .map { it.split(':') }
         .associate { (k, v) -> k to v }
