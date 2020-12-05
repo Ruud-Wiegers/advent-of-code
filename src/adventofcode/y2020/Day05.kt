@@ -9,16 +9,17 @@ object Day05 : AdventSolution(2020, 5, "Binary Boarding")
 {
     override fun solvePartOne(input: String) = input
         .lineSequence()
-        .map(::parse)
-        .maxOrNull()
+        .maxOf(::parse)
 
-    override fun solvePartTwo(input: String) = input
-        .lineSequence()
-        .map(::parse)
-        .sorted()
-        .zipWithNext()
-        .first { (a, b) -> b - a == 2 }
-        .let { it.first + 1 }
+    override fun solvePartTwo(input: String): Int
+    {
+        val seats = input
+            .lineSequence()
+            .map(::parse)
+            .toSortedSet()
+
+        return seats.first { it + 1 !in seats && it + 2 in seats } + 1
+    }
 
     private fun parse(input: String) = input
         .map { if (it in "BR") 1 else 0 }
