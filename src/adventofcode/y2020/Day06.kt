@@ -13,7 +13,7 @@ object Day06 : AdventSolution(2020, 6, "Custom Customs")
 
     private fun solve(input: String, reducer: Reducer) = input
         .splitToSequence("\n\n")
-        .sumBy { g -> solveGroup(g, reducer) }
+        .sumOf { g -> solveGroup(g, reducer) }
 
     private fun solveGroup(group: String, reducer: Reducer) = group
         .split("\n")
