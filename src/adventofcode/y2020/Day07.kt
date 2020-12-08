@@ -49,6 +49,3 @@ object Day07 : AdventSolution(2020, 7, "Handy Haversacks")
         return container to containedBagCounts
     }
 }
-
-
-

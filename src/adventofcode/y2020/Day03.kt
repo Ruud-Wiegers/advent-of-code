@@ -11,7 +11,11 @@ object Day03 : AdventSolution(2020, 3, "Toboggan Trajectory")
         countTreesOnSlope(input.lineSequence(), 3, 1)
 
     override fun solvePartTwo(input: String) =
-        listOf(1 to 1, 3 to 1, 5 to 1, 7 to 1, 1 to 2)
+        listOf(1 to 1,
+               3 to 1,
+               5 to 1,
+               7 to 1,
+               1 to 2)
             .map { (dx, dy) -> countTreesOnSlope(input.lineSequence(), dx, dy) }
             .map(Int::toLong)
             .reduce(Long::times)
