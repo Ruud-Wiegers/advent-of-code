@@ -2,36 +2,43 @@ package adventofcode.y2020
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.util.collections.cartesian
+import adventofcode.util.collections.combinations
 
 fun main() = Day09.solve()
 
 object Day09 : AdventSolution(2020, 9, "Encoding Error")
 {
-    override fun solvePartOne(input: String): Long
-    {
-        val seq = input.lineSequence().map(String::toLong)
-        return seq
-            .windowed(25, partialWindows = false) { it.drop(1).map { r -> r + it[0] } }
-            .windowed(25, partialWindows = false) { it.flatten().toSet() }
-            .zip(seq.drop(25))
-            .first { (valid, n) -> n !in valid }
-            .second
-    }
+    override fun solvePartOne(input: String): Long = input
+        .lineSequence()
+        .map(String::toLong)
+        .windowed(26) {
+            it.last() to it.take(25).asSequence().combinations(Long::plus)
+        }
+        .first { (n, v) -> n !in v }
+        .first
 
-    override fun solvePartTwo(input: String): Long
-    {
-        val target = solvePartOne(input)
-        val seq = input.lines().map(String::toLong)
+    override fun solvePartTwo(input: String) = input.lines()
+        .map(String::toLong)
+        .findSublistSummingTo(solvePartOne(input))
+        .sorted()
+        .let { it.first() + it.last() }
 
-        var total = seq[0]
+    private fun List<Long>.findSublistSummingTo(target: Long): List<Long>
+    {
+        var total = this[0]
         var low = 0
         var high = 0
-        while (total != target)
+        while (high < this.lastIndex)
         {
-            if (total < target) total += seq[++high]
-            if (total > target) total -= seq[low++]
+            when
+            {
+                total < target -> total += this[++high]
+                total > target -> total -= this[low++]
+                else           -> return subList(low, high + 1)
+            }
         }
 
-        return seq.subList(low, high + 1).sorted().let { it.first() + it.last() }
+        return emptyList()
     }
 }

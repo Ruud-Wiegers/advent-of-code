@@ -9,15 +9,26 @@ fun <T> Iterable<T>.cartesian() = this.cartesian(this)
  * Generates a the cartesian product of a list with another list, as a sequence of pairs
  */
 fun <T, U> Iterable<T>.cartesian(other: Iterable<U>): Sequence<Pair<T, U>> =
-        asSequence().flatMap { a ->
-            other.asSequence().map { b ->
-                Pair(a, b)
-            }
+    asSequence().flatMap { a ->
+        other.asSequence().map { b ->
+            Pair(a, b)
         }
+    }
 
 fun <T, U> Sequence<T>.cartesian(other: Iterable<U>): Sequence<Pair<T, U>> =
-        flatMap { a ->
-            other.asSequence().map { b ->
-                Pair(a, b)
-            }
+    flatMap { a ->
+        other.asSequence().map { b ->
+            Pair(a, b)
         }
+    }
+
+/**
+ * Generates combinations of distinct pairs of the source sequence, applying [transform]
+ * TODO: iterates over the sequence multiple times, not very nice
+ */
+inline fun <T, R> Sequence<T>.combinations(crossinline transform: (T, T) -> R): Sequence<R> =
+    flatMapIndexed { i, a ->
+        take(i).map { b ->
+            transform(a, b)
+        }
+    }
