@@ -14,7 +14,7 @@ object Day10 : AdventSolution(2020, 10, "Adapter Array")
         .zipWithNext { a, b -> b - a }
         .groupingBy { it }
         .eachCount()
-        .let { it.getValue(1) * (it.getValue(3) + 1) }
+        .run { getValue(1) * (getValue(3) + 1) }
 
     override fun solvePartTwo(input: String): Long
     {
@@ -22,8 +22,8 @@ object Day10 : AdventSolution(2020, 10, "Adapter Array")
 
         val counts = mutableMapOf(adapters.last() to 1L)
 
-        fun countPaths(v: Int): Long = counts.getOrPut(v) {
-            (1..3).map(v::plus).filter(adapters::contains).sumOf(::countPaths)
+        fun countPaths(joltage: Int): Long = counts.getOrPut(joltage) {
+            (1..3).map(joltage::plus).filter(adapters::contains).sumOf(::countPaths)
         }
 
         return countPaths(0)
