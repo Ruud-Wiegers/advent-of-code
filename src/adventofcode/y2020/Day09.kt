@@ -2,7 +2,6 @@ package adventofcode.y2020
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.collections.cartesian
 import adventofcode.util.collections.combinations
 
 fun main() = Day09.solve()
@@ -13,7 +12,7 @@ object Day09 : AdventSolution(2020, 9, "Encoding Error")
         .lineSequence()
         .map(String::toLong)
         .windowed(26) {
-            it.last() to it.take(25).asSequence().combinations(Long::plus)
+            it.last() to it.take(25).combinations(Long::plus)
         }
         .first { (n, v) -> n !in v }
         .first

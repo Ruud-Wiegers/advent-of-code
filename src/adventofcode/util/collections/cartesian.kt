@@ -26,7 +26,7 @@ fun <T, U> Sequence<T>.cartesian(other: Iterable<U>): Sequence<Pair<T, U>> =
  * Generates combinations of distinct pairs of the source sequence, applying [transform]
  * TODO: iterates over the sequence multiple times, not very nice
  */
-inline fun <T, R> Sequence<T>.combinations(crossinline transform: (T, T) -> R): Sequence<R> =
+inline fun <T, R> List<T>.combinations(crossinline transform: (T, T) -> R): List<R> =
     flatMapIndexed { i, a ->
         take(i).map { b ->
             transform(a, b)
