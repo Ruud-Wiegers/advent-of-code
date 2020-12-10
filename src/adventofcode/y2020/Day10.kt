@@ -18,12 +18,12 @@ object Day10 : AdventSolution(2020, 10, "Adapter Array")
 
     override fun solvePartTwo(input: String): Long
     {
-        val adapters = input.lines().map(String::toInt).sorted()
+        val adapters = input.lines().map(String::toInt).toSortedSet()
 
         val counts = mutableMapOf(adapters.last() to 1L)
 
         fun countPaths(v: Int): Long = counts.getOrPut(v) {
-            adapters.filter { it in (v + 1)..(v + 3) }.sumOf(::countPaths)
+            (1..3).map(v::plus).filter(adapters::contains).sumOf(::countPaths)
         }
 
         return countPaths(0)
