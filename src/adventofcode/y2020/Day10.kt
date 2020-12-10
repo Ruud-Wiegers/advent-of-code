@@ -3,7 +3,7 @@ package adventofcode.y2020
 import adventofcode.AdventSolution
 import adventofcode.solve
 
-fun main() = Day10.solve()
+fun main() = repeat(10) { Day10.solve() }
 
 object Day10 : AdventSolution(2020, 10, "Adapter Array")
 {
@@ -18,14 +18,12 @@ object Day10 : AdventSolution(2020, 10, "Adapter Array")
 
     override fun solvePartTwo(input: String): Long
     {
-        val adapters = input.lines().map(String::toInt).toSortedSet()
+        val adapters = input.lines().map(String::toInt).sorted()
 
-        val counts = mutableMapOf(adapters.last() to 1L)
+        val countPathsTo = mutableMapOf(0 to 1L)
 
-        fun countPaths(joltage: Int): Long = counts.getOrPut(joltage) {
-            (1..3).map(joltage::plus).filter(adapters::contains).sumOf(::countPaths)
-        }
-
-        return countPaths(0)
+        return adapters
+            .associateWithTo(countPathsTo) { (1..3).map(it::minus).mapNotNull(countPathsTo::get).sum() }
+            .getValue(adapters.last())
     }
 }

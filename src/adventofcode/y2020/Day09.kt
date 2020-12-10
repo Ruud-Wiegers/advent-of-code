@@ -11,9 +11,7 @@ object Day09 : AdventSolution(2020, 9, "Encoding Error")
     override fun solvePartOne(input: String): Long = input
         .lineSequence()
         .map(String::toLong)
-        .windowed(26) {
-            it.last() to it.take(25).combinations(Long::plus)
-        }
+        .windowed(26) { it.last() to it.take(25).combinations(Long::plus) }
         .first { (n, v) -> n !in v }
         .first
 
