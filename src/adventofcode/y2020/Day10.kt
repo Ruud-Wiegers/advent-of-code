@@ -19,11 +19,8 @@ object Day10 : AdventSolution(2020, 10, "Adapter Array")
     override fun solvePartTwo(input: String): Long
     {
         val adapters = input.lines().map(String::toInt).sorted()
-
-        val countPathsTo = mutableMapOf(0 to 1L)
-
-        return adapters
-            .associateWithTo(countPathsTo) { (1..3).map(it::minus).mapNotNull(countPathsTo::get).sum() }
-            .getValue(adapters.last())
+        val pathCounts = mutableMapOf(0 to 1L)
+        fun countPathsFromPrevious(adapter: Int) = (1..3).map(adapter::minus).mapNotNull(pathCounts::get).sum()
+        return adapters.associateWithTo(pathCounts, ::countPathsFromPrevious).getValue(adapters.last())
     }
 }
