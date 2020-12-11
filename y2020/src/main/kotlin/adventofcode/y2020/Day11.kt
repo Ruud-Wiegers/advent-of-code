@@ -81,6 +81,7 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
                 .map { delta ->
                     generateSequence(v) { it + delta }
                         .map { get(it) }
+                        .drop(1)
                         .takeWhile { it != null }
                         .find { it != '.' }
                 }
