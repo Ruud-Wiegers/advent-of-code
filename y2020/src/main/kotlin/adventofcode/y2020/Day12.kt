@@ -7,7 +7,7 @@ import kotlin.math.absoluteValue
 
 fun main() = Day12.solve()
 
-object Day12 : AdventSolution(2020, 12, "X X")
+object Day12 : AdventSolution(2020, 12, "Rain Risk")
 {
 
     override fun solvePartOne(input: String): Int
