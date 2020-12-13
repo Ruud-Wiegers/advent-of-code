@@ -13,22 +13,23 @@ object Day13 : AdventSolution(2020, 13, "Shuttle Search")
     {
         val (ts, bussesStr) = input.lines()
         val t = ts.toInt()
-        val busses = bussesStr.split(',').mapNotNull { it.toIntOrNull() }
+        val busses = bussesStr.split(',').mapNotNull(String::toIntOrNull)
 
-        val b = busses.minByOrNull { it - (t % it) }!!
+        fun f(x: Int) = x - t % x
 
-        return b * (b - (t % b))
+        val b = busses.minByOrNull(::f)!!
+
+        return b * f(b)
     }
 
     override fun solvePartTwo(input: String): Any
     {
-        val (ts, bussesStr) = input.lines()
-        val t = ts.toInt()
-        val busses = bussesStr.split(',').mapIndexedNotNull { i, s -> s.toIntOrNull()?.let { i to it } }
+        val (_, bussesStr) = input.lines()
+        val busses = bussesStr.split(',').map { it.toIntOrNull() }.mapIndexedNotNull { i, v -> v?.let { i to it } }
 
-        val mods = busses.map { (i, b) -> b.toBigInteger() to ((b - i) % b).toBigInteger() }
+        val congruences = busses.map { (i, b) -> b.toBigInteger() to ((b - i) % b).toBigInteger() }
 
-        return crt(mods)
+        return crt(congruences)
     }
 
     private fun crt(congruences: List<Pair<BigInteger, BigInteger>>): BigInteger
