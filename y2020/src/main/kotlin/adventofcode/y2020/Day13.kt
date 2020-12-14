@@ -36,10 +36,7 @@ object Day13 : AdventSolution(2020, 13, "Shuttle Search")
     {
         val m = congruences.map { it.first }.reduce(BigInteger::times)
         return congruences
-            .map { (n, a) ->
-                val ni = m / n
-                a * ni.modInverse(n) * ni
-            }
+            .map { (mod, offset) -> offset * (m / mod) * (m / mod).modInverse(mod) }
             .reduce(BigInteger::plus) % m
     }
 }
