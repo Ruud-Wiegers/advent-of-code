@@ -11,23 +11,20 @@ object Day14 : AdventSolution(2020, 14, "Docking Data")
 
     override fun solvePartOne(input: String): Long
     {
-        val mem = mutableMapOf<Int, Long>()
-        var mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        val parser = SimpleParser<() -> Unit>()
+        val mem = mutableMapOf<Long, Long>()
+        lateinit var mask: String
 
         fun applyMask(i: Long): Long
         {
             val str = i.toString(2).padStart(36, '0')
 
-            val masked = mask.zip(str) { m, ch -> if (m == 'X') ch else m }.toCharArray().let(::String)
-
-            return masked.toLong(2)
+            return mask.zip(str) { m, ch -> if (m == 'X') ch else m }.toCharArray().let(::String).toLong(2)
         }
 
-        parser.rule("""mem\[(\d+)\] = (\d+)""") { (adr, v) ->
-            { mem[adr.toInt()] = applyMask(v.toLong()) }
+        val parser = SimpleParser<() -> Unit>().apply {
+            rule("""mem\[(\d+)\] = (\d+)""") { (adr, v) -> { mem[adr.toLong()] = applyMask(v.toLong()) } }
+            rule("""mask = (.+)""") { (s) -> { mask = s } }
         }
-        parser.rule("""mask = (.+)""") { (s) -> { mask = s } }
 
         input.lineSequence().mapNotNull { parser.parse(it) }.forEach { it() }
 
@@ -37,34 +34,32 @@ object Day14 : AdventSolution(2020, 14, "Docking Data")
     override fun solvePartTwo(input: String): Any
     {
         val mem = mutableMapOf<Long, Long>()
-        var mask = "000000000000000000000000000000000000"
-        val parser = SimpleParser<() -> Unit>()
+        lateinit var mask: String
 
-        fun applyMask(adr: Long): List<Long>
+        fun applyMask(adr: Long): LongArray
         {
             val str = adr.toString(2).padStart(36, '0')
 
-            var masked = listOf("")
+            var masked = LongArray(1)
 
             mask.zip(str) { m, ch ->
-                masked = when (m)
-                {
-                    '0' -> masked.map { it + ch }
-                    '1' -> masked.map { it + '1' }
-                    'X' -> masked.map { it + '0' } + masked.map { it + '1' }
-                    else -> masked
+                for (i in masked.indices) masked[i] *= 2L
 
+                when
+                {
+                    m == 'X'              -> masked += masked.map { it + 1 }
+                    m == '1' || ch == '1' -> for (i in masked.indices) masked[i]++
                 }
             }
-            return masked.map { it.toLong(2) }
+            return masked
         }
 
-        parser.rule("""mem\[(\d+)\] = (\d+)""") { (adr, v) ->
-            { applyMask(adr.toLong()).forEach { a -> mem[a] = v.toLong() } }
+        val parser = SimpleParser<() -> Unit>().apply {
+            rule("""mem\[(\d+)\] = (\d+)""") { (adr, v) -> { applyMask(adr.toLong()).forEach { a -> mem[a] = v.toLong() } } }
+            rule("""mask = (.+)""") { (s) -> { mask = s } }
         }
-        parser.rule("""mask = (.+)""") { (s) -> { mask = s } }
 
-        input.lineSequence().mapNotNull { parser.parse(it) }.forEach { it() }
+        input.lineSequence().mapNotNull(parser::parse).forEach { it() }
 
         return mem.values.sum()
     }
