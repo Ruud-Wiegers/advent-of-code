@@ -9,56 +9,56 @@ object Day16 : AdventSolution(2020, 16, "Ticket Translation")
 {
     override fun solvePartOne(input: String): Int
     {
-        val p = parse(input)
-        return p.otherTickets.flatten().filter { x -> p.fields.none { f -> x in f } }.sum()
+        val (fields, _, otherTickets) = parse(input)
+
+        return otherTickets.flatten()
+            .filter { value -> fields.none { field -> value in field } }
+            .sum()
     }
 
     override fun solvePartTwo(input: String): Any
     {
         val p = parse(input).filterInvalidTickets()
 
-        val fieldMapping = p.deducePropertyMapping()
-        return fieldMapping
+        return p.deduceFieldNameMapping()
             .filterKeys { it.startsWith("departure") }
-            .values.map { p.yourTicket[it] }
+            .values
+            .map { p.yourTicket[it] }
             .fold(1L, Long::times)
     }
+}
 
-    private fun Problem.deducePropertyMapping(): Map<String, Int>
-    {
-        val columns = otherTickets.plusElement(yourTicket).transpose()
+private fun ProblemData.filterInvalidTickets() = copy(otherTickets = otherTickets.filter { xs ->
+    xs.all { x -> fields.any { range -> x in range } }
+})
 
-        val candidateFields = columns.map { xs ->
-            fields.filter { field -> xs.all(field::contains) }.toMutableSet()
-        }
+private fun ProblemData.deduceFieldNameMapping(): Map<String, Int>
+{
+    val dataset = otherTickets.plusElement(yourTicket).transpose()
 
-        val result = mutableMapOf<Field, Int>()
+    val candidateNames = dataset.map { column ->
+        fields
+            .filter { field -> column.all(field::contains) }
+            .map(Field::name)
+            .toMutableSet()
+    }
 
-        while (candidateFields.any { it.isNotEmpty() })
+    return buildMap {
+
+        while (candidateNames.any { it.isNotEmpty() })
         {
-            val c = candidateFields.indexOfFirst { it.size == 1 }
-            if (c == -1) throw IllegalStateException()
-            val element = candidateFields[c].first()
-            result[element] = c
-            candidateFields.forEach { it -= element }
+            val c = candidateNames.indexOfFirst { it.size == 1 }
+            val name = candidateNames[c].single()
+            this[name] = c
+            for (field in candidateNames) field -= name
         }
 
-        return result.mapKeys { it.key.name }
     }
 }
 
 private fun <T> List<List<T>>.transpose(): List<List<T>> = first().indices.map { index -> map { it[index] } }
 
-private fun Problem.filterInvalidTickets(): Problem
-{
-    val filtered = otherTickets.filter { xs -> xs.all { x -> fields.any { r -> x in r } } }
-
-    return copy(otherTickets = filtered)
-}
-
-data class Problem(val fields: List<Field>, val yourTicket: List<Int>, val otherTickets: List<List<Int>>)
-
-fun parse(input: String): Problem
+private fun parse(input: String): ProblemData
 {
     fun parseToField(input: String): Field
     {
@@ -71,13 +71,15 @@ fun parse(input: String): Problem
 
     val (fields, yourTicket, otherTickets) = input.split("\n\n")
 
-    return Problem(
-        fields.lines().map(::parseToField),
-        parseToTicket(yourTicket.lines().last()),
-        otherTickets.lines().drop(1).map(::parseToTicket))
+    return ProblemData(
+        fields = fields.lines().map(::parseToField),
+        yourTicket = parseToTicket(yourTicket.lines().last()),
+        otherTickets = otherTickets.lines().drop(1).map(::parseToTicket))
 }
 
-data class Field(val name: String, val r1: IntRange, val r2: IntRange)
+private data class ProblemData(val fields: List<Field>, val yourTicket: List<Int>, val otherTickets: List<List<Int>>)
+
+private data class Field(val name: String, val r1: IntRange, val r2: IntRange)
 {
     operator fun contains(i: Int) = i in r1 || i in r2
 }
