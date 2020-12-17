@@ -44,15 +44,12 @@ private fun ProblemData.deduceFieldNameMapping(): Map<String, Int>
     }
 
     return buildMap {
-
         while (candidateNames.any { it.isNotEmpty() })
         {
-            val c = candidateNames.indexOfFirst { it.size == 1 }
-            val name = candidateNames[c].single()
-            this[name] = c
+            val (i, name) = candidateNames.map { it.singleOrNull() }.withIndex().first { it.value != null }
+            this[name!!] = i
             for (field in candidateNames) field -= name
         }
-
     }
 }
 
