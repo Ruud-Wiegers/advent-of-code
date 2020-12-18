@@ -11,7 +11,7 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
     override fun solvePartOne(input: String) = input.lineSequence().sumOf { evaluate(it, ::evalLeftToRight) }
     override fun solvePartTwo(input: String) = input.lineSequence().sumOf { evaluate(it, ::evalWithWeirdPrecedence) }
 
-    private fun evaluate(input: String, eval: (MutableList<Any>) -> Long): Long
+    private inline fun evaluate(input: String, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long
     {
         val scope = Stack<MutableList<Any>>()
         scope.push(mutableListOf())
@@ -19,34 +19,29 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
             when (t)
             {
                 '('         -> scope.push(mutableListOf())
-                ')'         -> scope.pop().let { scope.peek() += eval(it) }
+                ')'         -> scope.pop().let { scope.peek() += eval(it, resolve) }
                 in '0'..'9' -> scope.peek() += t.toString().toLong()
                 '+', '*'    -> scope.peek() += t
             }
         }
 
-        return eval(scope.pop())
+        return eval(scope.pop(), resolve)
     }
 
-    private fun evalLeftToRight(tokens: MutableList<Any>): Long = tokens
+    private inline fun eval(tokens: List<Any>, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long = tokens
         .drop(1)
         .chunked(2)
-        .map { (o, v) -> o as Char to v as Long }
-        .fold(tokens.first() as Long) { acc, (op, v) ->
+        .map { (operator, value) -> operator as Char to value as Long }
+        .let { resolve(tokens.first() as Long, it) }
+
+    private fun evalLeftToRight(initial: Long, tokens: List<Pair<Char, Long>>): Long =
+        tokens.fold(initial) { acc, (op, v) ->
             if (op == '+') acc + v else acc * v
         }
 
-    private fun evalWithWeirdPrecedence(children: MutableList<Any>): Long
-    {
-        while (children.any { it == '+' })
-        {
-            val i = children.indexOfFirst { it == '+' } - 1
-            val lhs = children.removeAt(i) as Long
-            children.removeAt(i)
-            val rhs = children.removeAt(i) as Long
-            children.add(i, lhs + rhs)
-        }
-
-        return children.filterIsInstance<Long>().reduce(Long::times)
-    }
+    private fun evalWithWeirdPrecedence(initial: Long, tokens: List<Pair<Char, Long>>): Long =
+        tokens.fold(1L to initial) { (prod, sum), (op, v) ->
+            if (op == '+') prod to (sum + v) else prod * sum to v
+        }.let { (prod, sum) -> prod * sum }
 }
+
