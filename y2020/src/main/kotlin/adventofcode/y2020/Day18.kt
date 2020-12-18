@@ -22,7 +22,6 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
                 '+', '*'    -> scope.last() += t
             }
         }
-
         return eval(scope.single(), resolve)
     }
 
