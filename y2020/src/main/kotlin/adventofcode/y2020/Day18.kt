@@ -12,14 +12,16 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
 
     private inline fun evaluate(input: String, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long
     {
-        val scope = mutableListOf(mutableListOf<Any>())
-        input.forEach { t ->
-            when (t)
+        val scope = mutableListOf(listOf<Any>())
+        for (ch in input)
+        {
+            scope += when (ch)
             {
-                '('         -> scope.add(mutableListOf())
-                ')'         -> scope.removeLast().let { scope.last() += eval(it, resolve) }
-                in '0'..'9' -> scope.last() += t.toString().toLong()
-                '+', '*'    -> scope.last() += t
+                '('         -> listOf()
+                ')'         -> scope.removeLast().let { scope.removeLast() + eval(it, resolve) }
+                in '0'..'9' -> scope.removeLast() + ch.toString().toLong()
+                '+', '*'    -> scope.removeLast() + ch
+                else        -> continue
             }
         }
         return eval(scope.single(), resolve)
