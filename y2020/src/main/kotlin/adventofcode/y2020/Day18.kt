@@ -2,7 +2,6 @@ package adventofcode.y2020
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import java.util.Stack
 
 fun main() = Day18.solve()
 
@@ -13,19 +12,18 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
 
     private inline fun evaluate(input: String, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long
     {
-        val scope = Stack<MutableList<Any>>()
-        scope.push(mutableListOf())
+        val scope = mutableListOf(mutableListOf<Any>())
         input.forEach { t ->
             when (t)
             {
-                '('         -> scope.push(mutableListOf())
-                ')'         -> scope.pop().let { scope.peek() += eval(it, resolve) }
-                in '0'..'9' -> scope.peek() += t.toString().toLong()
-                '+', '*'    -> scope.peek() += t
+                '('         -> scope.add(mutableListOf())
+                ')'         -> scope.removeLast().let { scope.last() += eval(it, resolve) }
+                in '0'..'9' -> scope.last() += t.toString().toLong()
+                '+', '*'    -> scope.last() += t
             }
         }
 
-        return eval(scope.pop(), resolve)
+        return eval(scope.single(), resolve)
     }
 
     private inline fun eval(tokens: List<Any>, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long = tokens
