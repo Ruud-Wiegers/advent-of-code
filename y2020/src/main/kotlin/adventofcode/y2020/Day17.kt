@@ -11,17 +11,17 @@ object Day17 : AdventSolution(2020, 17, "Conway Cubes")
     {
         val active = parse(input).map { it + 0 }.toSet()
 
-        return generateSequence(ConwayCube(active), ConwayCube::next).take(7).last().size
+        return generateSequence(ConwayCube(active), ConwayCube::next).take(7).last().activeCells.size
     }
 
-    override fun solvePartTwo(input: String): Any
+    override fun solvePartTwo(input: String): Int
     {
         val active = parse(input).map { it + 0 + 0 }.toSet()
 
-        return generateSequence(ConwayCube(active), ConwayCube::next).take(7).last().size
+        return generateSequence(ConwayCube(active), ConwayCube::next).take(7).last().activeCells.size
     }
 
-    private fun parse(input:String) = buildList {
+    private fun parse(input:String): List<Coordinate> = buildList {
         input.lines().forEachIndexed { y, line ->
             line.forEachIndexed { x, ch ->
                 if (ch == '#')
@@ -30,15 +30,14 @@ object Day17 : AdventSolution(2020, 17, "Conway Cubes")
         }
     }
 
-    private data class ConwayCube(private val activeCells: Set<Coordinate>)
+    private data class ConwayCube(val activeCells: Set<Coordinate>)
     {
-        val size = activeCells.size
-        fun next() = interior().filter(::aliveInNext).toSet().let(::ConwayCube)
+        fun next(): ConwayCube = interior().filter(::aliveInNext).toSet().let(::ConwayCube)
 
-        private fun aliveInNext(c: Coordinate): Boolean = c.countActiveNeighbors() in if (c in activeCells) 3..4 else 3..3
+        private fun aliveInNext(c: Coordinate): Boolean = countActiveNeighbors(c) in if (c in activeCells) 3..4 else 3..3
 
-        private fun Coordinate.countActiveNeighbors() = neighbors
-            .map { this.zip(it, Int::plus) }
+        private fun countActiveNeighbors(c: Coordinate): Int = neighbors
+            .map { c.zip(it, Int::plus) }
             .count { it in activeCells }
 
         private val neighbors: List<Coordinate> by lazy { expand(activeCells.first().map { -1..1 }) }
@@ -47,7 +46,6 @@ object Day17 : AdventSolution(2020, 17, "Conway Cubes")
         {
             val min = activeCells.reduce { a, b -> a.zip(b, ::minOf) }.map { it - 1 }
             val max = activeCells.reduce { a, b -> a.zip(b, ::maxOf) }.map { it + 1 }
-
             return expand(min.zip(max, Int::rangeTo))
         }
     }
