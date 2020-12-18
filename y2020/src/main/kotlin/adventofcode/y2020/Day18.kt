@@ -31,7 +31,7 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
     private inline fun eval(tokens: List<Any>, resolve: (Long, List<Pair<Char, Long>>) -> Long): Long = tokens
         .drop(1)
         .chunked(2)
-        .map { (operator, value) -> operator as Char to value as Long }
+        .map { (operator, value) -> Pair(operator as Char, value as Long) }
         .let { resolve(tokens.first() as Long, it) }
 
     private fun evalLeftToRight(initial: Long, tokens: List<Pair<Char, Long>>): Long =
@@ -40,8 +40,7 @@ object Day18 : AdventSolution(2020, 18, "Operation Order")
         }
 
     private fun evalWithWeirdPrecedence(initial: Long, tokens: List<Pair<Char, Long>>): Long =
-        tokens.fold(1L to initial) { (prod, sum), (op, v) ->
-            if (op == '+') prod to (sum + v) else prod * sum to v
+        tokens.fold(Pair(1L, initial)) { (prod, sum), (op, v) ->
+            if (op == '+') Pair(prod, sum + v) else Pair(prod * sum, v)
         }.let { (prod, sum) -> prod * sum }
 }
-
