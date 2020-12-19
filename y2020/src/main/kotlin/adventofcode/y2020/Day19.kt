@@ -31,12 +31,12 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
     }
 
     private fun parseRules(input: String): List<Rule> = input.lines()
-        .map { it.split(":") }
+        .map { it.split(": ") }
         .sortedBy { it[0].toInt() }
-        .map { parseRule(it[1].trim()) }
+        .map { parseRule(it[1]) }
 
     private fun parseRule(input: String): Rule = if (input.startsWith('"')) Rule.Literal(input[1])
-    else input.split("|").map { it.split(" ").filter(String::isNotBlank).map(String::toInt) }.let(Rule::Split)
+    else input.split(" | ").map { it.split(" ").map(String::toInt) }.let(Rule::Split)
 
     private fun matches(remainder: String, unmatchedRules: List<Int>, rules: List<Rule>): Boolean
     {
