@@ -47,9 +47,7 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
         {
             null             -> unmatchedMessage.isEmpty()
             is Rule.Terminal -> rule.ch == unmatchedMessage.firstOrNull() && matches(unmatchedMessage.drop(1), unmatchedRules.drop(1), rules)
-            is Rule.Dnf      -> rule.alternatives.any { alt ->
-                matches(unmatchedMessage, alt + unmatchedRules.drop(1), rules)
-            }
+            is Rule.Dnf      -> rule.alternatives.any { alt -> matches(unmatchedMessage, alt + unmatchedRules.drop(1), rules) }
         }
 
     private sealed class Rule
