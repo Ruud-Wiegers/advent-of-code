@@ -22,7 +22,9 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
 
         val rules: List<Rule> = parseRules(rulesInput).toMutableList().apply {
 
-            //the first index in each branch (42) will always produce terminals, so the algorithm will always terminate
+            //the first index in each branch (42) will always produce terminals,
+            //so 'looping' will consume part of the message
+            //so the algorithm will always terminate
             set(8, parseRule("42 | 42 8"))
             set(11, parseRule("42 31 | 42 11 31"))
         }
@@ -35,27 +37,24 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
         .sortedBy { it[0].toInt() }
         .map { parseRule(it[1]) }
 
-    private fun parseRule(input: String): Rule = if (input.startsWith('"')) Rule.Literal(input[1])
-    else input.split(" | ").map { it.split(" ").map(String::toInt) }.let(Rule::Split)
+    private fun parseRule(input: String): Rule = if (input.startsWith('"'))
+        Rule.Terminal(input[1])
+    else
+        input.split(" | ").map { it.split(" ").map(String::toInt) }.let(Rule::Dnf)
 
-    private fun matches(remainder: String, unmatchedRules: List<Int>, rules: List<Rule>): Boolean
-    {
-        val rule: Rule? = unmatchedRules.firstOrNull()?.let { rules[it] }
-        return when
+    private fun matches(unmatchedMessage: String, unmatchedRules: List<Int>, rules: List<Rule>): Boolean =
+        when (val rule = unmatchedRules.firstOrNull()?.let(rules::get))
         {
-            remainder.isEmpty()                               -> rule == null
-            rule is Rule.Literal && rule.ch != (remainder[0]) -> false
-            rule is Rule.Literal                              -> matches(remainder.drop(1), unmatchedRules.drop(1), rules)
-            rule is Rule.Split                                -> rule.alternatives.any { alt ->
-                matches(remainder, alt + unmatchedRules.drop(1), rules)
+            null             -> unmatchedMessage.isEmpty()
+            is Rule.Terminal -> rule.ch == unmatchedMessage.firstOrNull() && matches(unmatchedMessage.drop(1), unmatchedRules.drop(1), rules)
+            is Rule.Dnf      -> rule.alternatives.any { alt ->
+                matches(unmatchedMessage, alt + unmatchedRules.drop(1), rules)
             }
-            else                                              -> false
         }
-    }
 
     private sealed class Rule
     {
-        data class Literal(val ch: Char) : Rule()
-        data class Split(val alternatives: List<List<Int>>) : Rule()
+        data class Terminal(val ch: Char) : Rule()
+        data class Dnf(val alternatives: List<List<Int>>) : Rule()
     }
 }
