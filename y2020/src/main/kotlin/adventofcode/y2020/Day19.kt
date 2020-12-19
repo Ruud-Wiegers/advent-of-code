@@ -44,7 +44,6 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
         return when
         {
             remainder.isEmpty()                               -> rule == null
-            rule == null                                      -> false
             rule is Rule.Literal && rule.ch != (remainder[0]) -> false
             rule is Rule.Literal                              -> matches(remainder.drop(1), unmatchedRules.drop(1), rules)
             rule is Rule.Split                                -> rule.alternatives.any { alt ->
