@@ -13,7 +13,7 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
             .first { it.first.isEmpty() || it.second.isEmpty() }
 
         val result = (combat.first + combat.second)
-        return result.reversed().withIndex().map { (i, v) -> (i + 1L) * v }.reduce(Long::plus)
+        return result.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
     }
 
     fun parse(input: String): Pair<List<Int>, List<Int>>
@@ -34,41 +34,33 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         return Pair(ra, rb)
     }
 
-    fun runGame(deckA: List<Int>, deckB: List<Int>): Pair<Boolean, List<Int>>
+    fun runGame(deckA: List<Int>, deckB:List<Int>): List<List<Int>>
     {
-        val seen = mutableSetOf<Pair<List<Int>, List<Int>>>()
+        val seen = mutableSetOf<Int>()
 
-        var da = deckA
-        var db = deckB
+        var d = listOf(ArrayDeque(deckA), ArrayDeque(deckB))
 
-        while (true)
+        while (d.none { it.isEmpty() })
         {
-            when
-            {
-                da.isEmpty()        -> return false to db
-                db.isEmpty()        -> return true to da
-                da to db in seen -> return true to da
-            }
-            seen += da to db
+            val hashCode = d.hashCode()
+            if( hashCode in seen) break
+            seen += hashCode
 
-            val a = da.first()
-            val b = db.first()
+            val tops = d.map { it.removeAt(0) }
 
-            val round = if (da.size > a && db.size > b)
-                runGame(da.subList(1, a+1), db.subList(1, b+1)).first
-            else a > b
+            val p1Wins = if (d[0].size >= tops[0] && d[1].size >= tops[1] )
 
-            if (round)
-            {
-                da = da.drop(1) + a + b
-                db = db.drop(1)
-            }
+                runGame(d[0].subList(0, tops[0]),d[1].subList(0,tops[1]) )[0].isNotEmpty()
             else
-            {
-                da = da.drop(1)
-                db = db.drop(1) + b + a
-            }
+                tops[0]>tops[1]
+
+
+            if(p1Wins)
+                d[0].addAll(tops)
+            else d[1].addAll(tops.reversed())
+
         }
+        return d
     }
 
     override fun solvePartTwo(input: String): Any
@@ -76,7 +68,6 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         val (a, b) = parse(input)
         val combat = runGame(a, b)
 
-
-        return combat.second.reversed().withIndex().map { (i, v) -> (i + 1L) * v }.reduce(Long::plus)
+        return combat.first { it.isNotEmpty() }.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
     }
 }
