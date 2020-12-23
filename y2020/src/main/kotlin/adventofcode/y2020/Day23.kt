@@ -16,13 +16,42 @@ object Day23 : AdventSolution(2020, 23, "Crab Cups")
 
     override fun solvePartTwo(input: String): Any
     {
+        return solveBetter(parse(input))
+        /*
         val circle = CupCircle(parse(input))
         circle.addAll(10..1_000_000)
         repeat(10_000_000) { circle.shuffle() }
         return circle.asSequence().take(2).map { it.label.toLong() }.reduce(Long::times)
+        */
     }
 
     private fun parse(input: String) = input.map(Char::toString).map(String::toInt)
+
+    fun solveBetter(i: List<Int>): Long
+    {
+        val nextCup = IntArray(1_000_001) { it + 1 }
+
+        nextCup[nextCup.lastIndex] = i[0]
+        i.zipWithNext().forEach { (c, n) -> nextCup[c] = n }
+        nextCup[i.last()] = i.size + 1
+
+        var current = i[0]
+        repeat(10_000_000) {
+
+            val a = nextCup[current]
+            val b = nextCup[a]
+            val c = nextCup[b]
+            nextCup[current] = nextCup[c]
+            fun lower(i: Int) = if (i == 1) nextCup.lastIndex else i - 1
+            var target = lower(current)
+            while (target == a || target == b || target == c) target = lower(target)
+            nextCup[c] = nextCup[target]
+            nextCup[target] = a
+            current = nextCup[current]
+        }
+
+        return nextCup[1].toLong() * nextCup[nextCup[1]].toLong()
+    }
 
     class CupCircle(labels: List<Int>)
     {
