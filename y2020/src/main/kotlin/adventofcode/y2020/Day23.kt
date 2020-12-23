@@ -9,29 +9,17 @@ object Day23 : AdventSolution(2020, 23, "Crab Cups")
 {
     override fun solvePartOne(input: String): Any
     {
-        val parsed = parse(input)
-
-        val circle = CupCircle(parsed)
-        repeat(100) {
-            circle.shuffle()
-        }
-
-        return circle.asSequence().joinToString("") { it.label.toString() }
+        val circle = CupCircle(parse(input))
+        repeat(100) { circle.shuffle() }
+        return circle.asSequence().map { it.label }.joinToString("")
     }
 
     override fun solvePartTwo(input: String): Any
     {
-        val parsed = parse(input)
-        val circle = CupCircle(parsed)
+        val circle = CupCircle(parse(input))
         circle.addAll(10..1_000_000)
-
-        repeat(10_000_000) {
-            circle.shuffle()
-        }
-
-        val a = circle.asSequence().take(2).toList()
-
-        return a[0].label.toLong() * a[1].label.toLong()
+        repeat(10_000_000) { circle.shuffle() }
+        return circle.asSequence().take(2).map { it.label.toLong() }.reduce(Long::times)
     }
 
     private fun parse(input: String) = input.map(Char::toString).map(String::toInt)
