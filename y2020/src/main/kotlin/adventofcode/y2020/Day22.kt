@@ -34,31 +34,30 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         return Pair(ra, rb)
     }
 
-    fun runGame(deckA: List<Int>, deckB:List<Int>): List<List<Int>>
+    fun runGame(deckA: List<Int>, deckB: List<Int>): List<List<Int>>
     {
         val seen = mutableSetOf<Int>()
 
-        var d = listOf(ArrayDeque(deckA), ArrayDeque(deckB))
+        val d = listOf(ArrayDeque(deckA), ArrayDeque(deckB))
 
         while (d.none { it.isEmpty() })
         {
             val hashCode = d.hashCode()
-            if( hashCode in seen) break
+            if (hashCode in seen) break
             seen += hashCode
 
             val tops = d.map { it.removeAt(0) }
 
-            val p1Wins = if (d[0].size >= tops[0] && d[1].size >= tops[1] )
+            val p1Wins = if (d[0].size >= tops[0] && d[1].size >= tops[1])
 
-                runGame(d[0].subList(0, tops[0]),d[1].subList(0,tops[1]) )[0].isNotEmpty()
+                runGame(d[0].subList(0, tops[0]), d[1].subList(0, tops[1]))[0].isNotEmpty()
             else
-                tops[0]>tops[1]
+                tops[0] > tops[1]
 
 
-            if(p1Wins)
+            if (p1Wins)
                 d[0].addAll(tops)
             else d[1].addAll(tops.reversed())
-
         }
         return d
     }
@@ -68,6 +67,7 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         val (a, b) = parse(input)
         val combat = runGame(a, b)
 
+        println(combat)
         return combat.first { it.isNotEmpty() }.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
     }
 }
