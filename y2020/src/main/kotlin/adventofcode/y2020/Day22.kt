@@ -16,7 +16,16 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         return result.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
     }
 
-    fun parse(input: String): Pair<List<Int>, List<Int>>
+    override fun solvePartTwo(input: String): Any
+    {
+        val (a, b) = parse(input)
+        val combat = runGame(a, b)
+
+        val result = combat.first { it.isNotEmpty() }
+        return result.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
+    }
+
+    private fun parse(input: String): Pair<List<Int>, List<Int>>
     {
         val (a, b) = input.split("\n\n")
 
@@ -25,7 +34,7 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         return Pair(al, bl)
     }
 
-    fun round(a: List<Int>, b: List<Int>): Pair<List<Int>, List<Int>>
+    private fun round(a: List<Int>, b: List<Int>): Pair<List<Int>, List<Int>>
     {
         val (wa, wb) = a.zip(b).partition { (a, b) -> a > b }
 
@@ -34,7 +43,7 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
         return Pair(ra, rb)
     }
 
-    fun runGame(deckA: List<Int>, deckB: List<Int>): List<List<Int>>
+    private fun runGame(deckA: List<Int>, deckB: List<Int>): List<List<Int>>
     {
         val seen = mutableSetOf<Int>()
 
@@ -55,19 +64,9 @@ object Day22 : AdventSolution(2020, 22, "Crab Combat")
                 tops[0] > tops[1]
 
 
-            if (p1Wins)
-                d[0].addAll(tops)
+            if (p1Wins) d[0].addAll(tops)
             else d[1].addAll(tops.reversed())
         }
         return d
-    }
-
-    override fun solvePartTwo(input: String): Any
-    {
-        val (a, b) = parse(input)
-        val combat = runGame(a, b)
-
-        println(combat)
-        return combat.first { it.isNotEmpty() }.reversed().mapIndexed { i, v -> (i + 1L) * v }.reduce(Long::plus)
     }
 }
