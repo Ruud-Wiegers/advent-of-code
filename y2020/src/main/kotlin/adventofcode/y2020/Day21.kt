@@ -5,7 +5,7 @@ import adventofcode.solve
 
 fun main() = Day21.solve()
 
-object Day21 : AdventSolution(2020, 21, "Surprise Surprise")
+object Day21 : AdventSolution(2020, 21, "Allergen Assessment")
 {
     override fun solvePartOne(input: String): Int
     {

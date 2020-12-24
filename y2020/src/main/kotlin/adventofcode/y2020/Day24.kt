@@ -3,29 +3,23 @@ package adventofcode.y2020
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.vector.Vec2
-import kotlin.math.absoluteValue
 
 fun main() = Day24.solve()
 
-object Day24 : AdventSolution(2020, 24, "Hex Tiling")
+object Day24 : AdventSolution(2020, 24, "Lobby Layout")
 {
-    override fun solvePartOne(input: String): Any
-    {
-        val seqs = input.lines().map(this::parse).map { toCoordinate(it) }
-            .groupingBy { it }.eachCount()
+    override fun solvePartOne(input: String) = blackTiles(input).size
 
-        return seqs.values.count { it % 2 == 1 }
-    }
+    override fun solvePartTwo(input: String) = generateSequence(Conway(blackTiles(input)), Conway::next)
+        .take(101).last().activeCells.size
 
-    override fun solvePartTwo(input: String): Any
-    {
-        val seqs = input.lines().map(this::parse).map { toCoordinate(it) }
-            .groupingBy { it }.eachCount()
-
-        val tiles = seqs.filterValues { it % 2 == 1 }.keys
-
-        return generateSequence(Conway(tiles), Conway::next).take(101).last().activeCells.size
-    }
+    private fun blackTiles(input: String): Set<Vec2> = input.lines()
+        .map(::parse)
+        .map(this::toCoordinate)
+        .groupingBy { it }
+        .eachCount()
+        .filterValues { it % 2 == 1 }
+        .keys
 
     private fun parse(input: String): List<Direction> = buildList {
         val iter = input.iterator()
@@ -47,17 +41,14 @@ object Day24 : AdventSolution(2020, 24, "Hex Tiling")
     private fun toCoordinate(input: List<Direction>) = input.fold(Vec2.origin, Vec2::step)
 }
 
-private val Vec2.dxHex get() = y.absoluteValue % 2
-
 private fun Vec2.step(d: Direction) = when (d)
 {
-    Direction.NE -> Vec2(x + dxHex, y + 1)
+    Direction.NE -> Vec2(x + 1, y + 1)
     Direction.E  -> Vec2(x + 1, y)
-    Direction.SE -> Vec2(x + dxHex, y - 1)
-    Direction.SW -> Vec2(x - 1 + dxHex, y - 1)
+    Direction.SE -> Vec2(x, y - 1)
+    Direction.SW -> Vec2(x - 1, y - 1)
     Direction.W  -> Vec2(x - 1, y)
-    Direction.NW -> Vec2(x - 1 + dxHex, y + 1)
-
+    Direction.NW -> Vec2(x, y + 1)
 }
 
 private enum class Direction
@@ -65,10 +56,12 @@ private enum class Direction
 
 private data class Conway(val activeCells: Set<Vec2>)
 {
-    fun next(): Conway = activeCells.flatMapTo(mutableSetOf(), this::neighborhood).let {
-        it.removeIf { !aliveInNext(it) }
-        Conway(it)
-    }
+    fun next(): Conway = activeCells
+        .flatMapTo(mutableSetOf(), this::neighborhood)
+        .let {
+            it.removeIf { !aliveInNext(it) }
+            Conway(it)
+        }
 
     private fun aliveInNext(c: Vec2): Boolean = neighborhood(c).count { it in activeCells } in if (c in activeCells) 2..3 else 2..2
 
