@@ -5,36 +5,28 @@ import adventofcode.solve
 
 fun main() = Day15.solve()
 
-object Day15 : AdventSolution(2020, 15, "Rambunctious Recitation")
-{
-    override fun solvePartOne(input: String) = input.split(',')
+object Day15 : AdventSolution(2020, 15, "Rambunctious Recitation") {
+    override fun solvePartOne(input: String) = input
+        .split(',')
         .map(String::toInt)
-        .let(::recitation)
-        .take(2020)
-        .last()
+        .let { recitation(it, 2020) }
 
-    override fun solvePartTwo(input: String) = input.split(',')
+    override fun solvePartTwo(input: String) = input
+        .split(',')
         .map(String::toInt)
-        .let(::recitation)
-        .take(30_000_000)
-        .last()
+        .let { recitation(it, 30_000_000) }
 
-    private fun recitation(initial: List<Int>): Sequence<Int>
-    {
-        val seen = initial.dropLast(1).withIndex().associate { it.value to it.index }.toMutableMap()
+    private fun recitation(initial: List<Int>, length: Int): Int {
+        val seen = IntArray(length) { -1 }
+        initial.dropLast(1).forEachIndexed { i, v -> seen[v] = i }
 
-        var index = initial.lastIndex
         var prev = initial.last()
-        return sequence {
-            yieldAll(initial.dropLast(1))
-
-            while (true)
-            {
-                val i = seen[prev] ?: index
-                yield(prev)
-                seen[prev] = index++
-                prev = index - i - 1
-            }
+        repeat(length - initial.size) {
+            val b = it + initial.lastIndex
+            val i = if (seen[prev] < 0) b else seen[prev]
+            seen[prev] = b
+            prev = b - i
         }
+        return prev
     }
 }
