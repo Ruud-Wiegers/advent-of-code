@@ -6,17 +6,13 @@ import adventofcode.util.vector.Vec2
 
 fun main() = Day20.solve()
 
-object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
-{
-    override fun solvePartOne(input: String): Any
-    {
-        val unmatchedEdges = unmatchedEdgeCounts(parseInput(input))
+object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw") {
+    override fun solvePartOne(input: String) = unmatchedEdgeCounts(parseInput(input))
+        .filter { it.value == 2 }
+        .keys
+        .reduce(Long::times)
 
-        return unmatchedEdges.filter { it.value == 2 }.keys.reduce(Long::times)
-    }
-
-    override fun solvePartTwo(input: String): Int
-    {
+    override fun solvePartTwo(input: String): Int {
         val tiles: List<Tile> = parseInput(input)
 
         val unmatchedEdges = unmatchedEdgeCounts(tiles)
@@ -24,7 +20,7 @@ object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
         val tilesByEdgecount: List<Map<Long, Tile>> =
             tiles.groupBy { unmatchedEdges[it.id] ?: 0 }.toSortedMap().values.map { it.associateBy { it.id } }
 
-        val arrangedTiles = arrangePuzzle(listOf(), Vec2.origin, tilesByEdgecount).first()
+        val arrangedTiles = arrangePuzzle(listOf(), Vec2.origin, tilesByEdgecount)!!
 
         val image = cutTiles(arrangedTiles)
 
@@ -42,15 +38,11 @@ object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
         return image.count() - monsterCount * monster.count()
     }
 
-    private fun countMonsters(image: Image, monster: Image): Int
-    {
+    private fun countMonsters(image: Image, monster: Image): Int {
 
-        fun matches(slice: List<String>, monster: List<String>): Boolean
-        {
-            for (y in monster.indices)
-            {
-                for (x in monster[0].indices)
-                {
+        fun matches(slice: List<String>, monster: List<String>): Boolean {
+            for (y in monster.indices) {
+                for (x in monster[0].indices) {
                     if (monster[y][x] != '#') continue
                     if (slice[y][x] != '#') return false
                 }
@@ -62,14 +54,16 @@ object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
             .count { matches(it.grid, monster.grid) }
     }
 
-    private fun arrangePuzzle(grid: List<List<Tile>>, p: Vec2, tilesByEdgecount: List<Map<Long, Tile>>): Sequence<List<List<Tile>>>
-    {
-        if (p.y == 12) return sequenceOf(grid)
+    private fun arrangePuzzle(
+        grid: List<List<Tile>>,
+        p: Vec2,
+        tilesByEdgecount: List<Map<Long, Tile>>
+    ): List<List<Tile>>? {
+        if (p.y == 12) return grid
 
         val edges = listOf(p.x == 0, p.x == 11, p.y == 0, p.y == 11).count { it }
 
-        fun isValidPlacement(tile: Tile): Boolean = when
-        {
+        fun isValidPlacement(tile: Tile): Boolean = when {
             p.x > 0 && grid[p.y][p.x - 1].right != tile.left -> false
             p.y > 0 && grid[p.y - 1][p.x].bottom != tile.top -> false
             else                                             -> true
@@ -81,12 +75,14 @@ object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
 
         fun nextPosition() = if (p.x < 11) p.copy(x = p.x + 1) else p.copy(y = p.y + 1, x = 0)
 
-        fun updateRemainingTiles(tile: Tile) = tilesByEdgecount.toMutableList().apply { this[edges] = this[edges].minus(tile.id) }
+        fun updateRemainingTiles(tile: Tile) =
+            tilesByEdgecount.toMutableList().apply { this[edges] = this[edges].minus(tile.id) }
 
         return tilesByEdgecount[edges].values.asSequence()
             .flatMap(Tile::allOrientations)
             .filter(::isValidPlacement)
-            .flatMap { tile -> arrangePuzzle(placeTile(tile), nextPosition(), updateRemainingTiles(tile)) }
+            .mapNotNull { tile -> arrangePuzzle(placeTile(tile), nextPosition(), updateRemainingTiles(tile)) }
+            .firstOrNull()
     }
 
     private fun cutTiles(arrangedTiles: List<List<Tile>>): Image = arrangedTiles
@@ -110,8 +106,7 @@ object Day20 : AdventSolution(2020, 20, "Jurassic Jigsaw")
         .map { Tile(it[0].drop(5).dropLast(1).toLong(), Image(it.drop(1))) }
 }
 
-private data class Tile(val id: Long, val img: Image)
-{
+private data class Tile(val id: Long, val img: Image) {
     val top = img.grid.first()
     val right = img.column(img.width - 1)
     val bottom = img.grid.last()
@@ -122,8 +117,8 @@ private data class Tile(val id: Long, val img: Image)
     val allEdges by lazy { listOf(top, right, bottom, left).let { it + it.map(String::reversed) } }
 }
 
-private data class Image(val grid: List<String>)
-{
+
+private data class Image(val grid: List<String>) {
     val width = grid[0].length
     val height = grid.size
 
@@ -147,8 +142,7 @@ private data class Image(val grid: List<String>)
                 yield(cropped(x, y, width, height))
     }
 
-    companion object
-    {
+    companion object {
         fun stitchHorizontal(images: List<Image>) = Image(images.first().grid.indices.map { y ->
             images.joinToString("") { it.grid[y] }
         })
