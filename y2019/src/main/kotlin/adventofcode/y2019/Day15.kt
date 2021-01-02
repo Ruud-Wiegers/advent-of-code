@@ -13,7 +13,7 @@ fun main() = Day15.solve()
 object Day15 : AdventSolution(2019, 15, "Oxygen System") {
 
     override fun solvePartOne(input: String) =
-            IntCodeProgram.fromData(input).let(::exploreMaze).first
+        IntCodeProgram.fromData(input).let(::exploreMaze).first
 
     override fun solvePartTwo(input: String): Any? {
         val map: Map<Vec2, Int> = IntCodeProgram.fromData(input).let(::exploreMaze).second
@@ -24,9 +24,8 @@ object Day15 : AdventSolution(2019, 15, "Oxygen System") {
         return generateSequence(source) { candidates ->
             candidates.flatMap { p -> p.neighbors().filter { it in open } }
         }
-                .onEach { open -= it }
-                .takeWhile { it.isNotEmpty() }
-                .count() - 1
+            .onEach { open -= it }
+            .indexOfFirst { it.isEmpty() } - 1
     }
 
     private fun exploreMaze(droidcontrol: IntCodeProgram): Pair<Int, Map<Vec2, Int>> {
