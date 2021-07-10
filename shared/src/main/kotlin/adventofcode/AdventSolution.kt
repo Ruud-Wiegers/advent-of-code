@@ -30,9 +30,12 @@ private fun printSolution(solve: () -> Any?)
 {
     var solution: Any?
     val time = measureNanoTime { solution = solve() } / 1_000_000
-    val formattedTime = time.toString().padStart(4).colored(gradeSolution(time))
-    println("[$formattedTime ms] $solution")
+    val formattedTime = formattedTime(time)
+    println("$formattedTime $solution")
 }
+
+fun formattedTime(time:Long) = time.toString().padStart(4).colored(gradeSolution(time)).let{"[$it ms]"}
+
 
 private fun String.colored(c: String) = "\u001B[${c}m$this\u001B[0m"
 
