@@ -42,12 +42,12 @@ object Day19 : AdventSolution(2020, 19, "Monster Messages")
     else
         input.split(" | ").map { it.split(" ").map(String::toInt) }.let(Rule::Dnf)
 
-    private fun matches(unmatchedMessage: String, unmatchedRules: List<Int>, rules: List<Rule>): Boolean =
-        when (val rule = unmatchedRules.firstOrNull()?.let(rules::get))
+    private fun matches(unmatchedMessage: String, unmatchedRules: List<Int>, grammar: List<Rule>): Boolean =
+        when (val rule = unmatchedRules.firstOrNull()?.let(grammar::get))
         {
             null             -> unmatchedMessage.isEmpty()
-            is Rule.Terminal -> rule.ch == unmatchedMessage.firstOrNull() && matches(unmatchedMessage.drop(1), unmatchedRules.drop(1), rules)
-            is Rule.Dnf      -> rule.alternatives.any { alt -> matches(unmatchedMessage, alt + unmatchedRules.drop(1), rules) }
+            is Rule.Terminal -> rule.ch == unmatchedMessage.firstOrNull() && matches(unmatchedMessage.drop(1), unmatchedRules.drop(1), grammar)
+            is Rule.Dnf      -> rule.alternatives.any { alt -> matches(unmatchedMessage, alt + unmatchedRules.drop(1), grammar) }
         }
 
     private sealed class Rule
