@@ -3,22 +3,25 @@ package adventofcode.y2015
 import adventofcode.AdventSolution
 import java.math.BigInteger
 
-object Day24 : AdventSolution(2015, 24, "It Hangs in the Balance") {
+object Day24 : AdventSolution(2015, 24, "It Hangs in the Balance")
+{
 
-	override fun solvePartOne(input: String): String {
-		val presents = list(input).asSequence()
-		val target = presents.sum() / 3
-		return subsetSum(presents, target)
-	}
+    override fun solvePartOne(input: String): String
+    {
+        val presents = list(input).asSequence()
+        val target = presents.sum() / 3
+        return subsetSum(presents, target)
+    }
 
-	override fun solvePartTwo(input: String): String {
-		val presents = list(input).asSequence()
-		val target = presents.sum() / 4
-		return subsetSum(presents, target)
+    override fun solvePartTwo(input: String): String
+    {
+        val presents = list(input).asSequence()
+        val target = presents.sum() / 4
+        return subsetSum(presents, target)
+    }
 
-	}
-
-	private fun subsetSum(presents: Sequence<Int>, target: Int): String {
+    private fun subsetSum(presents: Sequence<Int>, target: Int): String
+    {
         return generateSequence(presents.map { listOf(it) }) { prev ->
             prev.flatMap { subset ->
                 val t = target - subset.sum()
@@ -34,6 +37,5 @@ object Day24 : AdventSolution(2015, 24, "It Hangs in the Balance") {
             .toString()
     }
 
-	private fun list(input: String) = input.lines().map { it.toInt() }
-
+    private fun list(input: String): List<Int> = input.lines().map { it.toInt() }
 }

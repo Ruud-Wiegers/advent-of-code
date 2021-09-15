@@ -45,14 +45,14 @@ private fun Square.step(squareSize: Int, fullRules: Map<Square, Square>): Square
 		chunked(squareSize).flatMap { chunkRow ->
 			chunkRow.map { line -> line.chunked(squareSize) }
 					.transpose()
-					.map { square -> fullRules[square]!! }
+					.map { square -> fullRules.getValue(square) }
 					.transpose()
 					.map { line -> line.fold(StringBuilder(), StringBuilder::append).toString() }
 		}
 
 private fun Square.countLights() = sumBy { line -> line.count { char -> char == '#' } }
 
-private fun <T> List<List<T>>.transpose() =
+private fun <T> List<List<T>>.transpose(): List<List<T>> =
 		this[0].indices.map { col -> map { it[col] } }
 
 private typealias Square = List<String>

@@ -15,7 +15,7 @@ object Day07 : AdventSolution(2015, 7, "Some Assembly Required") {
 
 private class WireMap(instructions: List<String>) {
 	private val wireValueMap: MutableMap<String, Int> = mutableMapOf()
-	private val wireConnectionMap: Map<String, () -> Int> = instructions.map { parseInstruction(it) }.toMap()
+	private val wireConnectionMap: Map<String, () -> Int> = instructions.associate(this::parseInstruction)
 
 	private fun parseInstruction(string: String) = string.split(" ").let { cmd ->
 		when (cmd[1]) {
@@ -28,7 +28,6 @@ private class WireMap(instructions: List<String>) {
 		}
 	}
 
-	fun evaluate(wire: String): Int = wire.toIntOrNull()
-			?: wireValueMap.computeIfAbsent(wire) { wireConnectionMap[wire]?.invoke()!! }
+	fun evaluate(wire: String): Int = wire.toIntOrNull() ?: wireValueMap.getOrPut(wire) { wireConnectionMap.getValue(wire)() }
 
 }

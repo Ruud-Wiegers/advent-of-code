@@ -18,8 +18,7 @@ object Day08 : AdventSolution(2017, 8, "I Heard You Like Registers") {
 		val registers = mutableMapOf<String, Int>()
 		return parseInput(input)
 			.onEach { it.executeOn(registers) }
-			.map { registers[it.register] ?: 0 }
-			.maxOrNull()
+			.maxOf { registers[it.register] ?: 0 }
 			.toString()
 	}
 

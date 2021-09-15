@@ -1,6 +1,12 @@
 package adventofcode.y2017
 
 import adventofcode.AdventSolution
+import adventofcode.solve
+
+fun main()
+{
+	Day18.solve()
+}
 
 object Day18 : AdventSolution(2017, 18, "Duet") {
 

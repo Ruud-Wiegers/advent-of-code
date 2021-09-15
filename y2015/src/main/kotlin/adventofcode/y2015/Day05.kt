@@ -15,11 +15,9 @@ object Day05 : AdventSolution(2015, 5, "Doesn't He Have Intern-Elves For This?")
 			.lineSequence()
 			.filter { it.windowed(3).any { it[0] == it[2] } }
 			.filter { string ->
-				string.zipWithNext()
+				string.windowedSequence(2)
 						.withIndex()
-						.any { (i, v) ->
-							string.substring(i + 2).zipWithNext().any { other -> v.first == other.first && v.second == other.second }
-						}
+						.any { (i, v) -> v in string.substring(i + 2) }
 			}
 			.count()
 }
