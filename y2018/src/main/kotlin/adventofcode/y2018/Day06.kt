@@ -52,10 +52,10 @@ object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {
         val points = parse(input)
 
         val height = points.height()
-        return points.width().sumBy { x ->
+        return points.width().sumOf { x ->
             height.asSequence()
                     .map { y ->
-                        points.sumBy { it.distanceTo(x, y) }
+                        points.sumOf { it.distanceTo(x, y) }
                     }
                     .count { it < 10000 }
         }

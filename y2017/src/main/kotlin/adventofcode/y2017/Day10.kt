@@ -18,7 +18,7 @@ object Day10 : AdventSolution(2017, 10, "Knot Hash") {
 }
 
 fun knotHash(input: String): List<Int> {
-	val lengths = input.map { it.toInt() } + listOf(17, 31, 73, 47, 23)
+	val lengths = input.map { it.code } + listOf(17, 31, 73, 47, 23)
 	val rounds = (1..64).flatMap { lengths }
 
 	val sparseHash = knot(rounds)
@@ -34,7 +34,7 @@ private fun knot(lengths: List<Int>): List<Int> {
 
 	//undo all previous rotations
 	val rotation = lengths.withIndex()
-			.sumBy { (i, l) -> i + l } % list.size
+			.sumOf { (i, l) -> i + l } % list.size
 	return list.rotateLeft(list.size - rotation)
 }
 

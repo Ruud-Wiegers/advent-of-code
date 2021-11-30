@@ -14,7 +14,7 @@ object Day06 : AdventSolution(2019, 6, "Universal Orbit Map") {
                 .groupBy({ it[0] }, { it[1] })
 
         fun check(obj: String, depth: Int): Int =
-                depth + satellites[obj].orEmpty().sumBy { check(it, depth + 1) }
+                depth + satellites[obj].orEmpty().sumOf { check(it, depth + 1) }
 
         return check("COM", 0)
     }

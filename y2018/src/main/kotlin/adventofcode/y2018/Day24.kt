@@ -28,7 +28,7 @@ object Day24 : AdventSolution(2018, 24, "Immune System Simulator 20XX") {
                     .forEach { (att, def) -> att.dealDamage(def) }
         }
 
-        return Pair(immune.sumBy(Group::count), disease.sumBy(Group::count))
+        return Pair(immune.sumOf(Group::count), disease.sumOf(Group::count))
     }
 
     private fun selectTargets(attackers: List<Group>, defenders: List<Group>): List<Pair<Group, Group>> {
@@ -57,7 +57,7 @@ private data class Group(
 
     fun chooseTarget(targets: Iterable<Group>): Group? {
         return targets.sortedWith(compareByDescending(Group::effectivePower).thenByDescending(Group::initiative))
-                .maxBy(this::calcDamage)
+                .maxByOrNull(this::calcDamage)
                 ?.takeUnless { calcDamage(it) == 0 }
     }
 

@@ -4,7 +4,7 @@ import adventofcode.AdventSolution
 
 object Day01 : AdventSolution(2015, 1, "Not Quite Lisp") {
 
-	override fun solvePartOne(input: String) = input.sumBy { if (it == '(') 1 else -1 }.toString()
+	override fun solvePartOne(input: String) = input.map { if (it == '(') 1 else -1 }.sum().toString()
 
 	override fun solvePartTwo(input: String) = input.foldIndexed(0) { index, acc, c ->
 		when {

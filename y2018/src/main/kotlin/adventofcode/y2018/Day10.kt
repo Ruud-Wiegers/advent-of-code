@@ -30,8 +30,8 @@ object Day10 : AdventSolution(2018, 10, "The Stars Align") {
 
 
     private data class Sky(val lights: List<Light>) {
-        val width: IntRange by lazy { lights.minByOrNull { it: Light -> it.p.x }!!.p.x..lights.maxBy { it.p.x }!!.p.x }
-        val height: IntRange by lazy { lights.minByOrNull { it: Light -> it.p.y }!!.p.y..lights.maxBy { it.p.y }!!.p.y }
+        val width: IntRange by lazy { lights.minOf {  it.p.x }..lights.maxOf { it.p.x } }
+        val height: IntRange by lazy { lights.minOf { it.p.y }..lights.maxOf { it.p.y } }
 
         fun nextSecond() = Sky(lights.map(Light::nextSecond))
 

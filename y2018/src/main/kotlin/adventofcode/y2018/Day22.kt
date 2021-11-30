@@ -11,7 +11,7 @@ object Day22 : AdventSolution(2018, 22, "Mode Maze") {
         val cave = buildMaze(depth, tx, ty)
         cave[ty][tx] = 0
 
-        return cave.sumBy(IntArray::sum)
+        return cave.sumOf(IntArray::sum)
     }
 
     override fun solvePartTwo(input: String): Int? {

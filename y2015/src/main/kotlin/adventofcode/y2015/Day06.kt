@@ -34,7 +34,7 @@ object Day06 : AdventSolution(2015, 6, "Probably a Fire Hazard") {
             }
         }
 
-        return screen.sumBy(IntArray::sum)
+        return screen.sumOf(IntArray::sum)
     }
 
     private fun parse(input: String): Sequence<Instruction> {

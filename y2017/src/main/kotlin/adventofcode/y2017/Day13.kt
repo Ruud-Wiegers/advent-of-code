@@ -7,7 +7,7 @@ object Day13 : AdventSolution(2017, 13, "Packet Scanners") {
 	override fun solvePartOne(input: String): String = parseInput(input)
 			.filter { (depth, range) -> depth % (range * 2 - 2) == 0 }
 			.entries
-			.sumBy { (depth, range) -> depth * range }
+			.sumOf { (depth, range) -> depth * range }
 			.toString()
 
 	override fun solvePartTwo(input: String): String {

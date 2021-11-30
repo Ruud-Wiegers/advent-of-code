@@ -19,9 +19,9 @@ object Day16 : AdventSolution(2019, 16, "Flawed Frequency Transmission") {
     private fun fft(digits: List<Int>) = List(digits.size) { index ->
         val period = 4 * (index + 1)
 
-        fun sum(start: Int) = (start..digits.lastIndex step period).sumBy { blockStart ->
+        fun sum(start: Int) = (start..digits.lastIndex step period).sumOf { blockStart ->
             val blockEnd = (blockStart + index).coerceAtMost(digits.lastIndex)
-            (blockStart..blockEnd).sumBy { digits[it] }
+            (blockStart..blockEnd).sumOf { digits[it] }
         }
 
         (sum(index) - sum(3 * index + 2)).absoluteValue % 10

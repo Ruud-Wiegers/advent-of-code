@@ -4,7 +4,7 @@ import adventofcode.AdventSolution
 
 object Day04 : AdventSolution(2016, 4, "Security Through Obscurity") {
     override fun solvePartOne(input: String) = parseRooms(input)
-            .sumBy { it.id }
+            .sumOf { it.id }
             .toString()
 
     override fun solvePartTwo(input: String) = parseRooms(input)
@@ -40,7 +40,7 @@ object Day04 : AdventSolution(2016, 4, "Security Through Obscurity") {
         fun decrypt(): String = name.map {
             when (it) {
                 '-' -> '-'
-                in 'a'..'z' -> ((((it - 'a') + id) % 26) + 'a'.toInt()).toChar()
+                in 'a'..'z' -> ((((it - 'a') + id) % 26) + 'a'.code).toChar()
                 else -> '?'
             }
         }

@@ -11,7 +11,7 @@ object Day18 : AdventSolution(2016, 18, "Like a Rogue") {
 		val room = generateSequence(firstLine, ::nextLine)
 		val safeSpaces = room
 				.take(lines)
-				.sumBy { line -> line.count { it == '.' } }
+				.sumOf { line -> line.count { it == '.' } }
 
 		return safeSpaces.toString()
 	}

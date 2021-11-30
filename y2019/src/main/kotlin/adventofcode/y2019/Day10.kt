@@ -13,7 +13,7 @@ object Day10 : AdventSolution(2019, 10, "Monitoring Station") {
 
     override fun solvePartTwo(input: String): Int {
         val asteroids = parseToAsteroids(input.lines())
-        val station = losPerAsteroid(asteroids).maxBy { it.value }!!.key
+        val station = losPerAsteroid(asteroids).maxByOrNull { it.value }!!.key
 
         val vectorsToOtherAsteroids = asteroids
             .filter { it != station }

@@ -8,7 +8,7 @@ object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") 
     override fun solvePartOne(input: String): Int {
         val bots = parse(input)
 
-        val best = bots.maxBy(NanoBot::r)!!
+        val best = bots.maxByOrNull(NanoBot::r)!!
 
         return bots.count { it.p in best }
     }

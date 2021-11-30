@@ -20,7 +20,7 @@ object Day25 : AdventSolution(2019, 25, "Cryostasis") {
                     p.execute()
                     p
                 }
-                .map { generateSequence(it::output).map { it.toChar() }.joinToString("") }
+                .map { generateSequence(it::output).map { it.toInt().toChar() }.joinToString("") }
                 .first { "heavier" !in it && "lighter" !in it }
     }
 
@@ -53,7 +53,7 @@ object Day25 : AdventSolution(2019, 25, "Cryostasis") {
 
 
     private fun IntCodeProgram.readline(s: String) {
-        (s + '\n').map(Char::toLong).forEach(this::input)
+        (s + '\n').map { it.code.toLong() }.forEach(this::input)
     }
 
     override fun solvePartTwo(input: String) = "Free star!"

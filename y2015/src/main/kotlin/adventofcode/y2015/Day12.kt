@@ -37,16 +37,17 @@ private fun tokenize(str: String): Iterator<Any> = iterator {
 	val reader = StringReader(str)
 	val tokenizer = StreamTokenizer(reader)
 	while (tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
-		val tokenValue: Any = when (tokenizer.ttype) {
+		val tokenValue: Any = when (tokenizer.ttype)
+		{
 			StreamTokenizer.TT_NUMBER -> tokenizer.nval.toInt()
-			'"'.toInt() -> tokenizer.sval
-			'['.toInt() -> Token.ArrayBegin
-			']'.toInt() -> Token.ArrayEnd
-			'{'.toInt() -> Token.ObjectBegin
-			'}'.toInt() -> Token.ObjectEnd
-			':'.toInt() -> Token.Separator
-			','.toInt() -> Token.Comma
-			else -> throw IllegalArgumentException()
+			'"'.code                  -> tokenizer.sval
+			'['.code -> Token.ArrayBegin
+			']'.code -> Token.ArrayEnd
+			'{'.code -> Token.ObjectBegin
+			'}'.code -> Token.ObjectEnd
+			':'.code -> Token.Separator
+			','.code -> Token.Comma
+			else     -> throw IllegalArgumentException()
 		}
 		yield(tokenValue)
 	}

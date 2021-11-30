@@ -6,12 +6,12 @@ object Day08 : AdventSolution(2015, 8, "Matchsticks") {
 
 	override fun solvePartOne(input: String) = input
 			.lines()
-			.sumBy { it.length - unescape(it).length }
+			.sumOf { it.length - unescape(it).length }
 			.toString()
 
 	override fun solvePartTwo(input: String): String = input
 			.lines()
-			.sumBy { escape(it).length - it.length }
+			.sumOf { escape(it).length - it.length }
 			.toString()
 
 

@@ -29,12 +29,12 @@ object Day21 : AdventSolution(2019, 21, "Springdroid") {
 
     private fun runDroid(input: String, springscript: List<String>): Long {
         val baseprogram = IntCodeProgram.fromData(input)
-        springscript.joinToString("\n", postfix = "\n").forEach { baseprogram.input(it.toLong()) }
+        springscript.joinToString("\n", postfix = "\n").forEach { baseprogram.input(it.code.toLong()) }
         baseprogram.execute()
         return generateSequence { baseprogram.output() }.last()
     }
 
     private fun IntCodeProgram.videoOut() {
-        generateSequence(this::output).map(Long::toChar).joinToString("").let(::println)
+        generateSequence(this::output).map{it.toInt().toChar()}.joinToString("").let(::println)
     }
 }

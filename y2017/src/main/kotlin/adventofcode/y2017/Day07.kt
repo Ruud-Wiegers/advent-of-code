@@ -76,7 +76,7 @@ private data class Program(val name: String,
 						   val children: List<Program>) {
 
 	val combinedWeight: Int by lazy {
-		weight + children.sumBy { it.combinedWeight }
+		weight + children.sumOf { it.combinedWeight }
 	}
 
 	val isUnbalanced: Boolean by lazy {

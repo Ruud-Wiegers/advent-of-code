@@ -53,7 +53,7 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
     }.toSet()
 
     private data class ErisianGrid(val grid: Set<Vec3>) {
-        val zs: IntRange by lazy { grid.minByOrNull { it: Vec3 -> it.z }!!.z - 1..grid.maxBy(Vec3::z)!!.z + 1 }
+        val zs: IntRange by lazy { grid.minOf(Vec3::z) - 1..grid.maxOf(Vec3::z) + 1 }
 
         fun next() = sequence {
             for (z in zs)
@@ -72,28 +72,28 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
 
         private fun Vec3.left() = when {
             x == 2 && y == 2 -> 0
-            x == 3 && y == 2 -> (0..4).sumBy { countBugs(Vec3(4, it, z + 1)) }
+            x == 3 && y == 2 -> (0..4).sumOf { countBugs(Vec3(4, it, z + 1)) }
             x == 0           -> countBugs(Vec3(1, 2, z - 1))
             else             -> countBugs(copy(x = x - 1))
         }
 
         private fun Vec3.right() = when {
             x == 2 && y == 2 -> 0
-            x == 1 && y == 2 -> (0..4).sumBy { countBugs(Vec3(0, it, z + 1)) }
+            x == 1 && y == 2 -> (0..4).sumOf { countBugs(Vec3(0, it, z + 1)) }
             x == 4           -> countBugs(Vec3(3, 2, z - 1))
             else             -> countBugs(copy(x = x + 1))
         }
 
         private fun Vec3.up() = when {
             y == 2 && x == 2 -> 0
-            y == 3 && x == 2 -> (0..4).sumBy { countBugs(Vec3(it, 4, z + 1)) }
+            y == 3 && x == 2 -> (0..4).sumOf { countBugs(Vec3(it, 4, z + 1)) }
             y == 0           -> countBugs(Vec3(2, 1, z - 1))
             else             -> countBugs(copy(y = y - 1))
         }
 
         private fun Vec3.down() = when {
             y == 2 && x == 2 -> 0
-            y == 1 && x == 2 -> (0..4).sumBy { countBugs(Vec3(it, 0, z + 1)) }
+            y == 1 && x == 2 -> (0..4).sumOf { countBugs(Vec3(it, 0, z + 1)) }
             y == 4           -> countBugs(Vec3(2, 3, z - 1))
             else             -> countBugs(copy(y = y + 1))
         }

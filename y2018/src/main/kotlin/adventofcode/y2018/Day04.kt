@@ -7,8 +7,8 @@ object Day04 : AdventSolution(2018, 4, "Repose Record") {
     override fun solvePartOne(input: String): Int {
         val schedule = parseSchedule(input)
 
-        val sleepiestGuard = schedule.maxBy { it.value.sumBy { it.last - it.first } }!!
-        val sleepiestMinute = (0..59).maxBy { m -> sleepiestGuard.value.count { m in it } }!!
+        val sleepiestGuard = schedule.maxByOrNull { it.value.sumOf { it.last - it.first } }!!
+        val sleepiestMinute = (0..59).maxByOrNull { m -> sleepiestGuard.value.count { m in it } }!!
 
         return sleepiestGuard.key * sleepiestMinute
     }
@@ -18,7 +18,7 @@ object Day04 : AdventSolution(2018, 4, "Repose Record") {
 
         val (guard, minute) = schedule.keys
                 .flatMap { g -> (0..59).map { m -> g to m } }
-                .maxBy { (g, m) -> schedule[g]!!.count { m in it } }!!
+                .maxByOrNull { (g, m) -> schedule[g]!!.count { m in it } }!!
 
         return guard * minute
     }

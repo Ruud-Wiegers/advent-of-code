@@ -63,7 +63,7 @@ object Day17 : AdventSolution(2018, 17, "Reservoir Research") {
             return map
         }
 
-        fun count(predicate: (Char) -> Boolean) = map.slice(yRange).sumBy { it.count(predicate) }
+        fun count(predicate: (Char) -> Boolean) = map.slice(yRange).sumOf { it.count(predicate) }
     }
 }
 

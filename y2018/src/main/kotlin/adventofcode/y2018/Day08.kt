@@ -21,11 +21,11 @@ object Day08 : AdventSolution(2018, 8, "Memory Maneuver") {
 
     private data class Node(private val children: List<Node>, private val metadata: List<Int>) {
 
-        fun simpleChecksum(): Int = metadata.sum() + children.sumBy(Node::simpleChecksum)
+        fun simpleChecksum(): Int = metadata.sum() + children.sumOf(Node::simpleChecksum)
 
         fun complexChecksum(): Int = if (children.isEmpty())
             metadata.sum()
         else
-            metadata.sumBy { children.getOrNull(it - 1)?.complexChecksum() ?: 0 }
+            metadata.sumOf { children.getOrNull(it - 1)?.complexChecksum() ?: 0 }
     }
 }

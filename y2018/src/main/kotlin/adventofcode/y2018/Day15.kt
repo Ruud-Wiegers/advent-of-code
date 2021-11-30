@@ -16,7 +16,7 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
         }
 
         val r = simulate(map, combatants)
-        return r * combatants.sumBy { it.hp }
+        return r * combatants.sumOf { it.hp }
     }
 
     override fun solvePartTwo(input: String): Int {
@@ -36,7 +36,7 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
             val r = simulate(map, combatants)
 
             if (elves.any { !it.isAlive() }) continue
-            return r * combatants.sumBy { it.hp }
+            return r * combatants.sumOf { it.hp }
         }
         return -1
     }
@@ -88,7 +88,7 @@ object Day15 : AdventSolution(2018, 15, "Beverage Bandits") {
                 .distinct()
                 .filter { map.isOpen(it) }
                 .associateWith { distanceTo(attacker.p, it, map) }
-        val min = targetsByDistance.values.min() ?: return
+        val min = targetsByDistance.values.minOrNull() ?: return
         if (min == Int.MAX_VALUE) return
         val destination = targetsByDistance.keys.sortedBy { it.x }.sortedBy { it.y }.find { targetsByDistance[it] == min }
                 ?: return

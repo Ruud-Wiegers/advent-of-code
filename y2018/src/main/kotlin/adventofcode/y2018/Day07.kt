@@ -38,7 +38,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
                     }
 
             //advance the time to the completion of the next task
-            currentTime = tasksInProgress.values.min() ?: currentTime
+            currentTime = tasksInProgress.values.minOrNull() ?: currentTime
 
             //move all completed tasks to  'complete'
             tasksInProgress.keys

@@ -26,7 +26,7 @@ object Day09 : AdventSolution(2018, 9, "Marble Mania") {
                 circle.offerLast(nextMarble)
             }
         }
-        return scores.max()
+        return scores.maxOrNull()
     }
 
     private fun parse(input: String): Pair<Int, Int> {

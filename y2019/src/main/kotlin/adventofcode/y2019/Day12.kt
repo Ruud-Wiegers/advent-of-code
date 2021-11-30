@@ -18,7 +18,7 @@ object Day12 : AdventSolution(2019, 12, "The N-body problem") {
             }
             moons.forEach { it.move() }
         }
-        return moons.sumBy { it.energy() }
+        return moons.sumOf { it.energy() }
     }
 
     override fun solvePartTwo(input: String): Long {
@@ -40,7 +40,7 @@ object Day12 : AdventSolution(2019, 12, "The N-body problem") {
 
     private fun evolve(state: List<Pair<Int, Int>>) = generateSequence(state) { old ->
         old.map { (p, v) ->
-            val vn = v + old.sumBy { (it.first - p).sign }
+            val vn = v + old.sumOf { (it.first - p).sign }
             p + vn to vn
         }
     }

@@ -8,7 +8,7 @@ object Day22 : AdventSolution(2016, 22, "Grid Computing") {
 	override fun solvePartOne(input: String): String {
 		val nodes = parseInput(input)
 
-		return nodes.sumBy { source ->
+		return nodes.sumOf { source ->
 			nodes.count { target ->
 				(source.x != target.x || source.y != target.y)
 						&& source.used > 0

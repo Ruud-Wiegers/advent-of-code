@@ -6,7 +6,7 @@ plugins {
 }
 
 application {
-    mainClass.set( "adventofcode.y2020.RunAllKt")
+    mainClass.set ("adventofcode.y2021.RunAllKt")
 }
 
 dependencies {

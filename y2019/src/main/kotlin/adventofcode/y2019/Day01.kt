@@ -10,12 +10,12 @@ object Day01 : AdventSolution(2019, 1, "The Tyranny of the Rocket Equation") {
     override fun solvePartOne(input: String) = input
             .lineSequence()
             .map(String::toInt)
-            .sumBy(this::fuel)
+            .sumOf(this::fuel)
 
     override fun solvePartTwo(input: String) = input
             .lineSequence()
             .map(String::toInt)
-            .sumBy(this::tyrannousFuel)
+            .sumOf(this::tyrannousFuel)
 
     private fun fuel(mass: Int) = mass / 3 - 2
 

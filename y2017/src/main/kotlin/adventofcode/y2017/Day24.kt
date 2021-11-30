@@ -8,7 +8,7 @@ object Day24 : AdventSolution(2017, 24, "Electromagnetic Moat") {
         val pairs = parseInput(input)
 
         return buildAllBridges(emptyList(), pairs, 0)
-            .map { it.sumBy { (a, b) -> a + b } }
+            .map { it.sumOf { (a, b) -> a + b } }
             .maxOrNull()
             .toString()
     }
@@ -17,8 +17,8 @@ object Day24 : AdventSolution(2017, 24, "Electromagnetic Moat") {
 		val pairs = parseInput(input)
 
 		return buildAllBridges(emptyList(), pairs, 0)
-				.map { it.size to it.sumBy { (a, b) -> a + b } }
-				.maxWith(compareBy({ it.first }, { it.second }))
+				.map { it.size to it.sumOf { (a, b) -> a + b } }
+				.maxWithOrNull(compareBy({ it.first }, { it.second }))
 				?.second
 				.toString()
 	}

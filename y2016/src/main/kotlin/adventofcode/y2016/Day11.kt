@@ -85,6 +85,6 @@ private data class FloorPlan(private val elevator: Int, private val elements: Li
 
 	override val isGoal = elements.all { it.chip == 4 && it.gen == 4 }
 
-	override val heuristic = elements.sumBy { 8 - it.chip - it.gen } / 2
+	override val heuristic = elements.sumOf { 8 - it.chip - it.gen } / 2
 
 }

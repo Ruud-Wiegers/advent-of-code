@@ -14,7 +14,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
     override fun solvePartOne(input: String): Int {
         val map = readMap(IntCodeProgram.fromData(input))
 
-        return (1 until map.lastIndex).sumBy { y ->
+        return (1 until map.lastIndex).sumOf { y ->
             y * (1 until map[y].lastIndex)
                     .filter { x -> map.isCrossing(y, x) }
                     .sum()
@@ -38,7 +38,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
         val v = CompressedRoute(route).fullCompress("ABC").first { it.fitsInMemory() && it.fullyCompressed() }
 
         val instructions = listOf(v.main) + v.functions + "n"
-        instructions.joinToString("\n", postfix = "\n").forEach { program.input(it.toLong()) }
+        instructions.joinToString("\n", postfix = "\n").forEach { program.input(it.code.toLong()) }
         program.execute()
         return generateSequence { program.output() }.last()
     }
@@ -73,7 +73,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
 
     private fun readMap(program: IntCodeProgram): List<String> = program.run {
         execute()
-        generateSequence { output() }.map { it.toChar() }.joinToString("")
+        generateSequence { output() }.map { it.toInt().toChar() }.joinToString("")
     }
             .lines().filter { it.isNotBlank() }
 

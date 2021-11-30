@@ -36,7 +36,7 @@ private data class ConwayGrid(private val grid: List<BooleanArray>) {
         grid[last][last] = true
     }
 
-    fun countAlive() = grid.sumBy { it.count { row -> row } }
+    fun countAlive() = grid.sumOf { it.count { row -> row } }
 
     private fun aliveNext(x: Int, y: Int) = area(x, y) == 3 || grid[y][x] && area(x, y) == 4
 

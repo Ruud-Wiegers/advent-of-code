@@ -7,7 +7,7 @@ import adventofcode.util.parser
 object Day08 : AdventSolution(2016, 8, "Two-Factor Authentication") {
 
 	override fun solvePartOne(input: String) = solve(input).let { screen ->
-		screen.screen.sumBy { row -> row.count { it } }.toString()
+		screen.screen.sumOf { row -> row.count { it } }.toString()
 	}
 
 	override fun solvePartTwo(input: String) = solve(input).let { screen ->

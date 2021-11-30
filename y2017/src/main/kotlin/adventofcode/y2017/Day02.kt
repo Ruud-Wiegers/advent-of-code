@@ -15,6 +15,6 @@ object Day02 : AdventSolution(2017, 2, "Corruption Checksum") {
 
 	private fun solveForChecksum(input: String, checksum: (List<Int>) -> Int) = input.lines()
 			.map { it.split("\t").map(String::toInt) }
-			.sumBy(checksum)
+			.sumOf(checksum)
 			.toString()
 }
