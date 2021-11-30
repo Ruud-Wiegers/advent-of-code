@@ -12,6 +12,7 @@ out/**
 #AoC Session
 **/session.kt
 data/**/*.txt
+**/data/**/*.txt
 
 **/build/**
 .gradle/**
