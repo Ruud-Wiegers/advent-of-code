@@ -25,7 +25,7 @@ object Day03 : AdventSolution(2017, 3, "Spiral Memory")
         fun Vec2.sumNeighborhood() = neighbors().mapNotNull(spiral::get).sum()
 
         return spiralCoordinatesSequence
-            .map { spiral.computeIfAbsent(it, Vec2::sumNeighborhood) }
+            .map { spiral.computeIfAbsent(it) { it.sumNeighborhood() } }
             .first { it > input.toInt() }
     }
 
