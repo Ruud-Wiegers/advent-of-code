@@ -4,16 +4,13 @@ import adventofcode.AdventSolution
 
 object Day01 : AdventSolution(2021, 1, "Sonar Sweep")
 {
-    override fun solvePartOne(input: String) = input
-        .lineSequence()
-        .map(String::toInt)
-        .zipWithNext { a, b -> a < b }
-        .count { it }
+    override fun solvePartOne(input: String) = solve(input, 2)
 
-    override fun solvePartTwo(input: String) = input
+    override fun solvePartTwo(input: String) = solve(input, 4)
+
+    private fun solve(input: String, sweep: Int) = input
         .lineSequence()
         .map(String::toInt)
-        .windowed(3) { it.sum() }
-        .zipWithNext { a, b -> a < b }
-        .count { it }
+        .windowed(sweep)
+        .count { it.first() < it.last() }
 }
