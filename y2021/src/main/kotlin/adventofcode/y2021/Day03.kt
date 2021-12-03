@@ -8,37 +8,36 @@ fun main()
     Day03.solve()
 }
 
-object Day03 : AdventSolution(2021, 3, "stuff!")
+object Day03 : AdventSolution(2021, 3, "Binary Diagnostic")
 {
-    override fun solvePartOne(input: String): Int = input
-        .lines()
-        .transpose()
-        .map { it.count { it == '1' } >= it.length / 2 }
-        .map { if (it) 1 else 0 }
-        .fold(0) { acc, e -> acc * 2 + e }
-        .let { it * ("111111111111".toInt(radix = 2) xor it) }
-
-    private fun List<String>.transpose(): List<String> =
-        this[0].indices.map { col -> map { it[col] } }.map { it.joinToString("") }
+    override fun solvePartOne(input: String): Int
+    {
+        val lines = input.lines()
+        return lines[0].indices.map(lines::mostFrequentCharacterAt)
+            .joinToString("")
+            .toInt(2)
+            .let { it * ("111111111111".toInt(2) xor it) }
+    }
 
     override fun solvePartTwo(input: String): Int
     {
-        val ogr = input.lines().toMutableList().findRating { ch, mostFrequent -> ch == mostFrequent }.toInt(radix = 2)
-        val co2r = input.lines().toMutableList().findRating { ch, mostFrequent -> ch != mostFrequent }.toInt(radix = 2)
-
+        val ogr = findRating(input) { ch, mostFrequent -> ch == mostFrequent }
+        val co2r = findRating(input) { ch, mostFrequent -> ch != mostFrequent }
         return ogr * co2r
     }
-
-    private inline fun MutableList<String>.findRating(crossinline matchCriteria: (current: Char, mostFrequent: Char) -> Boolean): String
-    {
-        first().indices.forEach { index ->
-            val mfc = mostFrequentCharacterAt(index)
-            retainAll { matchCriteria(mfc, it[index]) }
-            if (size == 1) return single()
-        }
-        throw IllegalStateException()
-    }
-
-    private fun List<String>.mostFrequentCharacterAt(index: Int): Char =
-        if (count { it[index] == '1' } >= size / 2) '1' else '0'
 }
+
+private inline fun findRating(input:String,crossinline matchCriteria: (current: Char, mostFrequent: Char) -> Boolean): Int
+{
+    val candidates = input.lines().toMutableList()
+
+    candidates[0].indices.forEach { index ->
+        val mfc =candidates.mostFrequentCharacterAt(index)
+        candidates.retainAll { matchCriteria(mfc, it[index]) }
+        if (candidates.size == 1) return candidates.single().toInt(radix = 2)
+    }
+    throw IllegalStateException()
+}
+
+private fun List<String>.mostFrequentCharacterAt(index: Int): Char =
+    if (count { it[index] == '1' } >= size / 2) '1' else '0'
