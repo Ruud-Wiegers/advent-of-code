@@ -13,7 +13,7 @@ object Day03 : AdventSolution(2021, 3, "Binary Diagnostic")
     override fun solvePartOne(input: String): Int
     {
         val lines = input.lines()
-        return lines[0].indices.map(lines::mostFrequentCharacterAt)
+        return lines[0].indices.map(lines::mostFrequentDigitAt)
             .joinToString("")
             .toInt(2)
             .let { it * ("111111111111".toInt(2) xor it) }
@@ -21,23 +21,21 @@ object Day03 : AdventSolution(2021, 3, "Binary Diagnostic")
 
     override fun solvePartTwo(input: String): Int
     {
-        val ogr = findRating(input) { ch, mostFrequent -> ch == mostFrequent }
-        val co2r = findRating(input) { ch, mostFrequent -> ch != mostFrequent }
-        return ogr * co2r
+        val generator = findRating(input) { d, mostFrequent -> d == mostFrequent }
+        val scrubber = findRating(input) { d, mostFrequent -> d != mostFrequent }
+        return generator * scrubber
     }
 }
 
-private inline fun findRating(input:String,crossinline matchCriteria: (current: Char, mostFrequent: Char) -> Boolean): Int
-{
-    val candidates = input.lines().toMutableList()
+private inline fun findRating(input: String, crossinline matchCriteria: (d: Char, mostFrequent: Char) -> Boolean) =
+    generateSequence(0, Int::inc)
+        .scan(input.lines()) { candidates, index ->
+            val mfd = candidates.mostFrequentDigitAt(index)
+            candidates.filter { candidate -> matchCriteria(candidate[index], mfd) }
+        }
+        .firstNotNullOf { it.singleOrNull() }
+        .toInt(radix = 2)
 
-    candidates[0].indices.forEach { index ->
-        val mfc =candidates.mostFrequentCharacterAt(index)
-        candidates.retainAll { matchCriteria(mfc, it[index]) }
-        if (candidates.size == 1) return candidates.single().toInt(radix = 2)
-    }
-    throw IllegalStateException()
-}
-
-private fun List<String>.mostFrequentCharacterAt(index: Int): Char =
-    if (count { it[index] == '1' } >= size / 2) '1' else '0'
+//verborgen shenanigans met het geval dat er evenveel nullen als enen zijn
+private fun List<String>.mostFrequentDigitAt(index: Int): Char =
+    (if (count { it[index] == '1' } >= size / 2) '1' else '0')
