@@ -1,12 +1,6 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-
-fun main()
-{
-    Day04.solve()
-}
 
 object Day04 : AdventSolution(2021, 4, "Giant Squid")
 {
@@ -48,25 +42,25 @@ object Day04 : AdventSolution(2021, 4, "Giant Squid")
             .toMutableList()
         return Pair(numbers, bingoCards)
     }
-}
 
-private class BingoCard(
-    val cells: List<Int>,
-    val crosses: List<MutableList<Boolean>>
-)
-{
-    constructor(cells: List<List<Int>>) : this(cells.flatten(), cells.map { MutableList(it.size) { false } })
-
-    fun hasWon() = hasFullRow() || hasFullColumn()
-    private fun hasFullRow() = crosses.any { row -> row.all { it } }
-    private fun hasFullColumn() = crosses[0].indices.any { iCol -> crosses.all { row -> row[iCol] } }
-
-    fun sumUnmarked() = cells.zip(crosses.flatten()) { num, crossed -> num.takeUnless { crossed } }.sumOf { it ?: 0 }
-
-    fun crossOff(drawnNumber: Int)
+    private class BingoCard(
+        val cells: List<Int>,
+        val crosses: List<MutableList<Boolean>>
+    )
     {
-        val i = cells.indexOf(drawnNumber)
-        if (i < 0) return
-        crosses[i / 5][i % 5] = true
+        constructor(cells: List<List<Int>>) : this(cells.flatten(), cells.map { MutableList(it.size) { false } })
+
+        fun hasWon() = hasFullRow() || hasFullColumn()
+        private fun hasFullRow() = crosses.any { row -> row.all { it } }
+        private fun hasFullColumn() = crosses[0].indices.any { iCol -> crosses.all { row -> row[iCol] } }
+
+        fun sumUnmarked() = cells.zip(crosses.flatten()) { num, crossed -> num.takeUnless { crossed } }.sumOf { it ?: 0 }
+
+        fun crossOff(drawnNumber: Int)
+        {
+            val i = cells.indexOf(drawnNumber)
+            if (i < 0) return
+            crosses[i / 5][i % 5] = true
+        }
     }
 }
