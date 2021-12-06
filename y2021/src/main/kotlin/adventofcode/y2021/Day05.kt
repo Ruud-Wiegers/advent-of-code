@@ -6,25 +6,17 @@ import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.sign
 
-object Day05 : AdventSolution(2021, 5, "Hydrothermal Venture")
-{
-    override fun solvePartOne(input: String) =
-        parseInput(input)
-            .filter { (a, b) -> a.x == b.x || a.y == b.y }
-            .countOverlap()
-
+object Day05 : AdventSolution(2021, 5, "Hydrothermal Venture") {
+    override fun solvePartOne(input: String) = parseInput(input).filterNot(Line::isDiagonal).countOverlap()
     override fun solvePartTwo(input: String) = parseInput(input).countOverlap()
 
     private fun Sequence<Line>.countOverlap() =
-        flatMap(Line::toPointSequence)
-            .groupingBy { it }
-            .eachCount()
-            .count { it.value > 1 }
+        flatMap(Line::toPointSequence).groupingBy { it }.eachCount().count { it.value > 1 }
 
-    private data class Line(val a: Vec2, val b: Vec2)
-    {
-        fun toPointSequence(): Sequence<Vec2>
-        {
+    private data class Line(private val a: Vec2, private val b: Vec2) {
+        fun isDiagonal() = a.x != b.x && a.y != b.y
+
+        fun toPointSequence(): Sequence<Vec2> {
             val delta = (b - a)
             val step = Vec2(delta.x.sign, delta.y.sign)
             val length = max(delta.x.absoluteValue, delta.y.absoluteValue) + 1
@@ -32,8 +24,7 @@ object Day05 : AdventSolution(2021, 5, "Hydrothermal Venture")
         }
     }
 
-    private fun parseInput(input: String): Sequence<Line>
-    {
+    private fun parseInput(input: String): Sequence<Line> {
         val regex = """(\d+),(\d+) -> (\d+),(\d+)""".toRegex()
         return input.lineSequence()
             .map { regex.matchEntire(it)!!.destructured }
