@@ -10,43 +10,40 @@ fun main()
 
 object Day08 : AdventSolution(2021, 8, "Seven Segment Search")
 {
-    override fun solvePartOne(input: String) = parseInput(input)
-        .flatMap { it.message }
-        .count { it.size in listOf(2, 3, 4, 7) }
+    override fun solvePartOne(input: String) = parseInput(input).flatMap(DecodingProblem::message).count { it.size in listOf(2, 3, 4, 7) }
 
     override fun solvePartTwo(input: String) = parseInput(input).sumOf { (digits, message) ->
-        val patterns = digits.digitPatterns()
+        val patterns = digits.sortDigitPatterns()
         message.map(patterns::indexOf).joinToString("").toInt()
     }
 
-    private fun parseInput(input: String) = input.lineSequence()
-        .map {
-            val (digits, message) = it.split(" | ")
-            DecodingProblem(
-                digits.split(" ").map(String::toSet),
-                message.split(" ").map(String::toSet)
-            )
-        }
+    private fun parseInput(input: String) = input.lineSequence().map {
+        val (digits, message) = it.split(" | ").map { it.split(" ").map(String::toSet) }
+        DecodingProblem(digits, message)
+    }
 
-    private fun List<Set<Char>>.digitPatterns(): List<Set<Char>>
+    private fun Collection<Set<Char>>.sortDigitPatterns(): List<SegmentEncodedDigit>
     {
-        val one = first { it.size == 2 }
-        val four = first { it.size == 4 }
-        val seven = first { it.size == 3 }
-        val eight = first { it.size == 7 }
+        val one = single { it.size == 2 }
+        val four = single { it.size == 4 }
+        val seven = single { it.size == 3 }
+        val eight = single { it.size == 7 }
 
-        val bottomLeftSegment = ('a'..'g').first { segment -> count { segment in it } == 4 }
+        val bottomLeftSegment = ('a'..'g').single { segment -> count { segment in it } == 4 }
 
-        val two = first { it.size == 5 && bottomLeftSegment in it }
-        val three = first { it.size == 5 && (it intersect one).size == 2 }
-        val five = first { it.size == 5 && it != two && it != three }
+        val fiveSegments = filter { it.size == 5 }
+        val two = fiveSegments.single { bottomLeftSegment in it }
+        val three = fiveSegments.single { (it intersect one).size == 2 }
+        val five = fiveSegments.single { it != two && it != three }
 
-        val six = first { it.size == 6 && (it intersect one).size == 1 }
-        val nine = first { it.size == 6 && bottomLeftSegment !in it }
-        val zero = first { it.size == 6 && it != six && it != nine }
+        val sixSegments = filter { it.size == 6 }
+        val six = sixSegments.single { (it intersect one).size == 1 }
+        val nine = sixSegments.single { bottomLeftSegment !in it }
+        val zero = sixSegments.single { it != six && it != nine }
 
         return listOf(zero, one, two, three, four, five, six, seven, eight, nine)
     }
-
-    private data class DecodingProblem(val digits: List<Set<Char>>, val message: List<Set<Char>>)
 }
+
+private data class DecodingProblem(val digitPatterns: List<SegmentEncodedDigit>, val message: List<SegmentEncodedDigit>)
+private typealias SegmentEncodedDigit = Set<Char>
