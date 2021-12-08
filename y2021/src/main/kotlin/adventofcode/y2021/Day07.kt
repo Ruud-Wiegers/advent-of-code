@@ -8,7 +8,7 @@ fun main() {
     Day07.solve()
 }
 
-object Day07 : AdventSolution(2021, 7, "???") {
+object Day07 : AdventSolution(2021, 7, "The Treachery of Whales") {
     override fun solvePartOne(input: String): Int {
         val subs = parseInput(input).sorted()
         val median = subs[subs.size / 2]

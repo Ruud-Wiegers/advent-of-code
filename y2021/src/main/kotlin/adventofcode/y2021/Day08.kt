@@ -8,7 +8,7 @@ fun main()
     Day08.solve()
 }
 
-object Day08 : AdventSolution(2021, 8, "???")
+object Day08 : AdventSolution(2021, 8, "Seven Segment Search")
 {
     override fun solvePartOne(input: String) = parseInput(input)
         .flatMap { it.message }
