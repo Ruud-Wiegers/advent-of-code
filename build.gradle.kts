@@ -9,7 +9,6 @@ allprojects {
     version = "1.0"
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 }
@@ -19,8 +18,6 @@ dependencies {
 }
 
 subprojects {
-
-
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             jvmTarget = "11"
