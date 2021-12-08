@@ -1,7 +1,6 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
-import adventofcode.util.collections.scan
 
 object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum") {
 

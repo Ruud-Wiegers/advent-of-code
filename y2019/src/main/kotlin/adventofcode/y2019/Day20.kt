@@ -11,7 +11,7 @@ fun main() {
 }
 
 object Day20 : AdventSolution(2019, 20, "Donut maze") {
-    override fun solvePartOne(input: String): Any? {
+    override fun solvePartOne(input: String): Any {
         val (floor, labels) = readMaze(input)
 
         val portals = labelPortals(floor, labels, Direction.RIGHT) + labelPortals(floor, labels, Direction.DOWN)

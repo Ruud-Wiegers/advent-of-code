@@ -7,7 +7,7 @@ object Day12 : AdventSolution(2018, 12, "Subterranean Sustainability") {
     override fun solvePartOne(input: String): Int {
         val (initial, rules) = parse(input)
         val g = 20
-        return generateSequence(initial) { ("....$it....").windowedSequence(5) { rules[it]!! }.joinToString("") }
+        return generateSequence(initial) { ("....$it....").windowedSequence(5) { w -> rules[w] }.joinToString("") }
                 .drop(g)
                 .first()
                 .mapIndexed { index, c -> if (c == '#') index - 2 * g else 0 }

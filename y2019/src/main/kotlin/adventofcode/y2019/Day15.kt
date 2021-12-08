@@ -15,7 +15,7 @@ object Day15 : AdventSolution(2019, 15, "Oxygen System") {
     override fun solvePartOne(input: String) =
         IntCodeProgram.fromData(input).let(::exploreMaze).first
 
-    override fun solvePartTwo(input: String): Any? {
+    override fun solvePartTwo(input: String): Int {
         val map: Map<Vec2, Int> = IntCodeProgram.fromData(input).let(::exploreMaze).second
 
         val source: List<Vec2> = map.asSequence().first { it.value == 2 }.key.let { listOf(it) }
@@ -24,7 +24,7 @@ object Day15 : AdventSolution(2019, 15, "Oxygen System") {
         return generateSequence(source) { candidates ->
             candidates.flatMap { p -> p.neighbors().filter { it in open } }
         }
-            .onEach { open -= it }
+            .onEach { open -= it.toSet() }
             .indexOfFirst { it.isEmpty() } - 1
     }
 

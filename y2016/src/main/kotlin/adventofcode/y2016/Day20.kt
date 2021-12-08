@@ -13,21 +13,20 @@ object Day20 : AdventSolution(2016, 20, "Firewall Rules") {
 	}
 
 	override fun solvePartTwo(input: String): String {
-		val blacklistedIpCount = coalesceIpRanges(input)
-				.map { (it.last - it.first) + 1 }
-				.sum()
-		return (4294967296L - blacklistedIpCount).toString()
+		val blacklistedIpCount = coalesceIpRanges(input).sumOf { (it.last - it.first) + 1 }
+        return (4294967296L - blacklistedIpCount).toString()
 	}
 }
 
 private fun coalesceIpRanges(input: String): List<LongRange> {
-	return input.lines()
-			.map { it.substringBefore('-').toLong()..it.substringAfter('-').toLong() }
-			.sortedBy { it.first }
-			.fold(listOf(), ::combineOverlapping)
-			.sortedBy { it.first }
-			.fold(listOf(), ::combineAdjacent)
-			.sortedBy { it.first }
+	return input.lineSequence()
+		.map { it.substringBefore('-').toLong()..it.substringAfter('-').toLong() }
+		.sortedBy { it.first }
+		.fold(listOf(), ::combineOverlapping)
+		.sortedBy { it.first }
+		.fold(listOf(), ::combineAdjacent)
+		.sortedBy { it.first }
+		.toList()
 }
 
 private tailrec fun combineOverlapping(list: List<LongRange>, range: LongRange): List<LongRange> {

@@ -27,7 +27,7 @@ object Day12 : AdventSolution(2015, 12, "JSAbacusFramework.io") {
 	}
 
 	private inline fun traverseAndSum(node: Iterable<*>, traverse: (Any) -> Int) =
-			node.filterNotNull().map { traverse(it) }.sum()
+		node.filterNotNull().sumOf { traverse(it) }
 }
 
 

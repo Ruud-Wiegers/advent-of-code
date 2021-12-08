@@ -11,7 +11,7 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
         val completed = mutableListOf<Char>()
 
         while (open.isNotEmpty()) {
-            val newTask = open.first { prerequisites[it].orEmpty().none { it in open } }
+            val newTask = open.first { prerequisites[it].orEmpty().none(open::contains) }
             open -= newTask
             completed += newTask
         }
@@ -30,35 +30,35 @@ object Day07 : AdventSolution(2018, 7, "The Sum of Its Parts") {
         while (completed.size < 26) {
             //assign new tasks to waiting elves if possible
             open
-                    .filter { prerequisites[it].orEmpty().all { it in completed } }
-                    .take(5 - tasksInProgress.size)
-                    .forEach { newTaskId ->
-                        open -= newTaskId
-                        tasksInProgress[newTaskId] = currentTime + 61 + (newTaskId - 'A')
-                    }
+                .filter { prerequisites[it].orEmpty().all(completed::contains) }
+                .take(5 - tasksInProgress.size)
+                .forEach { newTaskId ->
+                    open -= newTaskId
+                    tasksInProgress[newTaskId] = currentTime + 61 + (newTaskId - 'A')
+                }
 
             //advance the time to the completion of the next task
             currentTime = tasksInProgress.values.minOrNull() ?: currentTime
 
             //move all completed tasks to  'complete'
             tasksInProgress.keys
-                    .filter { tasksInProgress[it] == currentTime }
-                    .forEach { completedTaskId ->
-                        tasksInProgress -= completedTaskId
-                        completed += completedTaskId
-                    }
+                .filter { tasksInProgress[it] == currentTime }
+                .forEach { completedTaskId ->
+                    tasksInProgress -= completedTaskId
+                    completed += completedTaskId
+                }
         }
 
         return currentTime
     }
 
     private fun parse(input: String) = input
-            .lineSequence()
-            .map {
-                val required = it.substringAfter("Step ")[0]
-                val next = it.substringAfter("before step ")[0]
-                next to required
-            }
-            .groupBy({ it.first }, { it.second })
-            .mapValues { it.value.toSortedSet() }
+        .lineSequence()
+        .map {
+            val required = it.substringAfter("Step ")[0]
+            val next = it.substringAfter("before step ")[0]
+            next to required
+        }
+        .groupBy({ it.first }, { it.second })
+        .mapValues { it.value.toSortedSet() }
 }

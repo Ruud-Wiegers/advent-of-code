@@ -59,7 +59,7 @@ private data class Conway(val activeCells: Set<Vec2>)
     fun next(): Conway = activeCells
         .flatMapTo(mutableSetOf(), this::neighborhood)
         .let {
-            it.removeIf { !aliveInNext(it) }
+            it.retainAll(this::aliveInNext)
             Conway(it)
         }
 

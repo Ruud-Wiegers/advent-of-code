@@ -20,7 +20,7 @@ object Day18 : AdventSolution(2015, 18, "Like a GIF For Your Yard") {
 
 private data class ConwayGrid(private val grid: List<BooleanArray>) {
 
-    constructor(input: String) : this(input.lines().map { it.map { it == '#' }.toBooleanArray() })
+    constructor(input: String) : this(input.lines().map { line -> line.map { it == '#' }.toBooleanArray() })
 
     fun next() = List(grid.size) { y ->
         BooleanArray(grid[0].size) { x ->

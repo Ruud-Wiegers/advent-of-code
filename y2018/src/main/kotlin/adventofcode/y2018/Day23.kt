@@ -94,44 +94,4 @@ object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") 
         }
 
     }
-
-
-    private fun partitioningSolve(cluster: MutableSet<Day23.NanoBot>): Day23.NanoBot {
-
-        fun Day23.Point3D.neighbors(d: Long): Iterable<Day23.Point3D> =
-                (-1L..1L).flatMap { xd ->
-                    (-1L..1L).flatMap { yd ->
-                        (-1L..1L).map { zd ->
-                            copy(
-                                    x = x + xd * d,
-                                    y = y + yd * d,
-                                    z = z + zd * d
-                            )
-                        }
-                    }
-                }
-
-        var currentRadius = 100_000_000L
-        val origin = Day23.Point3D(0, 0, 0)
-        var currentBots = setOf(Day23.NanoBot(origin, currentRadius))
-
-        while (currentRadius > 0) {
-            currentRadius = (currentRadius / 2) + if (currentRadius > 2) 1 else 0
-
-            val newGeneration = currentBots.flatMap { bot ->
-                bot.p.neighbors(currentRadius).map { c ->
-                    bot.copy(p = c, r = currentRadius).let { newBot ->
-                        newBot to cluster.count {
-                            newBot.overlaps(it)
-                        }
-                    }
-                }
-            }
-            val maxBots = newGeneration.map { it.second }.maxOrNull() ?: 0
-
-            currentBots = newGeneration.filter { it.second == maxBots }.map { it.first }.toSet()
-        }
-
-        return currentBots.minByOrNull { it: NanoBot -> origin.distance(it.p) }!!
-    }
 }

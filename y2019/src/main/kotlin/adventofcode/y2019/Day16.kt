@@ -2,7 +2,6 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.collections.scan
 import kotlin.math.absoluteValue
 
 fun main() = Day16.solve()
@@ -33,7 +32,7 @@ object Day16 : AdventSolution(2019, 16, "Flawed Frequency Transmission") {
 
         val relevantInput = input.repeat(10000 - offset / input.length).reversed().map { it - '0' }
         val transformed = generateSequence(relevantInput) {
-            it.scan(0, { a, b -> (a + b) % 10 })
+            it.scan(0) { a, b -> (a + b) % 10 }
         }.drop(100).first()
 
         return transformed.drop(reverseOffset).take(8).joinToString("").reversed()

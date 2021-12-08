@@ -96,7 +96,7 @@ object Day18 : AdventSolution(2019, 18, "Many-Worlds Interpretation") {
                 directDistances[from]?.keys.orEmpty()
                         .filter { it !in requiredKeysForKey.keys }
                         .forEach { to ->
-                            requiredKeysForKey[to] = requiredKeysForKey[from].orEmpty() + from.toLowerCase()
+                            requiredKeysForKey[to] = requiredKeysForKey[from].orEmpty() + from.lowercaseChar()
                             new += to
                         }
             }

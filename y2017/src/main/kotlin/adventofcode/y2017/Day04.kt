@@ -12,7 +12,7 @@ object Day04 : AdventSolution(2017, 4, "High-Entropy Passphrases") {
 
 	override fun solvePartTwo(input: String) = input
 			.lines()
-			.map { it.split(" ").map { it.toList().sorted() } }
+			.map { it.split(" ").map(String::toList).map(List<Char>::sorted) }
 			.count { it.distinct().size == it.size }
 			.toString()
 }

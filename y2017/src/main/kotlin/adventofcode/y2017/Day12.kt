@@ -12,7 +12,7 @@ object Day12 : AdventSolution(2017, 12, "Digital Plumber") {
 	}
 
 	override fun solvePartTwo(input: String): String {
-		var connections: Map<Int, List<Int>> = parseInput(input)
+		val connections: MutableMap<Int, List<Int>> = parseInput(input).toMutableMap()
 		val groups = generateSequence {
 			connections.keys.firstOrNull()
 					?.let { id -> findGroup(connections, id) }

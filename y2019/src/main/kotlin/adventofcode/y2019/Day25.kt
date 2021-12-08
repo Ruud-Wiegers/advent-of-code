@@ -14,13 +14,13 @@ object Day25 : AdventSolution(2019, 25, "Cryostasis") {
         val foundItems = listOf("fixed point", "whirled peas", "hologram", "shell", "fuel cell", "polygon", "antenna", "candy cane")
         return testItems(foundItems)
                 .map {
-                    val cmds = it.map { "drop $it" }.joinToString("\n")
+                    val cmds = it.joinToString("\n") { "drop $it" }
                     val p = runAdventure(input, cmds)
                     p.readline("west")
                     p.execute()
                     p
                 }
-                .map { generateSequence(it::output).map { it.toInt().toChar() }.joinToString("") }
+                .map { generateSequence(it::output).map(Long::toInt).map(Int::toChar).joinToString("") }
                 .first { "heavier" !in it && "lighter" !in it }
     }
 

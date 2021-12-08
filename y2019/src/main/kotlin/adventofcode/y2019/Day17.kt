@@ -3,7 +3,6 @@ package adventofcode.y2019
 import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.IntCodeProgram
-import adventofcode.util.collections.scan
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 
@@ -28,7 +27,7 @@ object Day17 : AdventSolution(2019, 17, "Set and Forget") {
                     && this[y + 1][x] == '#'
                     && this[y][x + 1] == '#'
 
-    override fun solvePartTwo(input: String): Long? {
+    override fun solvePartTwo(input: String): Long {
         val data = "2" + input.drop(1)
         val program = IntCodeProgram.fromData(data)
         val map: List<String> = readMap(program)

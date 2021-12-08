@@ -84,6 +84,6 @@ object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
     }
 }
 
-private data class Example(val before: Registers, val instruction: UnboundInstruction, val after: Registers) {
+private class Example(val before: Registers, val instruction: UnboundInstruction, val after: Registers) {
     fun isSolvedBy(op: Operation) = before.clone().apply { execute(op, instruction) }.contentEquals(after)
 }

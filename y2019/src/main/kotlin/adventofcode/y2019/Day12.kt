@@ -59,7 +59,7 @@ object Day12 : AdventSolution(2019, 12, "The N-body problem") {
         operator fun plus(o: Vec3) = Vec3(x + o.x, y + o.y, z + o.z)
         operator fun minus(o: Vec3) = Vec3(x - o.x, y - o.y, z - o.z)
         fun sign() = Vec3(x.sign, y.sign, z.sign)
-        fun energy() = listOf(x, y, z).map { it.absoluteValue }.sum()
+        fun energy() = listOf(x, y, z).sumOf { it.absoluteValue }
     }
 
     private data class Moon(var p: Vec3, var v: Vec3) {

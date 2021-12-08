@@ -34,7 +34,4 @@ object Day21 : AdventSolution(2019, 21, "Springdroid") {
         return generateSequence { baseprogram.output() }.last()
     }
 
-    private fun IntCodeProgram.videoOut() {
-        generateSequence(this::output).map{it.toInt().toChar()}.joinToString("").let(::println)
-    }
 }

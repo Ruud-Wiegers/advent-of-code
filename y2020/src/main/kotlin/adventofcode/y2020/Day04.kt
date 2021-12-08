@@ -24,15 +24,15 @@ object Day04 : AdventSolution(2020, 4, "Passport Processing")
         val pidValidator = "[0-9]{9}".toRegex()
 
         val validators = sequenceOf<Validator>(
-            { it["byr"]?.toIntOrNull() ?: 0 in 1920..2002 },
-            { it["iyr"]?.toIntOrNull() ?: 0 in 2010..2020 },
-            { it["eyr"]?.toIntOrNull() ?: 0 in 2020..2030 },
+            { (it["byr"]?.toIntOrNull() ?: 0) in 1920..2002 },
+            { (it["iyr"]?.toIntOrNull() ?: 0) in 2010..2020 },
+            { (it["eyr"]?.toIntOrNull() ?: 0) in 2020..2030 },
             {
                 val hgt = it.getOrDefault("hgt", "")
                 when (hgt.takeLast(2))
                 {
-                    "cm" -> hgt.dropLast(2).toIntOrNull() ?: 0 in 150..193
-                    "in" -> hgt.dropLast(2).toIntOrNull() ?: 0 in 59..76
+                    "cm" -> (hgt.dropLast(2).toIntOrNull() ?: 0) in 150..193
+                    "in" -> (hgt.dropLast(2).toIntOrNull() ?: 0) in 59..76
                     else -> false
                 }
             },

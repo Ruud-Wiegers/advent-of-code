@@ -2,7 +2,6 @@ package adventofcode.y2018
 
 import adventofcode.AdventSolution
 import adventofcode.util.collections.cycle
-import adventofcode.util.collections.scan
 
 
 object Day01 : AdventSolution(2018, 1, "Chronal Calibration") {

@@ -7,7 +7,7 @@ object Day04 : AdventSolution(2018, 4, "Repose Record") {
     override fun solvePartOne(input: String): Int {
         val schedule = parseSchedule(input)
 
-        val sleepiestGuard = schedule.maxByOrNull { it.value.sumOf { it.last - it.first } }!!
+        val sleepiestGuard = schedule.maxByOrNull { g -> g.value.sumOf { it.last - it.first } }!!
         val sleepiestMinute = (0..59).maxByOrNull { m -> sleepiestGuard.value.count { m in it } }!!
 
         return sleepiestGuard.key * sleepiestMinute

@@ -32,11 +32,9 @@ object Day16 : AdventSolution(2015, 16, "Aunt Sue") {
 
 	private fun parseInput(input: String) = input.lineSequence()
 			.map {
-				it.substringAfter(":")
-						.split(',')
-						.map { i -> parseItem(i) }
-						.toMap()
-			}
+                it.substringAfter(":")
+                    .split(',').associate { i -> parseItem(i) }
+            }
 
 	private fun parseItem(item: String) = item.substringBefore(':').trim() to
 			item.substringAfter(":").trim().toInt()

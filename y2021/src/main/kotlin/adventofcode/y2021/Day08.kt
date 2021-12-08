@@ -18,7 +18,7 @@ object Day08 : AdventSolution(2021, 8, "Seven Segment Search")
     }
 
     private fun parseInput(input: String) = input.lineSequence().map {
-        val (digits, message) = it.split(" | ").map { it.split(" ").map(String::toSet) }
+        val (digits, message) = it.split(" | ").map { list -> list.split(" ").map(String::toSet) }
         DecodingProblem(digits, message)
     }
 

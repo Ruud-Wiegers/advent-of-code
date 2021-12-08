@@ -2,7 +2,6 @@ package adventofcode.y2015
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.y2015.*
 
 fun main() {
 	listOf(Day01, Day02, Day03, Day04, Day05,

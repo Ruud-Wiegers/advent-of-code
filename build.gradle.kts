@@ -10,11 +10,12 @@ allprojects {
 
     repositories {
         jcenter()
+        mavenCentral()
     }
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
 }
 
 subprojects {
@@ -25,7 +26,6 @@ subprojects {
             jvmTarget = "11"
             sourceCompatibility = "11"
             targetCompatibility = "11"
-            freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalStdlibApi,kotlin.time.ExperimentalTime"
         }
     }
 }

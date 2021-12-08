@@ -12,7 +12,7 @@ object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
 
         return ('a'..'z')
             .asSequence()
-            .map { ch -> preProcessed.filter { it.toLowerCase() != ch } }
+            .map { ch -> preProcessed.filter { it.lowercaseChar() != ch } }
             .map { process(it).size }
             .minOrNull()
 
@@ -20,7 +20,7 @@ object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {
 
     private fun process(input: String): Deque<Char> = ArrayDeque<Char>().apply {
         for (ch in input)
-            if (isEmpty() || ch == peek() || ch.toLowerCase() != peek().toLowerCase())
+            if (isEmpty() || ch == peek() || ch.lowercaseChar() != peek().lowercaseChar())
                 push(ch)
             else
                 pop()

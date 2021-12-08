@@ -94,8 +94,8 @@ private fun findPath(start: CavePoint, goal: CavePoint, cave: List<IntArray>): I
             return candidate.cost
         } else {
             candidate.move(cave).forEach {
-                val exisiting = distances[it.st] ?: 10000
-                if (it.cost < exisiting) {
+                val existing = distances[it.st] ?: 10000
+                if (it.cost < existing) {
                     distances[it.st] = it.cost
                     openList.add(PathfinderStateW(it.st, it.cost))
                 }

@@ -54,7 +54,7 @@ object Day22 : AdventSolution(2017, 22, "Sporifica Virus") {
 		protected abstract fun action(health: Health): Pair<Health, Direction>
 	}
 
-	fun parseInput(input: String): MutableMap<Point, Health> = input.lines()
+	private fun parseInput(input: String): MutableMap<Point, Health> = input.lines()
 			.mapIndexed { y, row ->
 				row.mapIndexed { x, char ->
 					val position = Point(x - row.length / 2, y - row.length / 2)
@@ -77,7 +77,7 @@ object Day22 : AdventSolution(2017, 22, "Sporifica Virus") {
 		fun right() = turn(1)
 		fun reverse() = turn(2)
 
-		private fun turn(i: Int): Direction = Direction.values().let { it[(it.indexOf(this) + i) % it.size] }
+		private fun turn(i: Int): Direction = values().let { it[(it.indexOf(this) + i) % it.size] }
 	}
 
 	data class Point(val x: Int, val y: Int) {

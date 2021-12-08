@@ -18,7 +18,7 @@ object Day19 : AdventSolution(2019, 19, "Tractor Beam") {
     }
 
 
-    override fun solvePartTwo(input: String): Int? {
+    override fun solvePartTwo(input: String): Int {
         val baseprogram = IntCodeProgram.fromData(input)
 
         fun walk(p: Vec2, delta: Vec2, ontoBeam: Boolean) =

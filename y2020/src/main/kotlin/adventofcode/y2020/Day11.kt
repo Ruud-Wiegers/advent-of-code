@@ -30,7 +30,7 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
 
         constructor(input: String) : this(input.lines().map(String::toList))
 
-        fun count() = grid.sumOf { it.count { it == '#' } }
+        fun count() = grid.sumOf { it.count('#'::equals) }
 
         fun next() = grid.indices.map { y ->
             grid[0].indices.map { x ->
@@ -40,8 +40,8 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
 
         private fun typeInNextGeneration(v: Vec2, ch: Char): Char =
             when (ch) {
-                'L'  -> if (countNear(v) > 0) 'L' else '#'
-                '#'  -> if (countNear(v) <= 4) '#' else 'L'
+                'L' -> if (countNear(v) > 0) 'L' else '#'
+                '#' -> if (countNear(v) <= 4) '#' else 'L'
                 else -> '.'
             }
 
@@ -61,7 +61,7 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
 
         constructor(input: String) : this(input.lines().map(String::toList))
 
-        fun count() = grid.sumOf { it.count { it == '#' } }
+        fun count() = grid.sumOf { it.count('#'::equals) }
 
         fun next() = grid.indices.map { y ->
             grid[0].indices.map { x ->
@@ -71,8 +71,8 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
 
         private fun typeInNextGeneration(v: Vec2, ch: Char): Char =
             when (ch) {
-                'L'  -> if (countNear(v) > 0) 'L' else '#'
-                '#'  -> if (countNear(v) <= 5) '#' else 'L'
+                'L' -> if (countNear(v) > 0) 'L' else '#'
+                '#' -> if (countNear(v) <= 5) '#' else 'L'
                 else -> '.'
             }
 

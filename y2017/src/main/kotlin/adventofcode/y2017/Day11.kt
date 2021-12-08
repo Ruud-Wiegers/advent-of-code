@@ -23,7 +23,7 @@ private data class HexCoordinates(private val x: Int, private val y: Int, privat
 
 	infix operator fun plus(o: HexCoordinates) = HexCoordinates(x + o.x, y + o.y, z + o.z)
 
-    val distance get() = listOf(x, y, z).map(::abs).maxOrNull()!!
+    val distance get() = listOf(x, y, z).maxOf(::abs)
 }
 
 private val coordinatesForDirection = mapOf(

@@ -2,7 +2,6 @@ package adventofcode.y2021
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.vector.Vec2
 
 fun main() {
     Day06.solve()

@@ -18,7 +18,7 @@ object Day02 : AdventSolution(2020, 2, "Password Philosophy")
         .map(::parse)
         .count { (ch, l, h, pwd) -> (pwd[l - 1] == ch) xor (pwd[h - 1] == ch) }
 
-    val regex = """(\d+)-(\d+) (.): (.+)""".toRegex()
+    private val regex = """(\d+)-(\d+) (.): (.+)""".toRegex()
     private fun parse(input: String): Policy
     {
         val (low, high, character, password) = regex.matchEntire(input)!!.destructured

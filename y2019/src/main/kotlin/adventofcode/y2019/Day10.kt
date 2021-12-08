@@ -16,11 +16,13 @@ object Day10 : AdventSolution(2019, 10, "Monitoring Station") {
         val station = losPerAsteroid(asteroids).maxByOrNull { it.value }!!.key
 
         val vectorsToOtherAsteroids = asteroids
+            .asSequence()
             .filter { it != station }
             .filter { lineOfSight(station, it, asteroids) }
             .map { it - station }
             .sortedBy { it.y.toDouble() / it.x.toDouble() }
             .sortedBy { it.x < 0 }
+            .toList()
 
         val targetAsteroid = vectorsToOtherAsteroids[199] + station
         return targetAsteroid.x * 100 + targetAsteroid.y

@@ -13,7 +13,7 @@ object Day02 : AdventSolution(2016, 2, "Bathroom Security") {
 			.fold(listOf(5)) { result, line ->
 				result + line.asSequence().fold(result.last(), function)
 			}
-			.joinToString("") { it: Int -> it.toString(16).toUpperCase() }
+			.joinToString("") { it.toString(16).uppercase() }
 			.drop(1)
 
 
