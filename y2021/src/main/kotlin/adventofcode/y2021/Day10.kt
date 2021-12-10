@@ -8,7 +8,15 @@ fun main() {
 }
 
 object Day10 : AdventSolution(2021, 10, "Syntax Scoring") {
-    override fun solvePartOne(input: String) = input.lineSequence().sumOf { firstError(it) }
+    override fun solvePartOne(input: String) = input.lineSequence().sumOf(::firstError)
+
+    override fun solvePartTwo(input: String) = input.lineSequence()
+        .filter { firstError(it) == 0 }
+        .map(::remains)
+        .map(::score)
+        .toList()
+        .sorted()
+        .let { it[it.size / 2] }
 
     private fun firstError(str: String): Int {
         val stack = mutableListOf<Char>()
@@ -23,14 +31,6 @@ object Day10 : AdventSolution(2021, 10, "Syntax Scoring") {
         }
         return 0
     }
-
-    override fun solvePartTwo(input: String) = input.lineSequence()
-        .filter { firstError(it) == 0 }
-        .map(::remains)
-        .map(::score)
-        .toList()
-        .sorted()
-        .let { it[it.size / 2] }
 
     private fun remains(str: String) = buildList<Char> {
         str.forEach { if (it in ")]}>") removeLast() else add(it) }
