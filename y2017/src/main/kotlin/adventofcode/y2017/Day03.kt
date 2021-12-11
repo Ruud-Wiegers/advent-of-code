@@ -2,6 +2,8 @@ package adventofcode.y2017
 
 import adventofcode.AdventSolution
 import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.mooreNeighbors
+import adventofcode.util.vector.neighbors
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -13,14 +15,8 @@ object Day03 : AdventSolution(2017, 3, "Spiral Memory") {
 
         val spiral = mutableMapOf(Vec2.origin to 1)
 
-        fun Vec2.neighbors() =
-            (-1..1).flatMap { dx ->
-                (-1..1).map { dy ->
-                    Vec2(x + dx, y + dy)
-                }
-            }
 
-        fun Vec2.sumNeighborhood() = neighbors().mapNotNull(spiral::get).sum()
+        fun Vec2.sumNeighborhood() = mooreNeighbors().mapNotNull(spiral::get).sum()
 
         return spiralCoordinatesSequence
             .map { spiral.computeIfAbsent(it) { v -> v.sumNeighborhood() } }

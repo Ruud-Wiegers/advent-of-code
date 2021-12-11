@@ -3,10 +3,6 @@ package adventofcode.y2021
 import adventofcode.AdventSolution
 import adventofcode.solve
 
-fun main() {
-    Day06.solve()
-}
-
 object Day06 : AdventSolution(2021, 6, "Lanternfish") {
     override fun solvePartOne(input: String) = solve(input, 80)
     override fun solvePartTwo(input: String) = solve(input, 256)
@@ -30,5 +26,4 @@ object Day06 : AdventSolution(2021, 6, "Lanternfish") {
             .map { it.toInt() }
             .groupingBy { it }
             .eachCount()
-
 }

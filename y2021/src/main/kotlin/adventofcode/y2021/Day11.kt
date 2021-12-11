@@ -1,44 +1,35 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Vec2
-
-fun main() {
-    Day11.solve()
-}
+import adventofcode.util.vector.mooreNeighbors
 
 object Day11 : AdventSolution(2021, 11, "Dumbo Octopus") {
     override fun solvePartOne(input: String) =
-        generateSequence(parseInput(input), Grid::next).drop(1).take(100).sumOf(Grid::flashed)
+        generateSequence(parseInput(input), Grid::step).drop(1).take(100).sumOf(Grid::flashed)
 
     override fun solvePartTwo(input: String) =
-        generateSequence(parseInput(input), Grid::next).map(Grid::flashed).indexOfFirst(100::equals)
+        generateSequence(parseInput(input), Grid::step).map(Grid::flashed).indexOfFirst(100::equals)
 
     private fun parseInput(input: String) = input.lines()
         .flatMapIndexed { y, line ->
             line.mapIndexed { x, ch -> Vec2(x, y) to Character.getNumericValue(ch) }
         }
-        .toMap()
-        .let(::Grid)
+        .toMap().let(::Grid)
 
-    private data class Grid(val cells: Map<Vec2, Int>) {
+    private class Grid(val octopuses: Map<Vec2, Int>) {
 
-        fun flashed(): Int = cells.count { it.value == 0 }
+        fun flashed(): Int = octopuses.count { it.value == 0 }
 
-        fun next(): Grid = generateSequence(grow(), Grid::flash)
-            .zipWithNext().first { it.first == it.second }.first
+        fun step(): Grid = generateSequence(charge(), Grid::flash).first(Grid::done)
 
-        private fun grow() = Grid(cells = cells.mapValues { it.value + 1 })
+        private fun charge() = Grid(octopuses.mapValues { it.value + 1 })
 
-        private fun flash() = Grid(cells = cells.mapValues { (k, v) ->
-            if (v in 1..9) v + neighbors(k).count { cells.getValue(it) > 9 }
+        private fun flash() = Grid(octopuses.mapValues { (pos, v) ->
+            if (v in 1..9) v + pos.mooreNeighbors().count { (octopuses[it] ?: 0) > 9 }
             else 0
         })
 
-        private fun neighbors(v: Vec2) =
-            (-1..1).flatMap { y -> (-1..1).map { x -> Vec2(x, y) } }
-                .map { it + v }
-                .filter { it in cells.keys }
+        private fun done() = octopuses.none { it.value > 9 }
     }
 }

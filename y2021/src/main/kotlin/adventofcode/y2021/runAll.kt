@@ -6,13 +6,12 @@ import adventofcode.solve
 import kotlin.system.measureTimeMillis
 
 fun main() {
-    repeat(3) {
-        measureTimeMillis {
-            listOf(
-                Day01, Day02, Day03, Day04, Day05,
-                Day06, Day07, Day08, Day09, Day10
-            )
-                .forEach(AdventSolution::solve)
-        }.let { println(formattedTime(it)) }
-    }
+    measureTimeMillis {
+        listOf(
+            Day01, Day02, Day03, Day04, Day05,
+            Day06, Day07, Day08, Day09, Day10,
+            Day11
+        )
+            .forEach(AdventSolution::solve)
+    }.let { println(formattedTime(it)) }
 }

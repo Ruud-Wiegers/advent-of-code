@@ -1,12 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import kotlin.math.abs
-
-fun main() {
-    Day07.solve()
-}
 
 object Day07 : AdventSolution(2021, 7, "The Treachery of Whales") {
     override fun solvePartOne(input: String): Int {
@@ -24,11 +19,8 @@ object Day07 : AdventSolution(2021, 7, "The Treachery of Whales") {
 
     private fun t(i: Int) = i * (i + 1) / 2
 
-
     private fun parseInput(input: String): List<Int> {
         return input.split(',')
             .map { it.toInt() }
-
     }
-
 }

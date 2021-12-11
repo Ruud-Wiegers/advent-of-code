@@ -1,11 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-fun main() {
-    Day10.solve()
-}
 
 object Day10 : AdventSolution(2021, 10, "Syntax Scoring") {
     override fun solvePartOne(input: String) = input.lineSequence().sumOf(::firstError)

@@ -32,4 +32,7 @@ enum class Direction(val vector: Vec2) {
 
 }
 
-fun Vec2.neighbors() = Direction.values().map { this + it.vector }
+fun Vec2.neighbors(): List<Vec2> = Direction.values().map { this + it.vector }
+
+private val mooreDelta = (-1..1).flatMap { dy -> (-1..1).map { dx -> Vec2(dx, dy) } }
+fun Vec2.mooreNeighbors(): List<Vec2> = mooreDelta.map(this::plus)

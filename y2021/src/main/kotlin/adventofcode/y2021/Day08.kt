@@ -1,16 +1,11 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-fun main()
-{
-    Day08.solve()
-}
 
-object Day08 : AdventSolution(2021, 8, "Seven Segment Search")
-{
-    override fun solvePartOne(input: String) = parseInput(input).flatMap(DecodingProblem::message).count { it.size in listOf(2, 3, 4, 7) }
+object Day08 : AdventSolution(2021, 8, "Seven Segment Search") {
+    override fun solvePartOne(input: String) =
+        parseInput(input).flatMap(DecodingProblem::message).count { it.size in listOf(2, 3, 4, 7) }
 
     override fun solvePartTwo(input: String) = parseInput(input).sumOf { (digits, message) ->
         val patterns = digits.sortDigitPatterns()
@@ -22,8 +17,7 @@ object Day08 : AdventSolution(2021, 8, "Seven Segment Search")
         DecodingProblem(digits, message)
     }
 
-    private fun Collection<Set<Char>>.sortDigitPatterns(): List<SegmentEncodedDigit>
-    {
+    private fun Collection<Set<Char>>.sortDigitPatterns(): List<SegmentEncodedDigit> {
         val one = single { it.size == 2 }
         val four = single { it.size == 4 }
         val seven = single { it.size == 3 }
