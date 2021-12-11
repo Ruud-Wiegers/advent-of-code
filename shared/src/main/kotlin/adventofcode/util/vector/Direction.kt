@@ -1,5 +1,7 @@
 package adventofcode.util.vector
 
+import adventofcode.util.collections.cartesian
+
 enum class Direction(val vector: Vec2) {
     UP(Vec2(0, -1)), RIGHT(Vec2(1, 0)), DOWN(Vec2(0, 1)), LEFT(Vec2(-1, 0));
 
@@ -34,5 +36,5 @@ enum class Direction(val vector: Vec2) {
 
 fun Vec2.neighbors(): List<Vec2> = Direction.values().map { this + it.vector }
 
-private val mooreDelta = (-1..1).flatMap { dy -> (-1..1).map { dx -> Vec2(dx, dy) } }
+val mooreDelta = (-1..1).cartesian().map { (dx, dy) -> Vec2(dx, dy) }.toList()
 fun Vec2.mooreNeighbors(): List<Vec2> = mooreDelta.map(this::plus)

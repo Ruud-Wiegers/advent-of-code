@@ -2,8 +2,9 @@ package adventofcode.y2020
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import adventofcode.util.collections.cartesian
 import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.mooreDelta
+import adventofcode.util.vector.mooreNeighbors
 
 fun main() = Day11.solve()
 
@@ -46,14 +47,9 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
             }
 
         private fun countNear(v: Vec2) =
-            deltas
-                .map { delta -> v + delta }
+            v.mooreNeighbors()
                 .map { grid.getOrNull(it.y)?.getOrNull(it.x) }
                 .count { it == '#' }
-
-        private val deltas by lazy {
-            (-1..1).cartesian().map { Vec2(it.first, it.second) }.toList()
-        }
     }
 
 
@@ -77,22 +73,18 @@ object Day11 : AdventSolution(2020, 11, "Seating System") {
             }
 
         private fun countNear(v: Vec2): Int =
-            deltas
-                .map { delta ->
-                    generateSequence(v) { it + delta }
-                        .map { get(it) }
-                        .drop(1)
-                        .takeWhile { it != null }
-                        .find { it != '.' }
-                }
+            mooreDelta.map { delta ->
+                generateSequence(v, delta::plus)
+                    .map { get(it) }
+                    .drop(1)
+                    .takeWhile { it != null }
+                    .find { it != '.' }
+            }
                 .count { it == '#' }
 
 
         private fun get(v: Vec2) = grid.getOrNull(v.y)?.getOrNull(v.x)
 
-        private val deltas by lazy {
-            (-1..1).cartesian().map { Vec2(it.first, it.second) }.toList()
-        }
 
     }
 }
