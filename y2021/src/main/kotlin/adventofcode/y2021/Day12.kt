@@ -1,11 +1,6 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-
-fun main() {
-    Day12.solve()
-}
 
 object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
     override fun solvePartOne(input: String) = solve(input, Path::visit1)
@@ -14,12 +9,15 @@ object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
 
     private inline fun solve(input: String, visit: Path.(cave: Cave) -> Path?): Int {
         val graph = parseInput(input)
-        var open = mapOf(Path(Cave.Start, emptySet(), false) to 1)
+        var open = mapOf(Path.initial to 1)
         var complete = 0
         while (open.isNotEmpty()) {
-            open = open.flatMap { (path,count) -> graph[path.current].orEmpty().mapNotNull { path.visit(it) }.map { it to count } }
-                .groupBy ({ it.first }, {it.second}).mapValues { it.value.sum() }
-            complete += open.map { if (it.key.current == Cave.End) it.value else 0 }.sum()
+            open = open.flatMap { (path, count) ->
+                graph[path.current].orEmpty().mapNotNull { path.visit(it) }.map { it to count }
+            }
+                .groupingBy { it.first }
+                .fold(0) { sum, (_, count) -> sum + count }
+            complete += open.asSequence().filter { it.key.current == Cave.End }.sumOf { it.value }
         }
         return complete
     }
@@ -36,6 +34,10 @@ object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
             cave !in history -> copy(current = cave, history = history + cave)
             !doubled -> copy(current = cave, doubled = true)
             else -> null
+        }
+
+        companion object {
+            val initial = Path(Cave.Start, emptySet(), false)
         }
     }
 
