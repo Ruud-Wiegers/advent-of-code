@@ -17,7 +17,7 @@ object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
             }
                 .groupingBy { it.first }
                 .fold(0) { sum, (_, count) -> sum + count }
-            complete += open.asSequence().filter { it.key.current == "end"}.sumOf { it.value }
+            complete += open.asSequence().filter { it.key.current == "end" }.sumOf { it.value }
         }
         return complete
     }
@@ -25,8 +25,8 @@ object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
     private fun parseToGraph(input: String): Map<String, List<String>> =
         input.lineSequence().map { it.substringBefore('-') to it.substringAfter('-') }
             .flatMap { (a, b) -> listOf(a to b, b to a) }
-            .filter { it.second !="start" }
-            .filter { it.first != "end"}
+            .filter { it.second != "start" }
+            .filter { it.first != "end" }
             .groupBy({ it.first }, { it.second })
 
     private data class Path(val current: String, val history: Set<String>, val doubled: Boolean) {
