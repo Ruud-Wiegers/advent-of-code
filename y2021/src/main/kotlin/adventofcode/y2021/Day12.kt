@@ -14,11 +14,12 @@ object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
 
     private inline fun solve(input: String, visit: Path.(cave: Cave) -> Path?): Int {
         val graph = parseInput(input)
-        var open = listOf(Path(Cave.Start, emptySet(), false))
+        var open = mapOf(Path(Cave.Start, emptySet(), false) to 1)
         var complete = 0
         while (open.isNotEmpty()) {
-            open = open.flatMap { path -> graph[path.current].orEmpty().mapNotNull { path.visit(it) } }
-            complete += open.count { it.current == Cave.End }
+            open = open.flatMap { (path,count) -> graph[path.current].orEmpty().mapNotNull { path.visit(it) }.map { it to count } }
+                .groupBy ({ it.first }, {it.second}).mapValues { it.value.sum() }
+            complete += open.map { if (it.key.current == Cave.End) it.value else 0 }.sum()
         }
         return complete
     }
