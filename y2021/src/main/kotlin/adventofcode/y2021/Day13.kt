@@ -4,7 +4,7 @@ import adventofcode.AdventSolution
 import adventofcode.util.vector.Vec2
 import kotlin.math.abs
 
-object Day13 : AdventSolution(2021, 13, "Passage Pathing") {
+object Day13 : AdventSolution(2021, 13, "Transparent Origami") {
     override fun solvePartOne(input: String): Int {
         val (points, folds) = parse(input)
         return foldPaper(points, folds.take(1)).size
