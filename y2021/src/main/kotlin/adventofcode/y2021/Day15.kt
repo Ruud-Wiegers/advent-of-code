@@ -2,17 +2,18 @@ package adventofcode.y2021
 
 import adventofcode.AdventSolution
 import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.neighbors
 import java.util.PriorityQueue
 
 object Day15 : AdventSolution(2021, 15, "Chitons")
 {
-    override fun solvePartOne(input: String): Int?
+    override fun solvePartOne(input: String): Int
     {
         val grid = parse(input)
-        return findPath(Vec2.origin, Vec2(grid.lastIndex, grid[0].lastIndex), grid)
+        return findAllPaths(grid, Vec2.origin)[Vec2(grid[0].lastIndex, grid.lastIndex)]
     }
 
-    override fun solvePartTwo(input: String): Any?
+    override fun solvePartTwo(input: String): Int
     {
         val grid = parse(input)
 
@@ -22,42 +23,44 @@ object Day15 : AdventSolution(2021, 15, "Chitons")
                 (grid[y % size][x % size] + y / size + x / size - 1) % 9 + 1
             }
         }
-        return findPath(Vec2.origin, Vec2(bigGrid.lastIndex, bigGrid[0].lastIndex), bigGrid)
+
+        return findAllPaths(bigGrid, Vec2.origin)[Vec2(bigGrid[0].lastIndex, bigGrid.lastIndex)]
     }
 
     private fun parse(input: String) = input.lines().map { it.map { it - '0' }.toIntArray() }
-}
 
-private fun findPath(start: Vec2, goal: Vec2, cave: List<IntArray>): Int?
-{
-    val distances = cave.map { IntArray(it.size) { 1_000_000 } }
-    distances[0][0] = 0
-
-    val openList = PriorityQueue(compareBy<Vec2> { distances[it.y][it.x] })
-    openList += start
-
-    while (openList.isNotEmpty())
+    private fun findAllPaths(costs: List<IntArray>, start: Vec2): List<IntArray>
     {
-        val c = openList.poll()
-        if (c == goal) return distances[c.y][c.x]
+        val distances = costs.map { IntArray(it.size) { Int.MAX_VALUE } }
+        distances[start] = 0
 
-        neighbors(cave, c).forEach { n ->
-            val newDistance = distances[c.y][c.x] + cave[n.y][n.x]
+        val open = PriorityQueue(compareBy<Vec2> { distances[it] })
+        open += start
 
-            if (newDistance < distances[n.y][n.x])
+        while (open.isNotEmpty())
+        {
+            val edge = open.poll()
+
+            for (neighbor in edge.neighbors())
             {
-                distances[n.y][n.x] = newDistance
-                openList += n
+                if (neighbor !in costs) continue
+
+                val newDistance = distances[edge] + costs[neighbor]
+                if (distances[neighbor] > newDistance)
+                {
+                    distances[neighbor] = newDistance
+                    open += neighbor
+                }
             }
         }
+
+        return distances
     }
 
-    return null
-}
-
-private fun neighbors(cave: List<IntArray>, v: Vec2) = buildList {
-    if (v.x > 0) add(Vec2(v.x - 1, v.y))
-    if (v.y > 0) add(Vec2(v.x, v.y - 1))
-    if (v.x < cave[0].lastIndex) add(Vec2(v.x + 1, v.y))
-    if (v.y < cave.lastIndex) add(Vec2(v.x, v.y + 1))
+    private operator fun List<IntArray>.contains(v: Vec2) = v.y in indices && v.x in get(0).indices
+    private operator fun List<IntArray>.get(v: Vec2) = this[v.y][v.x]
+    private operator fun List<IntArray>.set(v: Vec2, value: Int)
+    {
+        this[v.y][v.x] = value
+    }
 }
