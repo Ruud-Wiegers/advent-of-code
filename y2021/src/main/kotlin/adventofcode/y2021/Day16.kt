@@ -14,7 +14,7 @@ object Day16 : AdventSolution(2021, 16, "BITS") {
 
         fun versions(p: Packet): Long = when (p) {
             is Literal -> p.version.toLong()
-            is Operator -> p.version + p.data.sumOf { versions(it) }
+            is Operator -> p.version + p.data.sumOf(::versions)
         }
 
         return versions(p)
@@ -42,10 +42,7 @@ object Day16 : AdventSolution(2021, 16, "BITS") {
     }
 
     private class BitsReader(input: String) {
-        val binary = input
-            .flatMap {
-                it.toString().toInt(16).toString(2).padStart(4, '0').asIterable()
-            }.joinToString("")
+        val binary: String = input.toBigInteger(16).toString(2)
         var mark = 0
 
         fun readBits(i: Int): Int {
@@ -54,15 +51,6 @@ object Day16 : AdventSolution(2021, 16, "BITS") {
             return result
         }
 
-        fun readNumber(): Long {
-            var result = 0L
-            do {
-                val next = readBits(1) == 1
-                result *= 16
-                result += readBits(4)
-            } while (next)
-            return result
-        }
     }
 
     private sealed class Packet(val version: Int, val type: Int)
@@ -79,26 +67,28 @@ object Day16 : AdventSolution(2021, 16, "BITS") {
     }
 
     private fun parseLiteral(reader: BitsReader, version: Int, type: Int): Packet {
-        val literal = reader.readNumber()
-        return Literal(version, type, literal)
+        var result = 0L
+        do {
+            val next = reader.readBits(1) == 1
+            result *= 16
+            result += reader.readBits(4)
+        } while (next)
+        return Literal(version, type, result)
     }
 
     private fun parseOperator(reader: BitsReader, version: Int, type: Int): Packet {
         val lengthType = reader.readBits(1)
-        return if (lengthType == 0) {
+        val subPackets = if (lengthType == 0) {
             val lastBit = reader.readBits(15) + reader.mark
-            val packets = buildList {
+            buildList {
                 while (reader.mark < lastBit) {
                     add(parsePacket(reader))
                 }
             }
-            Operator(version, type, packets)
         } else {
             val packetCount = reader.readBits(11)
-            val packets = List(packetCount) { parsePacket(reader) }
-            Operator(version, type, packets)
+            List(packetCount) { parsePacket(reader) }
         }
-
-
+        return Operator(version, type, subPackets)
     }
 }
