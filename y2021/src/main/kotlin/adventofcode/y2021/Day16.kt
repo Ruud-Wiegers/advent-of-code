@@ -3,8 +3,8 @@ package adventofcode.y2021
 import adventofcode.AdventSolution
 
 object Day16 : AdventSolution(2021, 16, "Packet Decoder") {
-    override fun solvePartOne(input: String): Long = PacketDecoder(input).parsePacket().let(::sumOfVersions)
-    override fun solvePartTwo(input: String): Long = PacketDecoder(input).parsePacket().let(::eval)
+    override fun solvePartOne(input: String) = PacketDecoder(input).parsePacket().let(::sumOfVersions)
+    override fun solvePartTwo(input: String) = PacketDecoder(input).parsePacket().let(::eval)
 }
 
 private sealed class Packet(val version: Int, val type: Int)
@@ -12,22 +12,15 @@ private class Literal(version: Int, type: Int, val data: Long) : Packet(version,
 private class Operator(version: Int, type: Int, val data: List<Packet>) : Packet(version, type)
 
 private class PacketDecoder(input: String) {
-    private val binary: String = input.toBigInteger(16).toString(2)
-    private var mark = 0
-
-    private fun readBits(i: Int): Int {
-        val result = binary.substring(mark, mark + i).toInt(2)
-        mark += i
-        return result
-    }
+    private val binary = "F$input".toBigInteger(16).toString(2).drop(4)
+    private var index = 0
+    private fun readBits(n: Int): Int = binary.substring(index, index + n).toInt(2).also { index += n }
 
     fun parsePacket(): Packet {
         val version = readBits(3)
         val type = readBits(3)
-        return when (type) {
-            4    -> Literal(version, type, parseLiteral())
-            else -> Operator(version, type, parseSubpackets())
-        }
+        return if (type == 4) Literal(version, type, parseLiteral())
+        else Operator(version, type, parseSubpackets())
     }
 
     private fun parseLiteral(): Long {
@@ -42,9 +35,9 @@ private class PacketDecoder(input: String) {
 
     private fun parseSubpackets(): List<Packet> {
         return if (readBits(1) == 0) {
-            val lastBit = readBits(15) + mark
+            val lastBit = readBits(15) + index
             buildList {
-                while (mark < lastBit) {
+                while (index < lastBit) {
                     add(parsePacket())
                 }
             }
@@ -55,8 +48,8 @@ private class PacketDecoder(input: String) {
     }
 }
 
-private fun sumOfVersions(p: Packet): Long = when (p) {
-    is Literal  -> p.version.toLong()
+private fun sumOfVersions(p: Packet): Int = when (p) {
+    is Literal  -> p.version
     is Operator -> p.version + p.data.sumOf(::sumOfVersions)
 }
 
