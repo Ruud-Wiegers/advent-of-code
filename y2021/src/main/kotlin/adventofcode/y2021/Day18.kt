@@ -1,74 +1,71 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-import adventofcode.util.collections.cartesian
-
-fun main() {
-    Day18.solve()
-}
 
 object Day18 : AdventSolution(2021, 18, "Snailfish") {
-    override fun solvePartOne(input: String) = input
-        .lineSequence()
-        .map(this::toSnailNumber)
-        .reduce(SnailNumber::plus)
-        .magnitude()
+    override fun solvePartOne(input: String): Int {
+        val numbers = input.lines().map(::toSnailNumber)
+        return numbers.reduce(SnailfishNumber::plus).magnitude()
+    }
 
-    override fun solvePartTwo(input: String) = input
-        .lines()
-        .map(this::toSnailNumber)
-        .cartesian()
-        .filter { it.first != it.second }
-        .map { (a, b) -> a + b }
-        .maxOf(SnailNumber::magnitude)
+    override fun solvePartTwo(input: String): Int {
+        val numbers = input.lines().map(::toSnailNumber)
+        return numbers.flatMap { a -> numbers.filterNot(a::equals).map(a::plus) }.maxOf { it.magnitude() }
+    }
 
-    private fun toSnailNumber(s: String) = SnailNumber(buildList {
+    private fun toSnailNumber(s: String) = SnailfishNumber(buildList {
         var depth = 0
         s.forEach { ch ->
             when (ch) {
                 '[' -> depth++
                 ']' -> depth--
-                in '0'..'9' -> add(Pair(ch - '0', depth))
+                in '0'..'9' -> add(Element(ch - '0', depth))
             }
         }
     })
 
-    private data class SnailNumber(val values: List<Pair<Int, Int>>) {
-        operator fun plus(o: SnailNumber) = SnailNumber((values + o.values).map { (a, b) -> a to b + 1 }).reduce()
+    private data class SnailfishNumber(val values: List<Element>) {
+        operator fun plus(o: SnailfishNumber) = SnailfishNumber((values + o.values).map { it.addDepth(1) }).simplify()
 
-        fun reduce(): SnailNumber = explode()?.reduce() ?: split()?.reduce() ?: this
+        fun simplify(): SnailfishNumber = explode()?.simplify() ?: split()?.simplify() ?: this
 
-        private fun split(): SnailNumber? {
-            val i = values.indexOfFirst { it.first > 9 }
-            return if (i < 0) null
-            else SnailNumber(values.toMutableList().apply {
-                set(i, Pair(values[i].first / 2, values[i].second + 1))
-                add(i + 1, Pair((values[i].first + 1) / 2, values[i].second + 1))
+        private fun explode(): SnailfishNumber? {
+            val i = values.indexOfFirst { it.depth == 5 }
+            return if (i < 0) null else SnailfishNumber(values.toMutableList().also { new ->
+                val (left, _) = new.removeAt(i)
+                val (right, _) = new.removeAt(i)
+                new.add(i, Element(0, 4))
+                if (i - 1 in new.indices) new[i - 1] = new[i - 1].addValue(left)
+                if (i + 1 in new.indices) new[i + 1] = new[i + 1].addValue(right)
             })
         }
 
-        private fun explode(): SnailNumber? {
-            val i = values.indexOfFirst { it.second == 5 }
-            return if (i < 0) null else SnailNumber(values.toMutableList().apply {
-                if (i > 0) set(i - 1, values[i - 1].let { (v0, d0) -> v0 + get(i).first to d0 })
-                if (i + 1 < values.lastIndex) set(i + 2, values[i + 2].let { (v0, d0) -> v0 + get(i + 1).first to d0 })
-                set(i, 0 to 4)
-                removeAt(i + 1)
+        private fun split(): SnailfishNumber? {
+            val i = values.indexOfFirst { it.value > 9 }
+            return if (i < 0) null
+            else SnailfishNumber(values.toMutableList().also { new ->
+                val (oldV, oldD) = new.removeAt(i)
+                new.add(i, Element(oldV / 2, oldD + 1))
+                new.add(i + 1, Element((oldV + 1) / 2, oldD + 1))
             })
         }
 
         fun magnitude(): Int {
-            val stack = mutableListOf<Pair<Int, Int>>()
-            values.forEach {
-                stack.add(it)
-                while (stack.size > 1 && stack.last().second == stack[stack.lastIndex - 1].second) {
-                    val (v2, d2) = stack.removeLast()
-                    val (v1, _) = stack.removeLast()
-                    stack.add(3 * v2 + 2 * v1 to d2 - 1)
-                }
+            val stack = mutableListOf<Element>()
+
+            tailrec fun tryAdd(r: Element) {
+                if ((stack.isEmpty() || stack.last().depth != r.depth)) stack.add(r)
+                else tryAdd(stack.removeLast().magnitudeWith(r))
             }
-            return stack.first().first
+
+            values.forEach(::tryAdd)
+            return stack.first().value
         }
+    }
+
+    private data class Element(val value: Int, val depth: Int) {
+        fun addDepth(a: Int) = copy(depth = depth + a)
+        fun addValue(a: Int) = copy(value = value + a)
+        fun magnitudeWith(o: Element) = Element(value * 2 + o.value * 3, depth - 1)
     }
 }
