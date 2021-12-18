@@ -3,7 +3,7 @@ package adventofcode.y2021
 import adventofcode.AdventSolution
 import adventofcode.util.vector.Vec2
 
-object Day17 : AdventSolution(2021, 17, "???") {
+object Day17 : AdventSolution(2021, 17, "Trick Shot") {
     override fun solvePartOne(input: String) = 92 * 93 / 2
 
     override fun solvePartTwo(input: String): Int {
