@@ -9,109 +9,66 @@ fun main() {
 }
 
 object Day18 : AdventSolution(2021, 18, "Snailfish") {
-    override fun solvePartOne(input: String) = input.lineSequence()
-        .map { it.toSnailNumber() }
-        .reduce(SnailNumber::plus).magnitude()
+    override fun solvePartOne(input: String) = input
+        .lineSequence()
+        .map(this::toSnailNumber)
+        .reduce(SnailNumber::plus)
+        .magnitude()
 
-
-    override fun solvePartTwo(input: String) = input.lines().cartesian()
+    override fun solvePartTwo(input: String) = input
+        .lines()
+        .map(this::toSnailNumber)
+        .cartesian()
         .filter { it.first != it.second }
-        .map { it.first.toSnailNumber() + it.second.toSnailNumber() }
+        .map { (a, b) -> a + b }
         .maxOf(SnailNumber::magnitude)
 
-    private fun String.toSnailNumber(): SnailNumber {
-        val digits = mutableListOf<SnailNumber>()
-        forEach { ch ->
+    private fun toSnailNumber(s: String) = SnailNumber(buildList {
+        var depth = 0
+        s.forEach { ch ->
             when (ch) {
-                in '0'..'9' -> digits += V((ch - '0').toLong())
-                ']' -> {
-                    val r = digits.removeLast()
-                    val l = digits.removeLast()
-                    digits += P(l, r)
+                '[' -> depth++
+                ']' -> depth--
+                in '0'..'9' -> add(Pair(ch - '0', depth))
+            }
+        }
+    })
+
+    private data class SnailNumber(val values: List<Pair<Int, Int>>) {
+        operator fun plus(o: SnailNumber) = SnailNumber((values + o.values).map { (a, b) -> a to b + 1 }).reduce()
+
+        fun reduce(): SnailNumber = explode()?.reduce() ?: split()?.reduce() ?: this
+
+        private fun split(): SnailNumber? {
+            val i = values.indexOfFirst { it.first > 9 }
+            return if (i < 0) null
+            else SnailNumber(values.toMutableList().apply {
+                set(i, Pair(values[i].first / 2, values[i].second + 1))
+                add(i + 1, Pair((values[i].first + 1) / 2, values[i].second + 1))
+            })
+        }
+
+        private fun explode(): SnailNumber? {
+            val i = values.indexOfFirst { it.second == 5 }
+            return if (i < 0) null else SnailNumber(values.toMutableList().apply {
+                if (i > 0) set(i - 1, values[i - 1].let { (v0, d0) -> v0 + get(i).first to d0 })
+                if (i + 1 < values.lastIndex) set(i + 2, values[i + 2].let { (v0, d0) -> v0 + get(i + 1).first to d0 })
+                set(i, 0 to 4)
+                removeAt(i + 1)
+            })
+        }
+
+        fun magnitude(): Int {
+            val stack = mutableListOf<Pair<Int, Int>>()
+            values.forEach {
+                stack.add(it)
+                while (stack.size > 1 && stack.last().second == stack[stack.lastIndex - 1].second) {
+                    val (v2, d2) = stack.removeLast()
+                    val (v1, _) = stack.removeLast()
+                    stack.add(3 * v2 + 2 * v1 to d2 - 1)
                 }
             }
+            return stack.first().first
         }
-        return digits.first()
-    }
-
-    private sealed class SnailNumber {
-
-        var parent: P? = null
-
-        abstract fun magnitude(): Long
-
-        operator fun plus(o: SnailNumber): SnailNumber = P(this, o).reduce()
-
-        fun reduce(): SnailNumber {
-            val toExplode =
-                traverse(0).filter { it.second == 4 }.map { it.first }.filterIsInstance<P>().firstOrNull()
-            if (toExplode != null) {
-                val left = traverse(0).map { it.first }.takeWhile { it != toExplode }
-                    .filterIsInstance<V>().lastOrNull()
-                val right = traverse(0).map { it.first }.dropWhile { it != toExplode }
-                    .filterIsInstance<V>().drop(2).firstOrNull()
-                toExplode.explode(left, right)
-                return reduce()
-            }
-
-            val toSplit = traverse(0).map { it.first }.filterIsInstance<V>().firstOrNull { it.v > 9 }
-            if (toSplit != null) {
-                toSplit.split()
-                return reduce()
-            }
-            return this
-        }
-
-
-        abstract fun traverse(depth: Int): Sequence<Pair<SnailNumber, Int>>
-    }
-
-    private class V(var v: Long) : SnailNumber() {
-
-
-        override fun magnitude() = v
-
-        fun split() {
-
-            val new = P(V(v / 2), V((v + 1) / 2))
-            new.parent = parent
-
-            if (parent!!.left == this) parent!!.left = new
-            else parent!!.right = new
-        }
-
-        override fun traverse(depth: Int) = sequenceOf(Pair(this, depth))
-
-        override fun toString() = v.toString()
-    }
-
-    private class P(var left: SnailNumber, var right: SnailNumber) : SnailNumber() {
-
-        init {
-            left.parent = this
-            right.parent = this
-        }
-
-        override fun magnitude() = 3 * left.magnitude() + 2 * right.magnitude()
-
-
-        override fun traverse(depth: Int) =
-            sequenceOf(Pair(this, depth)) + left.traverse(depth + 1) + right.traverse(depth + 1)
-
-
-        fun explode(left: V?, right: V?) {
-            val new = V(0)
-            new.parent = parent
-
-            if (parent!!.left == this) parent!!.left = new
-            else parent!!.right = new
-
-            left?.let { it.v += (this.left as V).v }
-            right?.let { it.v += (this.right as V).v }
-
-        }
-
-        override fun toString() = "[$left,$right]"
     }
 }
-
