@@ -28,14 +28,21 @@ object Day19 : AdventSolution(2021, 19, "Beacon Scanner") {
 
             val matched: Map<Scanner, Scanner?> = unmatched.associateWith { current ->
                 current.rotations.find { scanner ->
-                    (scanner.distances intersect placed.distances).size >= 66
+                    (scanner.fingerprint.keys intersect placed.fingerprint.keys).size >= 66
                 }
             }
 
             unmatched = matched.filterValues { it == null }.keys.toList()
 
             matched.values.filterNotNull().map { scanner ->
-                val delta = align(placed, scanner)!!
+                val matchingDistances = placed.fingerprint.keys intersect scanner.fingerprint.keys
+                val (delta, count) = matchingDistances.map { k ->
+                    placed.fingerprint.getValue(k) - scanner.fingerprint.getValue(k)
+                }
+                    .groupingBy { it }
+                    .eachCount()
+                    .maxByOrNull { it.value }!!
+                require(count >= 66)
                 val shifted = Scanner(scanner.beacons.map { it + delta })
 
                 openScanners += shifted
@@ -45,21 +52,6 @@ object Day19 : AdventSolution(2021, 19, "Beacon Scanner") {
         return closed
     }
 }
-
-private fun align(placed: Scanner, toMove: Scanner): Vec3? {
-    val set = placed.beacons.toSet()
-    toMove.beacons.forEach { newBeacon ->
-        placed.beacons.forEach { oldBeacon ->
-            val delta = oldBeacon - newBeacon
-
-            val translated = toMove.beacons.map { it + delta }
-            if (translated.count { it in set } >= 12)
-                return delta
-        }
-    }
-    return null
-}
-
 
 private val rotationFns: List<(Vec3) -> Vec3> = listOf(
     { (x, y, z) -> Vec3(x, y, z) },
@@ -94,12 +86,15 @@ private data class Scanner(val beacons: List<Vec3>) {
 
     //het verschil tussen alle paren van punten is een soort van fingerprint voor de hele beacon
     //Om een match te zijn van tenminste 12 punten, moeten de verschillen ook matchen. Dus tenminste 12*11/2 matches
-    //best wel een aanname over de input: als er genoeg matches tussen verschillen zijn, dan zal het wel kloppen.
-    val distances: Set<Vec3> by lazy {
-        buildSet {
+    //best wel wat aannames:
+    // Geen paren van punten met hetzelfde verschil
+    // als er genoeg matches tussen verschillen zijn, dan zal het wel kloppen. (hier zit wel een controle op)
+    // de key is om te matchen, de value is om snel de translatie uit te voeren.
+    val fingerprint: Map<Vec3, Vec3> by lazy {
+        buildMap {
             for (a in beacons.indices) {
                 for (b in a + 1..beacons.lastIndex) {
-                    add(beacons[a] - beacons[b])
+                    put(beacons[a] - beacons[b], beacons[a])
                 }
             }
         }
