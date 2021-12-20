@@ -1,12 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Vec2
-
-fun main() {
-    Day17.solve()
-}
 
 object Day17 : AdventSolution(2021, 17, "Trick Shot") {
     override fun solvePartOne(input: String): Int {
