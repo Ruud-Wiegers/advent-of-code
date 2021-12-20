@@ -11,6 +11,8 @@ allprojects {
     repositories {
         mavenCentral()
     }
+
+
 }
 
 subprojects {
@@ -20,5 +22,9 @@ subprojects {
             sourceCompatibility = "11"
             targetCompatibility = "11"
         }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 }

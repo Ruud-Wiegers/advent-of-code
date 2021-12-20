@@ -66,6 +66,6 @@ object Day18 : AdventSolution(2021, 18, "Snailfish") {
     private data class Element(val value: Int, val depth: Int) {
         fun addDepth(a: Int) = copy(depth = depth + a)
         fun addValue(a: Int) = copy(value = value + a)
-        fun magnitudeWith(o: Element) = Element(value * 2 + o.value * 3, depth - 1)
+        fun magnitudeWith(o: Element) = Element(value * 3 + o.value * 2, depth - 1)
     }
 }

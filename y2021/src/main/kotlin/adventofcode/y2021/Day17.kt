@@ -1,16 +1,24 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 import adventofcode.util.vector.Vec2
 
+fun main() {
+    Day17.solve()
+}
+
 object Day17 : AdventSolution(2021, 17, "Trick Shot") {
-    override fun solvePartOne(input: String) = 92 * 93 / 2
+    override fun solvePartOne(input: String): Int {
+        val (_,yT) = parse(input)
+        return yT.first * (yT.first+1) / 2
+    }
 
     override fun solvePartTwo(input: String): Int {
-        val xT = 195..238
-        val yT = -93..-67
+        val (xT,yT) = parse(input)
 
-        val dx = 20..xT.last
+
+        val dx = 0..xT.last
         val dy = yT.first until -yT.first
 
         return dy.flatMap { y -> dx.map { x -> Vec2(x, y) } }
@@ -21,5 +29,11 @@ object Day17 : AdventSolution(2021, 17, "Trick Shot") {
                     .takeWhile { (p, _) -> p.x <= xT.last && p.y >= yT.first }
                     .any { (p, _) -> p.x in xT && p.y in yT }
             }
+    }
+
+    fun parse(input: String): Pair<IntRange, IntRange> {
+        val (x0,x1,y0,y1) = """target area: x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)""".toRegex().matchEntire(input)!!.destructured
+
+        return x0.toInt()..x1.toInt() to y0.toInt()..y1.toInt()
     }
 }

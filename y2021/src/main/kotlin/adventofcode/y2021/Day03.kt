@@ -1,7 +1,11 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 
+fun main() {
+    Day03.solve()
+}
 object Day03 : AdventSolution(2021, 3, "Binary Diagnostic")
 {
     override fun solvePartOne(input: String): Int
@@ -10,7 +14,7 @@ object Day03 : AdventSolution(2021, 3, "Binary Diagnostic")
         return lines[0].indices.map(lines::mostFrequentDigitAt)
             .joinToString("")
             .toInt(2)
-            .let { it * ("111111111111".toInt(2) xor it) }
+            .let { it * (lines[0].replace('0','1').toInt(2) xor it) }
     }
 
     override fun solvePartTwo(input: String): Int
