@@ -12,7 +12,7 @@ object Day21 : AdventSolution(2021, 21, "???") {
         var dice = 1
         var rolls = 0
         fun next() = dice.also { rolls++;if (++dice > 100) dice = 1 }
-        while (p1Score < 1000 && p2Score < 1000) {
+        while (p2Score < 1000) {
             p1 += next() + next() + next()
             p1 %= 10
             p1Score += p1 + 1
@@ -20,7 +20,7 @@ object Day21 : AdventSolution(2021, 21, "???") {
             p1Score = p2Score.also { p2Score = p1Score }
         }
 
-        return minOf(p1Score, p2Score) * rolls
+        return p1Score * rolls
     }
 
     override fun solvePartTwo(input: String): Long {
@@ -32,27 +32,33 @@ object Day21 : AdventSolution(2021, 21, "???") {
         var p2Wins = 0L
 
         var p1Turn = true
+        val distribution3d3 = mapOf(3 to 1, 4 to 3, 5 to 6, 6 to 7, 7 to 6, 8 to 3, 9 to 1)
+        fun Map<State, Long>.takeTurn(isTurnForPlayer1: Boolean): Map<State, Long> {
 
-        fun Map<State, Long>.roll( isP1:Boolean) = asSequence()
-            .flatMap { (oldState, count) ->
-                (1..3).map { roll ->
-                    if (isP1) oldState.copy(pos1 = (oldState.pos1 + roll) % 10) to count
-                    else oldState.copy(pos2 = (oldState.pos2 + roll) % 10) to count
+            return asSequence()
+                .flatMap { (oldState, count) ->
+                    distribution3d3.map { (rv, rc) ->
+                        if (isTurnForPlayer1) {
+                            val newPos = (oldState.pos1 + rv) % 10
+                            val newScore = oldState.score1 + newPos + 1
+                            oldState.copy(pos1 = newPos, score1 = newScore) to count * rc
+                        } else {
+                            val newPos = (oldState.pos2 + rv) % 10
+                            val newScore = oldState.score2 + newPos + 1
+                            oldState.copy(pos2 = newPos, score2 = newScore) to count * rc
+                        }
+                    }
                 }
-            }
-            .groupBy({ it.first }, { it.second })
-            .mapValues { it.value.sum() }
-
-        fun Map<State, Long>.score(isP1:Boolean) = mapKeys { (oldState) ->
-            if (isP1) oldState.copy(score1 = oldState.score1 + oldState.pos1 + 1)
-            else oldState.copy(score2 = oldState.score2 + oldState.pos2 + 1)
+                .groupingBy { it.first }
+                .fold(0) { acc, (_, v) -> acc + v }
         }
 
+        val winningScore = 21
         while (universes.isNotEmpty()) {
-            universes = universes.roll(p1Turn).roll(p1Turn).roll(p1Turn).score(p1Turn)
-            p1Wins += universes.filterKeys { it.score1 >= 21 }.values.sum()
-            p2Wins += universes.filterKeys { it.score2 >= 21 }.values.sum()
-            universes = universes.filterKeys { it.score1 < 21 && it.score2 < 21 }
+            universes = universes.takeTurn(p1Turn)
+            p1Wins += universes.filterKeys { it.score1 >= winningScore }.values.sum()
+            p2Wins += universes.filterKeys { it.score2 >= winningScore }.values.sum()
+            universes = universes.filterKeys { it.score1 < winningScore && it.score2 < winningScore }
             p1Turn = !p1Turn
         }
 
