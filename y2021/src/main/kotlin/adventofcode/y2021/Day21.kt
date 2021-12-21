@@ -33,27 +33,26 @@ object Day21 : AdventSolution(2021, 21, "???") {
 
         var p1Turn = true
 
-        fun Map<State, Long>.roll() = asSequence().flatMap { (oldState, count) ->
-            (1..3).map { roll ->
-                if (p1Turn) oldState.copy(pos1 = (oldState.pos1 + roll) % 10) to count
-                else oldState.copy(pos2 = (oldState.pos2 + roll) % 10) to count
+        fun Map<State, Long>.roll( isP1:Boolean) = asSequence()
+            .flatMap { (oldState, count) ->
+                (1..3).map { roll ->
+                    if (isP1) oldState.copy(pos1 = (oldState.pos1 + roll) % 10) to count
+                    else oldState.copy(pos2 = (oldState.pos2 + roll) % 10) to count
+                }
             }
-        }.groupBy({ it.first }, { it.second })
+            .groupBy({ it.first }, { it.second })
             .mapValues { it.value.sum() }
 
-        fun Map<State, Long>.score() = mapKeys { (oldState) ->
-            if (p1Turn) oldState.copy(score1 = oldState.score1 + oldState.pos1 + 1)
+        fun Map<State, Long>.score(isP1:Boolean) = mapKeys { (oldState) ->
+            if (isP1) oldState.copy(score1 = oldState.score1 + oldState.pos1 + 1)
             else oldState.copy(score2 = oldState.score2 + oldState.pos2 + 1)
-
         }
 
         while (universes.isNotEmpty()) {
-            universes = universes.roll().roll().roll().score()
-
+            universes = universes.roll(p1Turn).roll(p1Turn).roll(p1Turn).score(p1Turn)
             p1Wins += universes.filterKeys { it.score1 >= 21 }.values.sum()
             p2Wins += universes.filterKeys { it.score2 >= 21 }.values.sum()
             universes = universes.filterKeys { it.score1 < 21 && it.score2 < 21 }
-
             p1Turn = !p1Turn
         }
 
