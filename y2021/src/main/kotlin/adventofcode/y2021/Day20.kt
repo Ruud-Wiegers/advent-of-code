@@ -3,41 +3,26 @@ package adventofcode.y2021
 import adventofcode.AdventSolution
 
 object Day20 : AdventSolution(2021, 20, "Trench Map") {
-    override fun solvePartOne(input: String) = solve(input, 2)
-    override fun solvePartTwo(input: String) = solve(input, 50)
+    override fun solvePartOne(input: String) = parse(input).let { (rules, grid) -> solve(rules, grid, 2) }
+    override fun solvePartTwo(input: String) = parse(input).let { (rules, grid) -> solve(rules, grid, 50) }
 
-    private fun solve(input: String, rep: Int): Int {
-        var (rules, grid) = parse(input)
+    private fun solve(rules: List<Int>, grid: List<List<Int>>, steps: Int) =
+        generateSequence(grid to 0) { (old, default) ->
+            Pair(nextStep(old, rules, default), if (default == 1) rules.last() else rules[0])
+        }.elementAt(steps).first.sumOf { it.sum() }
 
-        var void = 0
-        repeat(rep) {
-            val padded = padWith(grid, void)
+    private fun nextStep(grid: List<List<Int>>, rules: List<Int>, default: Int): List<List<Int>> {
+        fun get(x: Int, y: Int) = grid.getOrNull(y)?.getOrNull(x) ?: default
 
-            grid = nextStep(padded, rules)
-            void = if (void == 1) rules.last() else rules[0]
-        }
-        return grid.sumOf { it.sum() }
-    }
-
-    private fun nextStep(padded: List<List<Int>>, rules: List<Int>): List<List<Int>> {
-
-        val result = List(padded.size - 2) { y ->
-            List(padded.size - 2) { x ->
-                val list = padded[y].slice(x..x + 2) +
-                        padded[y + 1].slice(x..x + 2) +
-                        padded[y + 2].slice(x..x + 2)
-
-                val f = list.fold(0) { acc, n -> acc * 2 + n }
+        return List(grid.size + 2) { y ->
+            List(grid.size + 2) { x ->
+                var f = 0
+                for (row in y - 2..y)
+                    for (col in x - 2..x)
+                        f = f * 2 + get(col, row)
                 rules[f]
             }
         }
-        return result
-    }
-
-    private fun padWith(grid: List<List<Int>>, n: Int): List<List<Int>> {
-        val xPadded = grid.map { listOf(n, n) + it + listOf(n, n) }
-        val row = xPadded[0].map { n }
-        return listOf(row, row) + xPadded + listOf(row, row)
     }
 
     private fun parse(input: String): Pair<List<Int>, List<List<Int>>> {
