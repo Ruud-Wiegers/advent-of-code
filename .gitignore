@@ -17,3 +17,5 @@ data/**/*.txt
 **/build/**
 .gradle/**
 gradle
+*/out/production/**
+*/out/test/**
