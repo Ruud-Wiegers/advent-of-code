@@ -7,9 +7,7 @@ object Day22 : AdventSolution(2021, 22, "Reactor Reboot") {
     override fun solvePartTwo(input: String) = parse(input).let(::solve)
 
     private fun solve(input: List<Command>) = input
-        .fold(listOf<Cube>()) { cubes, (turnOn, new) ->
-            if (turnOn) addCube(cubes, new) else removeCube(cubes, new)
-        }
+        .fold(listOf<Cube>()) { cubes, (turnOn, new) -> if (turnOn) addCube(cubes, new) else removeCube(cubes, new) }
         .sumOf(Cube::size)
 
     private fun addCube(cubes: List<Cube>, toAdd: Cube) = cubes + cubes.fold(listOf(toAdd)) { newFragments, existingCube ->
@@ -34,44 +32,35 @@ object Day22 : AdventSolution(2021, 22, "Reactor Reboot") {
                 )
             )
         }
-
-    data class Command(val on: Boolean, val cube: Cube)
-    data class Cube(val xs: IntRange, val ys: IntRange, val zs: IntRange) {
-
-        val size = 1L * (xs.last - xs.first + 1) * (ys.last - ys.first + 1) * (zs.last - zs.first + 1)
-
-        operator fun contains(o: Cube) =
-            o.xs.first in xs && o.xs.last in xs
-                    && o.ys.first in ys && o.ys.last in ys
-                    && o.zs.first in zs && o.zs.last in zs
-
-        private fun outside(o: Cube) =
-            (xs.last < o.xs.first)
-                    || (ys.last < o.ys.first)
-                    || (zs.last < o.zs.first)
-                    || (o.xs.last < xs.first)
-                    || (o.ys.last < ys.first)
-                    || (o.zs.last < zs.first)
-
-        fun splitBy(o: Cube): Sequence<Cube> = splitXBy(o).flatMap { it.splitYBy(o) }.flatMap { it.splitZBy(o) }
-
-        private fun splitXBy(o: Cube) = splitAxisBy(o, Cube::xs).map { copy(xs = it) }
-        private fun splitYBy(o: Cube) = splitAxisBy(o, Cube::ys).map { copy(ys = it) }
-        private fun splitZBy(o: Cube) = splitAxisBy(o, Cube::zs).map { copy(zs = it) }
-
-        private inline fun splitAxisBy(o: Cube, dim: Cube.() -> IntRange): Sequence<IntRange> {
-
-            val b0 = o.dim().first
-            val b1 = o.dim().last
-            val a0 = dim().first
-            val a1 = dim().last
-            return when {
-                this.outside(o)    -> sequenceOf(dim())
-                b0 > a0 && b1 < a1 -> sequenceOf(a0 until b0, o.dim(), b1 + 1..a1)
-                b0 in a0 + 1..a1   -> sequenceOf(a0 until b0, b0..a1)
-                b1 in a0 until a1  -> sequenceOf(a0..b1, b1 + 1..a1)
-                else               -> sequenceOf(dim())
-            }
-        }
-    }
 }
+
+private data class Command(val on: Boolean, val cube: Cube)
+
+private data class Cube(val xs: IntRange, val ys: IntRange, val zs: IntRange) {
+
+    fun size() = xs.size() * ys.size() * zs.size()
+    operator fun contains(o: Cube) = o.xs in xs && o.ys in ys && o.zs in zs
+    private infix fun outside(o: Cube) = xs outside o.xs || ys outside o.ys || zs outside o.zs
+
+    fun splitBy(o: Cube): Sequence<Cube> = splitXBy(o).flatMap { it.splitYBy(o) }.flatMap { it.splitZBy(o) }
+
+    private fun splitXBy(o: Cube) = splitAxisBy(o, Cube::xs).map { copy(xs = it) }
+    private fun splitYBy(o: Cube) = splitAxisBy(o, Cube::ys).map { copy(ys = it) }
+    private fun splitZBy(o: Cube) = splitAxisBy(o, Cube::zs).map { copy(zs = it) }
+
+    private inline fun splitAxisBy(o: Cube, selectAxis: Cube.() -> IntRange) =
+        if (outside(o)) sequenceOf(selectAxis()) else selectAxis().splitBy(o.selectAxis())
+}
+
+private fun IntRange.size() = last - first + 1L
+private operator fun IntRange.contains(o: IntRange) = o.first in this && o.last in this
+private infix fun IntRange.outside(o: IntRange) = last < o.first || first > o.last
+
+private fun IntRange.splitBy(o: IntRange): Sequence<IntRange> = sequenceOf(
+    first,
+    o.first.takeIf { it in first + 1..last },
+    (o.last + 1).takeIf { it in first + 1..last },
+    last + 1
+)
+    .filterNotNull()
+    .windowed(2) { it[0] until it[1] }
