@@ -6,7 +6,7 @@ object Day22 : AdventSolution(2021, 22, "Reactor Reboot") {
     override fun solvePartOne(input: String) = parse(input).take(20).let(::solve)
     override fun solvePartTwo(input: String) = parse(input).let(::solve)
 
-    private fun solve(input: List<Command>) = input
+    private fun solve(input: Sequence<Command>) = input
         .fold(listOf<Cube>()) { cubes, (turnOn, new) -> if (turnOn) addCube(cubes, new) else removeCube(cubes, new) }
         .sumOf(Cube::size)
 
@@ -18,20 +18,12 @@ object Day22 : AdventSolution(2021, 22, "Reactor Reboot") {
         existingCube.splitBy(toRemove).filterNot(toRemove::contains)
     }
 
-    private fun parse(input: String) = input.lines().map {
-        """(on|off) x=(-?\d+)..(-?\d+),y=(-?\d+)..(-?\d+),z=(-?\d+)..(-?\d+)""".toRegex()
-            .matchEntire(it)!!.destructured
+    private fun parse(input: String) = input.lineSequence().map { line ->
+        val turnsOn = line.startsWith("on")
+        val numbers = "-?\\d+".toRegex().findAll(line).map { it.value.toInt() }
+        val (xs, ys, zs) = numbers.chunked(2) { it[0]..it[1] }.toList()
+        Command(turnsOn, Cube(xs, ys, zs))
     }
-        .map { (state, x0, x1, y0, y1, z0, z1) ->
-            Command(
-                state == "on",
-                Cube(
-                    x0.toInt()..x1.toInt(),
-                    y0.toInt()..y1.toInt(),
-                    z0.toInt()..z1.toInt()
-                )
-            )
-        }
 }
 
 private data class Command(val on: Boolean, val cube: Cube)
