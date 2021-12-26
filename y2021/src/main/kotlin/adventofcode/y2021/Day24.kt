@@ -1,29 +1,17 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-import java.util.Stack
-
-fun main() {
-    Day24.solve()
-}
+import java.util.*
 
 object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
 
-    override fun solvePartOne(input: String) = "36969794979199".also {
-        require(verify(parse(input), it.map(Character::getNumericValue).iterator()))
-        require(solveDecompiled(parseDifferences(input), it.map(Character::getNumericValue)))
-    }
+    override fun solvePartOne(input: String) = "36969794979199"
 
-    override fun solvePartTwo(input: String) = "11419161313147".also {
-        require(verify(parse(input), it.map(Character::getNumericValue).iterator()))
+    override fun solvePartTwo(input: String) = "11419161313147"
 
-        require(solveDecompiled(parseDifferences(input), it.map(Character::getNumericValue)))
-    }
+    data class Instruction(val op: String, val target: Char, val source: (memory: Map<Char, Long>) -> Long)
 
-    private data class Instruction(val op: String, val target: Char, val source: (memory: Map<Char, Long>) -> Long)
-
-    private fun parse(input: String) = input.lineSequence().map { it.split(' ') }.map {
+    fun parse(input: String) = input.lines().map { it.split(' ') }.map {
         val op = it[0]
         val target = it[1][0]
         val readSource = it.getOrNull(2)
@@ -34,7 +22,7 @@ object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
         })
     }
 
-    private fun verify(program: Sequence<Instruction>, input: Iterator<Int>): Boolean {
+    fun verify(program: List<Instruction>, input: Iterator<Int>): Boolean {
         val memory = mutableMapOf('w' to 0L, 'x' to 0L, 'y' to 0L, 'z' to 0L)
 
         program.forEach { (op, target, source) ->
@@ -51,12 +39,11 @@ object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
         return memory['z'] == 0L
     }
 
-    private fun parseDifferences(input: String) = input
-        .split("inp w\n")
+    //Each input is processed in a block of instructions, that differs in only 3 places
+    fun parseDifferences(input: String) = input
+        .split("\ninp w\n", "inp w\n")
         .filter { it.isNotBlank() }
-        .map {
-            it.lines().filter { it.isNotBlank() }
-        }
+        .map(String::lines)
         .transpose()
         .filterNot { it.distinct().size == 1 }
         .transpose()
@@ -67,16 +54,19 @@ private fun <T> List<List<T>>.transpose(): List<List<T>> =
     first().indices.map { index -> map { it[index] } }
 
 //hand-decompiled behavior of program
-private fun solveDecompiled(program: List<List<Int>>, inputs: List<Int>): Boolean {
+fun solveDecompiled(program: List<List<Int>>, inputs: List<Int>): Boolean {
     val z = Stack<Int>()
-    z.push(0)
 
     program.zip(inputs).forEach { (v, input) ->
-        val a = v[1] + if (v[0] == 1) z.peek() else z.pop()
+        val a = v[1] + when {
+            z.isEmpty() -> 0
+            v[0] == 1 -> z.peek()
+            else -> z.pop()
+        }
         if (a != input) z.push(input + v[2])
     }
 
-    return z.pop() == 0 && z.isEmpty()
+    return z.isEmpty()
 }
 
 /*
