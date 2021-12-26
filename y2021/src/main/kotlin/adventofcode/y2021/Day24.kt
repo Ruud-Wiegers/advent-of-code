@@ -2,7 +2,7 @@ package adventofcode.y2021
 
 import adventofcode.AdventSolution
 import adventofcode.solve
-import java.util.*
+import java.util.Stack
 
 fun main() {
     Day24.solve()
@@ -12,10 +12,13 @@ object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
 
     override fun solvePartOne(input: String) = "36969794979199".also {
         require(verify(parse(input), it.map(Character::getNumericValue).iterator()))
+        require(solveDecompiled(parseDifferences(input), it.map(Character::getNumericValue)))
     }
 
     override fun solvePartTwo(input: String) = "11419161313147".also {
         require(verify(parse(input), it.map(Character::getNumericValue).iterator()))
+
+        require(solveDecompiled(parseDifferences(input), it.map(Character::getNumericValue)))
     }
 
     private data class Instruction(val op: String, val target: Char, val source: (memory: Map<Char, Long>) -> Long)
@@ -47,38 +50,33 @@ object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
         }
         return memory['z'] == 0L
     }
+
+    private fun parseDifferences(input: String) = input
+        .split("inp w\n")
+        .filter { it.isNotBlank() }
+        .map {
+            it.lines().filter { it.isNotBlank() }
+        }
+        .transpose()
+        .filterNot { it.distinct().size == 1 }
+        .transpose()
+        .map { it.map { it.substringAfterLast(' ').toInt() } }
 }
 
-
-//hand-parsed input
-private val blocks = listOf(
-    listOf(1, 11, 6),
-    listOf(1, 11, 12),
-    listOf(1, 15, 8),
-    listOf(26, -11, 7),
-    listOf(1, 15, 7),
-    listOf(1, 15, 12),
-    listOf(1, 14, 2),
-    listOf(26, -7, 15),
-    listOf(1, 12, 4),
-    listOf(26, -6, 5),
-    listOf(26, -10, 12),
-    listOf(26, -15, 11),
-    listOf(26, -9, 13),
-    listOf(26, 0, 7)
-)
-
+private fun <T> List<List<T>>.transpose(): List<List<T>> =
+    first().indices.map { index -> map { it[index] } }
 
 //hand-decompiled behavior of program
-private fun solveDecompiled(inputs: List<Int>): Boolean {
+private fun solveDecompiled(program: List<List<Int>>, inputs: List<Int>): Boolean {
     val z = Stack<Int>()
+    z.push(0)
 
-    blocks.zip(inputs).forEach { (v, input) ->
+    program.zip(inputs).forEach { (v, input) ->
         val a = v[1] + if (v[0] == 1) z.peek() else z.pop()
         if (a != input) z.push(input + v[2])
     }
 
-    return z.isEmpty()
+    return z.pop() == 0 && z.isEmpty()
 }
 
 /*
