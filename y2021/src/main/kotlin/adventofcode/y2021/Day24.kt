@@ -1,6 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
+import adventofcode.util.transpose
 import java.util.*
 
 object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
@@ -49,9 +50,6 @@ object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {
         .transpose()
         .map { it.map { it.substringAfterLast(' ').toInt() } }
 }
-
-private fun <T> List<List<T>>.transpose(): List<List<T>> =
-    first().indices.map { index -> map { it[index] } }
 
 //hand-decompiled behavior of program
 fun solveDecompiled(program: List<List<Int>>, inputs: List<Int>): Boolean {

@@ -1,6 +1,7 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
+import adventofcode.util.transposeString
 
 private typealias CharacterSelector = (frequencyMap: Map<Char, Int>) -> Map.Entry<Char, Int>?
 
@@ -9,15 +10,10 @@ object Day06 : AdventSolution(2016, 6, "Signals and Noise") {
 	override fun solvePartTwo(input: String) = solve(input) { it.minByOrNull { (_, freq) -> freq } }
 
 	private inline fun solve(input: String, crossinline selectCharFromFreqMap: CharacterSelector) = input.lines()
-			.transpose()
+			.transposeString()
 			.asSequence()
 			.map { str -> str.groupingBy { it }.eachCount() }
 			.map { selectCharFromFreqMap(it) }
 			.map { it!!.key }
 			.joinToString("")
-
-	private fun List<String>.transpose(): List<String> =
-			first().indices.map { index ->
-				asSequence().map { it[index] }.joinToString("")
-			}
 }

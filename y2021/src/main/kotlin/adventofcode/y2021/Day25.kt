@@ -1,6 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.AdventSolution
+import adventofcode.util.transposeString
 
 object Day25 : AdventSolution(2021, 25, "Sea Cucumbers") {
 
@@ -10,19 +11,9 @@ object Day25 : AdventSolution(2021, 25, "Sea Cucumbers") {
 
     private fun step(field: List<String>): List<String> = field
         .map { ("${it.last()}$it${it[0]}").replace(">.", ".>").substring(1..it.length) }
-        .transpose()
+        .transposeString()
         .map { ("${it.last()}$it${it[0]}").replace("v.", ".v").substring(1..it.length) }
-        .transpose()
-
-    private fun List<String>.transpose(): List<String> =
-        first().indices.map { index ->
-            buildString {
-                for (row in this@transpose) {
-                    append(row[index])
-                }
-            }
-        }
-
+        .transposeString()
 
     override fun solvePartTwo(input: String) = "Free Star!"
 }

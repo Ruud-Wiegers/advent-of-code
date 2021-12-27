@@ -1,6 +1,7 @@
 package adventofcode.y2017
 
 import adventofcode.AdventSolution
+import adventofcode.util.transpose
 
 private val startingConfiguration: Square = ".#./..#/###".split('/')
 
@@ -51,8 +52,5 @@ private fun Square.step(squareSize: Int, fullRules: Map<Square, Square>): Square
 		}
 
 private fun Square.countLights() = sumOf { line -> line.count { char -> char == '#' } }
-
-private fun <T> List<List<T>>.transpose(): List<List<T>> =
-		this[0].indices.map { col -> map { it[col] } }
 
 private typealias Square = List<String>
