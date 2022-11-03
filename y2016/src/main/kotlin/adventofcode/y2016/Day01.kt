@@ -1,88 +1,64 @@
 package adventofcode.y2016
 
-import adventofcode.y2016.Day01.Orientation.*
 import adventofcode.AdventSolution
-import kotlin.math.abs
+import adventofcode.solve
+import adventofcode.util.collections.firstDuplicate
+import adventofcode.util.collections.onlyChanges
+import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Vec2
 
 object Day01 : AdventSolution(2016, 1, "No Time for a Taxicab") {
 
-	override fun solvePartOne(input: String) =
-			input.splitToSequence(", ")
-					.map { Pair(it[0] == 'L', it.substring(1).toInt()) }
-					.fold(Position(North, 0, 0)) { pos, (isLeft, steps) ->
-						if (isLeft) {
-							pos.left()
-						} else {
-							pos.right()
-						}.step(steps)
-					}
-					.distance()
-					.toString()
+    override fun solvePartOne(input: String) = parseCommands(input)
+        .fold(Person(Direction.UP, Vec2.origin), Person::applyCommand)
+        .position
+        .distance(Vec2.origin)
 
-	override fun solvePartTwo(input: String): String {
-		val visited: MutableSet<Pair<Int, Int>> = mutableSetOf()
-		return enumeratePosition(input)
-				.map { it.x to it.y }
-				.first { pos ->
-					val isDuplicate = pos in visited
-					visited += pos
-					isDuplicate
-				}
-				.let { (x, y) -> abs(x) + abs(y) }
-				.toString()
-	}
+    override fun solvePartTwo(input: String) = parseCommands(input)
+        .flatMap(Command::decompose)
+        .scan(Person(Direction.UP, Vec2.origin), Person::applyCommand)
+        .map(Person::position)
+        .onlyChanges()
+        .firstDuplicate()
+        .distance(Vec2.origin)
+
+    private fun parseCommands(input: String) = input
+        .splitToSequence(", ")
+        .flatMap { listOf(it.substring(0, 1), it.substring(1)) }
+        .map(String::toCommand)
+}
 
 
-	private fun enumeratePosition(input: String) = sequence {
-		input.splitToSequence(", ")
-				.map { Pair(it[0] == 'L', it.substring(1).toInt()) }
-				.fold(Position(North, 0, 0)) { pos, (isLeft, steps) ->
-					var t = if (isLeft) {
-						pos.left()
-					} else {
-						pos.right()
-					}
-					repeat(steps) {
-						t = t.step(1)
-						yield(t)
-					}
-					t
-				}
-	}
+private sealed class Command {
 
+    abstract fun apply(p: Person): Person
+    open fun decompose() = listOf(this)
 
-	data class Position(val facing: Orientation, val x: Int, val y: Int) {
+    data class Forward(val distance: Int) : Command() {
+        override fun apply(p: Person) = p.copy(position = p.position + p.direction.vector * distance)
+        override fun decompose() = List(distance) { SingleStep }
+    }
 
-		fun left(): Position = copy(facing = facing.left())
+    object Left : Command() {
+        override fun apply(p: Person) = p.copy(direction = p.direction.turnLeft)
+    }
 
-		fun right(): Position = copy(facing = facing.right())
+    object Right : Command() {
+        override fun apply(p: Person) = p.copy(direction = p.direction.turnRight)
+    }
 
-		fun step(d: Int): Position = when (facing) {
-			North -> copy(y = y + d)
-			East -> copy(x = x + d)
-			South -> copy(y = y - d)
-			West -> copy(x = x - d)
-		}
+    object SingleStep : Command() {
+        override fun apply(p: Person) = p.copy(position = p.position + p.direction.vector)
+    }
+}
 
-		fun distance() = abs(x) + abs(y)
-	}
+private fun String.toCommand() = when (this) {
+    "L" -> Command.Left
+    "R" -> Command.Right
+    "1" -> Command.SingleStep
+    else -> Command.Forward(toInt())
+}
 
-	enum class Orientation {
-		North, East, South, West;
-
-		fun left() = when (this) {
-			North -> West
-			East -> North
-			South -> East
-			West -> South
-		}
-
-		fun right() = when (this) {
-			North -> East
-			East -> South
-			South -> West
-			West -> North
-		}
-	}
-
+private data class Person(val direction: Direction, val position: Vec2) {
+    fun applyCommand(c: Command) = c.apply(this)
 }

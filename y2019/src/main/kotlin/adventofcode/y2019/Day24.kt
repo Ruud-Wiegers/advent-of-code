@@ -2,6 +2,7 @@ package adventofcode.y2019
 
 import adventofcode.AdventSolution
 import adventofcode.solve
+import adventofcode.util.collections.firstDuplicate
 import adventofcode.util.collections.takeWhileDistinct
 import adventofcode.util.vector.Vec3
 
@@ -11,9 +12,7 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
 
     override fun solvePartOne(input: String) =
             generateSequence(ConwayGrid(input), ConwayGrid::next)
-                    .takeWhileDistinct()
-                    .last()
-                    .next()
+                    .firstDuplicate()
                     .resourceValue()
 
     private data class ConwayGrid(private val grid: List<List<Boolean>>) {
