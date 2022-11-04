@@ -7,7 +7,6 @@ object Day17 : AdventSolution(2015, 17, "No Such Thing as Too Much") {
 	override fun solvePartOne(input: String) = input.lines()
 			.map { it.toInt() }
 			.let { partitions(it, 150) }
-			.toString()
 
 	override fun solvePartTwo(input: String) = input.lines()
 			.map { it.toInt() }
@@ -15,7 +14,6 @@ object Day17 : AdventSolution(2015, 17, "No Such Thing as Too Much") {
 			.groupingBy { it }.eachCount()
 			.minByOrNull { (k, _) -> k }
 			?.value
-			.toString()
 
 	private fun partitions(parts: List<Int>, total: Int): Int = when {
 		total == 0 -> 1

@@ -1,6 +1,8 @@
 package adventofcode.y2015
 
 import adventofcode.AdventSolution
+import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Vec2
 
 object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum") {
 
@@ -11,26 +13,20 @@ object Day03 : AdventSolution(2015, 3, "Perfectly Spherical Houses in a Vacuum")
         val route2 = input.filterIndexed { i, _ -> i % 2 != 0 }.visitEach()
         val visited = route1 + route2
 
-        return visited.size +1
+        return visited.size
     }
 
     private fun String.visitEach() = asSequence()
-            .scan(Pos(0, 0), Pos::next)
-            .toSet()
+        .map { it.toDirection() }
+        .map(Direction::vector)
+        .scan(Vec2.origin, Vec2::plus)
+        .toSet()
 
-    data class Pos(val x: Int, val y: Int) {
-        fun next(ch: Char) = Pos(x + ch.dx(), y + ch.dy())
-
-        private fun Char.dx() = when (this) {
-            '>' -> 1
-            '<' -> -1
-            else -> 0
-        }
-
-        private fun Char.dy() = when (this) {
-            '^' -> 1
-            'v' -> -1
-            else -> 0
-        }
+    private fun Char.toDirection() = when (this) {
+        '>' -> Direction.RIGHT
+        '<' -> Direction.LEFT
+        '^' -> Direction.UP
+        'v' -> Direction.DOWN
+        else -> throw IllegalArgumentException()
     }
 }
