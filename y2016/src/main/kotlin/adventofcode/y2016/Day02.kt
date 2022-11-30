@@ -1,70 +1,63 @@
 package adventofcode.y2016
 
 import adventofcode.AdventSolution
+import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Vec2
+import java.lang.IllegalArgumentException
+
 
 object Day02 : AdventSolution(2016, 2, "Bathroom Security") {
 
-	override fun solvePartOne(input: String) = solve(input, Day02::stepOnSquarePad)
+    override fun solvePartOne(input: String): String {
+        val squarePad = """
+    123
+    456
+    789
+"""
+        val map = convertToPad(squarePad)
+        val initial = map.firstNotNullOf { (p, ch) -> p.takeIf { ch == "5" } }
+        return solve(input, map, initial)
+    }
 
-	override fun solvePartTwo(input: String) = solve(input, Day02::stepOnDiamondPad)
+    override fun solvePartTwo(input: String): String {
+        val diamondPad = """
+        1
+       234
+      56789 
+       ABC
+        D
+"""
 
-	private fun solve(input: String, function: (Int, Char) -> Int): String = input
-			.lineSequence()
-			.fold(listOf(5)) { result, line ->
-				result + line.asSequence().fold(result.last(), function)
-			}
-			.joinToString("") { it.toString(16).uppercase() }
-			.drop(1)
+        val map = convertToPad(diamondPad)
+        val initial = map.firstNotNullOf { (p, ch) -> p.takeIf { ch == "5" } }
+        return solve(input, map, initial)
+    }
+}
 
-
-	private fun stepOnSquarePad(button: Int, instruction: Char): Int = when (instruction) {
-		'U' -> when (button) {
-			1, 2, 3 -> button
-			else -> button - 3
-		}
-		'D' -> when (button) {
-			7, 8, 9 -> button
-			else -> button + 3
-		}
-		'L' -> when (button) {
-			1, 4, 7 -> button
-			else -> button - 1
-		}
-		'R' -> when (button) {
-			3, 6, 9 -> button
-			else -> button + 1
-		}
-		else -> throw IllegalArgumentException("not an instruction:$instruction")
-	}
-
-	private fun stepOnDiamondPad(button: Int, instruction: Char): Int = when (instruction) {
-		'U' -> up(button)
-		'D' -> down(button)
-		'L' -> left(button)
-		'R' -> right(button)
-		else -> button
-	}
+private fun solve(input: String, pad: Map<Vec2, String>, initial: Vec2) = input
+    .lineSequence()
+    .scan(initial) { startingButton, instructionLine ->
+        instructionLine.map(Char::toDirection).fold(startingButton) { pos, instr ->
+            (pos + instr).takeIf { it in pad.keys } ?: pos
+        }
+    }
+    .drop(1)
+    .joinToString("", transform = pad::getValue)
 
 
-	private fun up(button: Int): Int = when (button) {
-		3, 13 -> button - 2
-		in 6..8, in 10..12 -> button - 4
-		else -> button
-	}
+private fun Char.toDirection(): Vec2 = when (this) {
+    'U' -> Direction.UP
+    'D' -> Direction.DOWN
+    'L' -> Direction.LEFT
+    'R' -> Direction.RIGHT
+    else -> throw IllegalArgumentException()
+}.vector
 
-	private fun down(button: Int): Int = when (button) {
-		1, 11 -> button + 2
-		in 2..4, in 6..8 -> button + 4
-		else -> button
-	}
 
-	private fun left(button: Int): Int = when (button) {
-		3, 4, in 6..9, 11, 12 -> button - 1
-		else -> button
-	}
-
-	private fun right(button: Int): Int = when (button) {
-		2, 3, in 5..8, 10, 11 -> button + 1
-		else -> button
-	}
+private fun convertToPad(input: String) = buildMap {
+    input.lines().forEachIndexed { y, line ->
+        line.forEachIndexed { x, ch ->
+            if (ch.isLetterOrDigit()) put(Vec2(x, y), ch.toString())
+        }
+    }
 }

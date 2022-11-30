@@ -5,12 +5,12 @@ import adventofcode.util.md5
 
 object Day14 : AdventSolution(2016, 14, "One-Time Pad") {
 
-	override fun solvePartOne(input: String) = generateSequence(0) { it + 1 }
+	override fun solvePartOne(input: String) = generateSequence(0,Int::inc)
 			.map { md5("$input$it") }
 			.solve()
 
-	override fun solvePartTwo(input: String) = generateSequence(0) { it + 1 }
-			.map { generateSequence("$input$it",::md5).take(2018).last() }
+	override fun solvePartTwo(input: String) = generateSequence(0,Int::inc)
+			.map { generateSequence("$input$it",::md5).elementAt(2017) }
 			.solve()
 
 	private fun Sequence<String>.solve() = windowed(1001, partialWindows = true)
@@ -22,10 +22,8 @@ object Day14 : AdventSolution(2016, 14, "One-Time Pad") {
 				else
 					false
 			}
-			.take(64)
-			.last()
+			.elementAt(63)
 			.index
-			.toString()
 
 
 	private fun String.threes(): Char? = windowedSequence(3).firstOrNull { sub -> sub.all { ch -> sub[0] == ch } }?.get(0)
