@@ -8,7 +8,7 @@ import kotlin.system.measureTimeMillis
 fun main() {
     measureTimeMillis {
         listOf(
-            Day01
+            Day01, Day02, Day03
         )
             .forEach(AdventSolution::solve)
     }.let { println(formattedTime(it)) }
