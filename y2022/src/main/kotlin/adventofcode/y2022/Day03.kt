@@ -1,29 +1,25 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
 object Day03 : AdventSolution(2022, 3, "Rucksack Reorganization") {
 
     override fun solvePartOne(input: String) = input
         .lineSequence()
-        .map { line ->
-            line.chunked(line.length / 2, CharSequence::toSet)
-                .reduce(Set<Char>::intersect)
-        }
-        .map(Set<Char>::single)
+        .map { line -> line.chunked(line.length / 2, CharSequence::toSet) }
+        .map { it.reduce(Set<Char>::intersect).single() }
         .sumOf(::priority)
 
-    override fun solvePartTwo(input: String) = input.lineSequence()
+    override fun solvePartTwo(input: String) = input
+        .lineSequence()
         .map(String::toSet)
-        .chunked(3) { it.reduce(Set<Char>::intersect) }
-        .map(Set<Char>::single)
+        .chunked(3)
+        .map { it.reduce(Set<Char>::intersect).single() }
         .sumOf(::priority)
 
-
-    private fun priority(it: Char): Int =
-        if (it in 'A'..'Z')
-            priority(it.lowercaseChar()) + 26
+    private fun priority(ch: Char): Int =
+        if (ch in 'a'..'z')
+            ch - 'a' + 1
         else
-            it.code - 'a'.code + 1
+            ch - 'A' + 27
 }

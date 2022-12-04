@@ -13,7 +13,9 @@ private fun readFromCache(day: Int, year: Int) =
 private fun readfromUrl(day: Int, year: Int) =
     URL("https://adventofcode.com/$year/day/$day/input")
         .openConnection()
-        .apply { addRequestProperty("Cookie", "session=$AOC_SESSION") }
+        .apply { addRequestProperty("Cookie", "session=$AOC_SESSION")
+            addRequestProperty("User-Agent", "https://github.com/Ruud-Wiegers/advent-of-code by ruud.wiegers@gmail.com")
+        }
         .getInputStream()
         .use(InputStream::readBytes)
         .toString(Charsets.UTF_8)
