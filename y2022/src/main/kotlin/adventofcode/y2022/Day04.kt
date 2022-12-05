@@ -1,11 +1,6 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-
-fun main() {
-    Day04.solve()
-}
 
 object Day04 : AdventSolution(2022, 4, "Camp Cleanup") {
 
