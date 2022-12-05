@@ -1,7 +1,11 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 import adventofcode.util.transpose
+import adventofcode.util.transposeString
+
+
 
 object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {
 
@@ -11,11 +15,11 @@ object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {
         val b = bricks.toMutableList()
 
         moves.forEach { (count, from, to) ->
-            b[to - 1] += b[from - 1].takeLast(count).reversed()
-            b[from - 1] = b[from - 1].dropLast(count)
+            b[to] = b[from].take(count).reversed() + b[to]
+            b[from] = b[from].drop(count)
         }
 
-        return b.map { it.last() }.joinToString("")
+        return b.joinToString("") { it.first().toString() }
     }
 
     override fun solvePartTwo(input: String): String {
@@ -24,27 +28,27 @@ object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {
         val b = bricks.toMutableList()
 
         moves.forEach { (count, from, to) ->
-            b[to - 1] += b[from - 1].takeLast(count)
-            b[from - 1] = b[from - 1].dropLast(count)
+            b[to] = b[from].take(count) + b[to]
+            b[from] = b[from].drop(count)
         }
 
-        return b.map { it.last() }.joinToString("")
+        return b.joinToString("") { it.first().toString() }
     }
 
-    private fun parse(input: String): Pair<List<List<Char>>, List<Move>> {
+    private fun parse(input: String): Pair<List<String>, List<Move>> {
 
         val (bricks, moves) = input.split("\n\n")
 
         val parsedBricks = bricks.lines().dropLast(1).map {
-            it.chunked(4).map { it[1] }
+            it.slice(1..it.lastIndex step 4)
         }
-            .transpose()
-            .map { it.reversed().filterNot { it.isWhitespace() } }
+            .transposeString()
+            .map { it.trimStart() }
 
         val regex = Regex("""move (\d+) from (\d+) to (\d+)""")
         val parsedMoves = moves.lines()
-            .map { regex.matchEntire(it)!!.destructured }
-            .map { (c, f, t) -> Move(c.toInt(), f.toInt(), t.toInt()) }
+            .map { regex.matchEntire(it)!!.groupValues.drop(1).map(String::toInt) }
+            .map { (count, from, to) -> Move(count, from - 1, to - 1) }
 
         return parsedBricks to parsedMoves
     }
