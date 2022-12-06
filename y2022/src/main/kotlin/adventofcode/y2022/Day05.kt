@@ -1,10 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-import adventofcode.util.transpose
 import adventofcode.util.transposeString
-
 
 
 object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {
@@ -39,15 +36,13 @@ object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {
 
         val (bricks, moves) = input.split("\n\n")
 
-        val parsedBricks = bricks.lines().dropLast(1).map {
-            it.slice(1..it.lastIndex step 4)
-        }
+        val parsedBricks = bricks.lines().dropLast(1)
+            .map { it.slice(1..it.lastIndex step 4) }
             .transposeString()
-            .map { it.trimStart() }
+            .map(String::trimStart)
 
         val regex = Regex("""move (\d+) from (\d+) to (\d+)""")
-        val parsedMoves = moves.lines()
-            .map { regex.matchEntire(it)!!.groupValues.drop(1).map(String::toInt) }
+        val parsedMoves = moves.lines().map { regex.matchEntire(it)!!.groupValues.drop(1).map(String::toInt) }
             .map { (count, from, to) -> Move(count, from - 1, to - 1) }
 
         return parsedBricks to parsedMoves
