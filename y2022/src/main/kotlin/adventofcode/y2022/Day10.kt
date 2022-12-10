@@ -3,6 +3,10 @@ package adventofcode.y2022
 import adventofcode.AdventSolution
 import adventofcode.solve
 
+fun main() {
+    Day10.solve()
+}
+
 object Day10 : AdventSolution(2022, 10, "stuff") {
 
     override fun solvePartOne(input: String): Int {
@@ -12,9 +16,9 @@ object Day10 : AdventSolution(2022, 10, "stuff") {
 
     override fun solvePartTwo(input: String) = parseSignal(input)
         .chunked(40)
-        .joinToString("\n", prefix = "\n") {
-            it.mapIndexed { index, signal -> if ((index - signal) in -1..1) '#' else ' ' }
-                .joinToString("")
+        .joinToString("\n", prefix = "\n") { row ->
+            row.mapIndexed { index, signal -> (index - signal) in -1..1 }
+                .joinToString("") { if (it) "\u2588" else " " }
         }
 
     private fun parseSignal(input: String) = input.lines()
