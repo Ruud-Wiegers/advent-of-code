@@ -1,19 +1,13 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
-import java.lang.IllegalStateException
-
-fun main() {
-    Day11.solve()
-}
 
 object Day11 : AdventSolution(2022, 11, "Monkey in the Middle") {
 
-    override fun solvePartOne(input: String): Long = solve(input, 20,3)
-    override fun solvePartTwo(input: String): Long = solve(input, 10_000,1)
+    override fun solvePartOne(input: String): Long = solve(input, 20, 3)
+    override fun solvePartTwo(input: String): Long = solve(input, 10_000, 1)
 
-    private fun solve(input: String, rounds: Int, reduction:Int): Long {
+    private fun solve(input: String, rounds: Int, reduction: Int): Long {
         val monkies = parse(input).sortedBy { it.id }
         val counts = monkies.map { 0L }.toMutableList()
 
@@ -25,7 +19,7 @@ object Day11 : AdventSolution(2022, 11, "Monkey in the Middle") {
 
                     // division under modulo isn't actually allowed here (no inverse) but whatever,
                     // part 1 stays small enough that the modulo doesn't kick in
-                    val newLevel = (m.operation.apply(item) / reduction ) % mod
+                    val newLevel = (m.operation.apply(item) / reduction) % mod
                     val newMonkey = m.test.test(newLevel)
                     monkies[newMonkey].items.add(newLevel)
                     counts[m.id]++

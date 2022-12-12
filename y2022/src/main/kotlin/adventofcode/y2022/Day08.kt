@@ -1,15 +1,9 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.transpose
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
-
-
-fun main() {
-    Day08.solve()
-}
 
 object Day08 : AdventSolution(2022, 8, "Treetop Tree House") {
 

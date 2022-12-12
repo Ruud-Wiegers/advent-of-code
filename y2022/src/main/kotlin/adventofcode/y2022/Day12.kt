@@ -1,13 +1,8 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
-
-fun main() {
-    Day12.solve()
-}
 
 object Day12 : AdventSolution(2022, 12, "Hill Climbing Algorithm") {
 
@@ -21,12 +16,13 @@ object Day12 : AdventSolution(2022, 12, "Hill Climbing Algorithm") {
         return bfs(landscape.getLowestPoints(), landscape.end, landscape::reachableNeighbors)
     }
 
-    private fun bfs(start: Iterable<Vec2>, end: Vec2, reachableNeighbors: (Vec2) -> Iterable<Vec2>): Int =
-        generateSequence(Pair(start.toSet(), start.toSet())) { (open, closed) ->
-            val new = open.flatMap(reachableNeighbors).toSet() - closed
-            Pair(new, closed + new)
+    private fun bfs(start: Iterable<Vec2>, goal: Vec2, reachableNeighbors: (Vec2) -> Iterable<Vec2>): Int =
+        generateSequence(Pair(start.toSet(), start.toSet())) { (frontier, visited) ->
+            val unexploredNeighbors = frontier.flatMap(reachableNeighbors).toSet() - visited
+            Pair(unexploredNeighbors, visited + unexploredNeighbors)
         }
-            .indexOfFirst { (open, _) -> end in open }
+            .takeWhile { (frontier, _) -> frontier.isNotEmpty() }
+            .indexOfFirst { (frontier, _) -> goal in frontier }
 }
 
 private fun parse(input: String): Landscape {

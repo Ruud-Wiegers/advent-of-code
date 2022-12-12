@@ -1,13 +1,9 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-fun main() {
-    Day10.solve()
-}
 
-object Day10 : AdventSolution(2022, 10, "stuff") {
+object Day10 : AdventSolution(2022, 10, "Cathode-Ray Tube") {
 
     override fun solvePartOne(input: String): Int {
         val signal = parseSignal(input)
