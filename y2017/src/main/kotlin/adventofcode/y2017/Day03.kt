@@ -3,7 +3,6 @@ package adventofcode.y2017
 import adventofcode.AdventSolution
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.mooreNeighbors
-import adventofcode.util.vector.neighbors
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 

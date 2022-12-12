@@ -4,45 +4,30 @@ import adventofcode.AdventSolution
 import adventofcode.solve
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
-import java.lang.IllegalStateException
+
+fun main() {
+    Day12.solve()
+}
 
 object Day12 : AdventSolution(2022, 12, "Hill Climbing Algorithm") {
 
     override fun solvePartOne(input: String): Int {
         val landscape = parse(input)
-
-        var open = listOf(landscape.start)
-        val closed = mutableSetOf(landscape.start)
-        var count = 0
-        do {
-            count++
-            val new = open.flatMap { landscape.neighbors(it) }
-                .distinct()
-                .filter { it !in closed }
-            closed += new
-            open = new
-        } while (landscape.end !in new)
-        return count
+        return bfs(listOf(landscape.start), landscape.end, landscape::reachableNeighbors)
     }
 
     override fun solvePartTwo(input: String): Int {
         val landscape = parse(input)
-
-        var open = listOf(landscape.end)
-        val closed = mutableSetOf(landscape.end)
-        var count = 0
-        do {
-            count++
-            val new = open.flatMap { landscape.inverseNeighbors(it) }
-                .distinct()
-                .filter { it !in closed }
-            closed += new
-            open = new
-        } while (new.none { landscape.landscape[it.y][it.x] == 0 })
-        return count
+        return bfs(landscape.getLowestPoints(), landscape.end, landscape::reachableNeighbors)
     }
-}
 
+    private fun bfs(start: Iterable<Vec2>, end: Vec2, reachableNeighbors: (Vec2) -> Iterable<Vec2>): Int =
+        generateSequence(Pair(start.toSet(), start.toSet())) { (open, closed) ->
+            val new = open.flatMap(reachableNeighbors).toSet() - closed
+            Pair(new, closed + new)
+        }
+            .indexOfFirst { (open, _) -> end in open }
+}
 
 private fun parse(input: String): Landscape {
     var start: Vec2? = null
@@ -61,13 +46,22 @@ private fun parse(input: String): Landscape {
 }
 
 
-private data class Landscape(val start: Vec2, val end: Vec2, val landscape: List<List<Int>>) {
+private data class Landscape(val start: Vec2, val end: Vec2, private val heights: List<List<Int>>) {
 
-    fun neighbors(pos: Vec2) = pos.neighbors()
-        .filter { (x, y) -> y in landscape.indices && x in landscape[y].indices }
-        .filter { (x, y) -> landscape[pos.y][pos.x] + 1 >= landscape[y][x] }
+    private operator fun contains(pos: Vec2) = pos.y in heights.indices && pos.x in heights[pos.y].indices
 
-    fun inverseNeighbors(pos: Vec2) = pos.neighbors()
-        .filter { (x, y) -> y in landscape.indices && x in landscape[y].indices }
-        .filter { (x, y) -> landscape[y][x] + 1 >= landscape[pos.y][pos.x] }
+    private fun height(pos: Vec2) = heights[pos.y][pos.x]
+
+    fun reachableNeighbors(pos: Vec2) = pos.neighbors()
+        .filter { it in this }
+        .filter { height(pos) + 1 >= height(it) }
+
+    fun getLowestPoints() =
+        heights.indices.flatMap { y ->
+            heights[0].indices.map { x ->
+                Vec2(x, y)
+            }
+        }
+            .filter { height(it) == 0 }
+
 }
