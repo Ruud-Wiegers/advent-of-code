@@ -1,7 +1,6 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
 object Day13 : AdventSolution(2022, 13, "Distress Signal") {
 
@@ -27,7 +26,7 @@ object Day13 : AdventSolution(2022, 13, "Distress Signal") {
 private fun parse(input: String): Sequence<Node> = input.lineSequence()
     .filter(String::isNotEmpty)
     .map(::tokenize)
-    .map(Sequence<Token>::parseToNode)
+    .map(::parseToNode)
 
 private fun tokenize(input: String) = sequence {
     var remainder = input
@@ -46,16 +45,13 @@ private fun tokenize(input: String) = sequence {
     }
 }
 
-private fun Sequence<Token>.parseToNode(): Node {
-    val stack = mutableListOf(Branch(mutableListOf()))
-    forEach {
+private fun parseToNode(tokens: Sequence<Token>): Node {
+    val stack = mutableListOf(Branch())
+    tokens.forEach {
         when (it) {
-            Token.Push -> stack += Branch(mutableListOf())
+            Token.Push -> stack += Branch()
+            Token.Pop -> stack.removeLast().let { node -> stack.last().children += node }
             is Token.Num -> stack.last().children += Leaf(it.n)
-            Token.Pop -> {
-                val new = stack.removeLast()
-                stack.last().children += new
-            }
         }
     }
     return stack.first().children.first()
@@ -72,25 +68,25 @@ private sealed class Node : Comparable<Node>
 private data class Leaf(val i: Int) : Node() {
     override fun compareTo(other: Node): Int = when (other) {
         is Leaf -> compareValues(i, other.i)
-        is Branch -> -other.compareTo(this)
+        is Branch -> Branch(mutableListOf(this)).compareTo(other)
     }
 
     override fun toString() = i.toString()
 }
 
-private data class Branch(val children: MutableList<Node>) : Node() {
+private data class Branch(val children: MutableList<Node> = mutableListOf()) : Node() {
     override fun compareTo(other: Node): Int = when (other) {
+        is Leaf -> compareTo(Branch(mutableListOf(other)))
         is Branch -> compareList(children, other.children)
-        is Leaf -> this.compareTo(Branch(mutableListOf(other)))
     }
 
-    override fun toString() = children.joinToString(",", prefix = "[", postfix = "]")
-}
+    private fun compareList(a: List<Node>, b: List<Node>): Int = when {
+        a.isEmpty() && b.isEmpty() -> 0
+        a.isEmpty() -> -1
+        b.isEmpty() -> 1
+        a[0].compareTo(b[0]) != 0 -> a[0].compareTo(b[0])
+        else -> compareList(a.drop(1), b.drop(1))
+    }
 
-private fun compareList(a: List<Node>, b: List<Node>): Int = when {
-    a.isEmpty() && b.isEmpty() -> 0
-    a.isEmpty() -> -1
-    b.isEmpty() -> 1
-    a[0].compareTo(b[0]) != 0 -> a[0].compareTo(b[0])
-    else -> compareList(a.drop(1), b.drop(1))
+    override fun toString() = children.joinToString(",", "[", "]")
 }
