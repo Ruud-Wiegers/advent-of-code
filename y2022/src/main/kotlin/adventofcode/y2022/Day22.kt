@@ -26,8 +26,8 @@ object Day22 : AdventSolution(2022, 22, "Monkey Map") {
         }
 
         val ys = grid.first().indices.flatMap { x ->
-            val yt = grid.indexOfFirst { it.getOrElse(x){Terrain.Air} != Terrain.Air }
-            val yb = grid.indexOfLast { it.getOrElse(x){Terrain.Air} != Terrain.Air }
+            val yt = grid.indexOfFirst { it.getOrElse(x) { Terrain.Air } != Terrain.Air }
+            val yb = grid.indexOfLast { it.getOrElse(x) { Terrain.Air } != Terrain.Air }
 
             listOf(
                 Turtle(Vec2(x, yt), Direction.UP) to Turtle(Vec2(x, yb), Direction.UP),
