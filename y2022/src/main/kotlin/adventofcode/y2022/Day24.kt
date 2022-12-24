@@ -1,22 +1,9 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
-
-fun main() {
-    Day24.solvePartOne(
-        """#.######
-#>>.<^<#
-#.<..<<#
-#>v.><>#
-#<^v^^>#
-######.#"""
-    ).let { println(it) }
-    Day24.solve()
-}
 
 object Day24 : AdventSolution(2022, 24, "Blizzard Basin") {
 
