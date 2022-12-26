@@ -1,7 +1,11 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
+import adventofcode.solve
 
+fun main() {
+    Day16.solve()
+}
 
 object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {
 
@@ -40,10 +44,24 @@ object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {
         distances: Map<String, Map<String, Int>>,
         bound: Int
     ): Int {
-        val partials = List(bound) { mutableListOf<Partial>() }
+        val partials = List(bound) { mutableSetOf<Partial>() }
         partials[0] += Partial(setOf("AA"), "AA", 0)
         for (t in partials.indices) {
+            val scoreToBeat = partials.drop(t).maxOfOrNull { it.maxOfOrNull { it.score } ?: 0 } ?: 0
+
             for (old in partials[t]) {
+
+                //prune if we can never catch up
+                //heuristic: we open the best valve every 2 minutes (minimum distance is 2)
+                val maximalRate = interestingValves
+                    .filterKeys { it !in old.opened }
+                    .values
+                    .sortedDescending()
+                    .scan(0, Int::plus)
+                    .take((bound - t)/2)
+                    .sum()
+                if (old.score + maximalRate < scoreToBeat) continue
+
                 for ((goal, rate) in interestingValves) {
                     if (goal in old.opened) continue
                     val time = distances.getValue(old.position).getValue(goal) + 1
