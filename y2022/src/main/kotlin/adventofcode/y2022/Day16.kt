@@ -1,11 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-fun main() {
-    Day16.solve()
-}
 
 object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {
 
@@ -58,9 +54,9 @@ object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {
                     .values
                     .sortedDescending()
                     .scan(0, Int::plus)
-                    .take((bound - t)/2)
+                    .take((bound - t) / 2)
                     .sum()
-                if (old.score + maximalRate < scoreToBeat) continue
+                if (old.score + maximalRate <= scoreToBeat) continue
 
                 for ((goal, rate) in interestingValves) {
                     if (goal in old.opened) continue
