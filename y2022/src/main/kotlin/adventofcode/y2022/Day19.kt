@@ -1,37 +1,21 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import kotlin.math.ceil
-
-fun main() {
-    Day19.solve()
-}
 
 object Day19 : AdventSolution(2022, 19, "Not Enough Minerals") {
 
-    override fun solvePartOne(input: String) = parse(input).map { bp ->
-        val time = 24
-        val states = List(time + 1) { mutableSetOf<State>() }
-
-        states[0] += State(
-            materials = Mats(0, 0, 0, 0),
-            delta = Mats(1, 0, 0, 0), 0
-        )
-
-        for (i in 0 until time) {
-            states[i].flatMap { it.next(bp, time) }.groupBy { it.time }.forEach { (index, new) ->
-                if (index in states.indices)
-                    states[index] += new
-            }
-            states[i].clear()
-        }
-        bp.index to states.last().maxOf { it.materials.geode }
-    }
+    override fun solvePartOne(input: String) = parse(input)
+        .map { bp -> solveWithBlueprint(bp, 24) }
         .sumOf { (i, v) -> i * v }
 
-    override fun solvePartTwo(input: String) = parse(input).take(3).map { bp ->
-        val time = 32
+    override fun solvePartTwo(input: String) = parse(input)
+        .take(3)
+        .map { bp -> solveWithBlueprint(bp, 32) }
+        .map { it.second }
+        .reduce(Int::times)
+
+    private fun solveWithBlueprint(bp: Blueprint, time: Int): Pair<Int, Int> {
         val states = List(time + 1) { mutableSetOf<State>() }
 
         states[0] += State(
@@ -40,17 +24,16 @@ object Day19 : AdventSolution(2022, 19, "Not Enough Minerals") {
         )
 
         for (i in 0 until time) {
-            println(i)
+            prune(states[i], time)
+
             states[i].flatMap { it.next(bp, time) }.groupBy { it.time }.forEach { (index, new) ->
                 if (index in states.indices)
                     states[index] += new
             }
             states[i].clear()
         }
-        states.last().maxOf { it.materials.geode }
+        return bp.index to states.last().maxOf { it.materials.geode }
     }
-        .map { it.toLong() }
-        .reduce(Long::times)
 
 
     private fun parse(input: String): Sequence<Blueprint> {
@@ -71,6 +54,18 @@ object Day19 : AdventSolution(2022, 19, "Not Enough Minerals") {
 
     private data class Blueprint(val index: Int, val ore: Mats, val clay: Mats, val obsidian: Mats, val geode: Mats) {
         val maxima = listOf(ore, clay, obsidian, geode).reduce(Mats::max)
+    }
+
+    private fun prune(states: MutableSet<State>, finishTime: Int) {
+        if (states.isEmpty()) return
+        val stepsRemaining = finishTime - states.first().time
+        val minimalBestScore = states.maxOf { it.materials.geode + it.delta.geode * stepsRemaining }
+
+        states.retainAll { candidate ->
+            val minimalScore = candidate.materials.geode + candidate.delta.geode * stepsRemaining
+            val bestDelta = (stepsRemaining * stepsRemaining + 1) / 2
+            minimalScore + bestDelta > minimalBestScore
+        }
     }
 
 
@@ -139,10 +134,5 @@ object Day19 : AdventSolution(2022, 19, "Not Enough Minerals") {
             maxOf(obsidian, other.obsidian),
             maxOf(geode, other.geode)
         )
-
-        companion object {
-            val initial = Mats(1, 0, 0, 0)
-        }
     }
-
 }
