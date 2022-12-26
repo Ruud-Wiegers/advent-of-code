@@ -1,15 +1,11 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import java.io.StreamTokenizer
 import java.io.StringReader
 
-fun main() {
-    Day22.solve()
-}
 
 object Day22 : AdventSolution(2022, 22, "Monkey Map") {
 

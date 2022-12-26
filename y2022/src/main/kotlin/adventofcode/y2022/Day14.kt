@@ -1,16 +1,11 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Vec2
 import kotlin.math.sign
 
 
-fun main() {
-    Day14.solve()
-}
-
-object Day14 : AdventSolution(2022, 14, "Distress Signal") {
+object Day14 : AdventSolution(2022, 14, "Regolith Reservoir") {
 
     override fun solvePartOne(input: String): Int {
 

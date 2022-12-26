@@ -1,12 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-
-fun main() {
-    Day16.solve()
-}
 
 object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {
 
@@ -102,7 +97,7 @@ private fun distances(
     }
 }
 
-data class Valve(val name: String, val rate: Int, val neighbors: List<String>)
+private data class Valve(val name: String, val rate: Int, val neighbors: List<String>)
 
 
 private fun List<String>.powerset(): List<List<String>> {

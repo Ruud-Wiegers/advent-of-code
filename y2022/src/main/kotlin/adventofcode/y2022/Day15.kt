@@ -1,14 +1,9 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 import adventofcode.util.vector.Vec2
 import kotlin.math.abs
 
-
-fun main() {
-    Day15.solve()
-}
 
 object Day15 : AdventSolution(2022, 15, "Beacon Exclusion Zone") {
 

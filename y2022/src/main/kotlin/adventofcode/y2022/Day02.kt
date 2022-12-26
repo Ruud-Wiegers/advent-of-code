@@ -1,11 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.AdventSolution
-import adventofcode.solve
 
-fun main() {
-    Day02.solve()
-}
 object Day02 : AdventSolution(2022, 2, "Rock Paper Scissors") {
 
     override fun solvePartOne(input: String) = input
