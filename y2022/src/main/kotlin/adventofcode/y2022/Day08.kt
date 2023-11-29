@@ -1,7 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transpose
+import adventofcode.util.algorithm.transpose
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 

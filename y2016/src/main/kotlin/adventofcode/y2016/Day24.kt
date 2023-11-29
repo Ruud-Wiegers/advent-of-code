@@ -1,8 +1,8 @@
 package adventofcode.y2016
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.IState
-import adventofcode.util.aStar
+import adventofcode.util.algorithm.IState
+import adventofcode.util.algorithm.aStar
 import adventofcode.util.collections.permutations
 import kotlin.math.abs
 

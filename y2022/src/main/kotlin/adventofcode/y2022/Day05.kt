@@ -1,7 +1,7 @@
 package adventofcode.y2022
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transposeString
+import adventofcode.util.algorithm.transposeString
 
 
 object Day05 : AdventSolution(2022, 5, "Camp Cleanup") {

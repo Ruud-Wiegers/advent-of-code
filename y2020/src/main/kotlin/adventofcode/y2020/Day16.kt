@@ -1,7 +1,7 @@
 package adventofcode.y2020
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transpose
+import adventofcode.util.algorithm.transpose
 
 object Day16 : AdventSolution(2020, 16, "Ticket Translation") {
     override fun solvePartOne(input: String): Int {

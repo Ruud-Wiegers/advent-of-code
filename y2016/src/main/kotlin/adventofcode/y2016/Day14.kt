@@ -1,7 +1,7 @@
 package adventofcode.y2016
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.md5
+import adventofcode.util.algorithm.md5
 
 object Day14 : AdventSolution(2016, 14, "One-Time Pad") {
 

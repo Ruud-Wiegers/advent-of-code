@@ -1,7 +1,7 @@
 package adventofcode.y2016
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transposeString
+import adventofcode.util.algorithm.transposeString
 
 private typealias CharacterSelector = (frequencyMap: Map<Char, Int>) -> Map.Entry<Char, Int>?
 

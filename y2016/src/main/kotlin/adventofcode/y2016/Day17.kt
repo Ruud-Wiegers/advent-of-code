@@ -1,10 +1,10 @@
 package adventofcode.y2016
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.IState
-import adventofcode.util.aStar
-import adventofcode.util.aStarExhaustive
-import adventofcode.util.md5
+import adventofcode.util.algorithm.IState
+import adventofcode.util.algorithm.aStar
+import adventofcode.util.algorithm.aStarExhaustive
+import adventofcode.util.algorithm.md5
 
 
 object Day17 : AdventSolution(2016, 17, "Two Steps Forward") {

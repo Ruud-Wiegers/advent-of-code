@@ -1,7 +1,7 @@
 package adventofcode.y2017
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transpose
+import adventofcode.util.algorithm.transpose
 
 private val startingConfiguration: Square = ".#./..#/###".split('/')
 

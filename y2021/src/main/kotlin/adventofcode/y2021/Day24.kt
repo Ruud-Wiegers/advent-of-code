@@ -1,7 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transpose
+import adventofcode.util.algorithm.transpose
 import java.util.*
 
 object Day24 : AdventSolution(2021, 24, "Arithmetic Logic Unit") {

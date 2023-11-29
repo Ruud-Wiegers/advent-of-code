@@ -1,4 +1,4 @@
-package adventofcode.util
+package adventofcode.util.algorithm
 
 fun List<String>.transposeString(): List<String> =
     first().indices.map { index ->

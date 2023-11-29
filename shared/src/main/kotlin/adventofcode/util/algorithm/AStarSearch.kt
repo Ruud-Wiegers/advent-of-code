@@ -1,4 +1,4 @@
-package adventofcode.util
+package adventofcode.util.algorithm
 
 import java.util.*
 

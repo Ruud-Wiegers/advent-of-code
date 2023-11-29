@@ -1,7 +1,7 @@
 package adventofcode.y2021
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.transposeString
+import adventofcode.util.algorithm.transposeString
 
 object Day25 : AdventSolution(2021, 25, "Sea Cucumbers") {
 
