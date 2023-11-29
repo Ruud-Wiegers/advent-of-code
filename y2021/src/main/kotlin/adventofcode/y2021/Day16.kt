@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day16 : AdventSolution(2021, 16, "Packet Decoder") {
     override fun solvePartOne(input: String) = PacketDecoder(input).parsePacket().let(::sumOfVersions)

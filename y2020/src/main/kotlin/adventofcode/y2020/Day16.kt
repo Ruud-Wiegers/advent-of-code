@@ -1,6 +1,6 @@
 package adventofcode.y2020
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.transpose
 
 object Day16 : AdventSolution(2020, 16, "Ticket Translation") {

@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day22 : AdventSolution(2021, 22, "Reactor Reboot") {
     override fun solvePartOne(input: String) = parse(input).take(20).let(::solve)

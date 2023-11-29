@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day23 : AdventSolution(2017, 23, "Coprocessor Conflagration") {
 

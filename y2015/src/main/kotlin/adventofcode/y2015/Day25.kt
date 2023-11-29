@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import java.math.BigInteger
 
 object Day25 : AdventSolution(2015, 25, "Let It Snow")

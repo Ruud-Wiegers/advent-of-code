@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day20 : AdventSolution(2015, 20, "Infinite Elves and Infinite Houses")
 {

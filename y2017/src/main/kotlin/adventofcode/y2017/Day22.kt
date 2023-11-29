@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.y2017.Day22.Health.*
 
 object Day22 : AdventSolution(2017, 22, "Sporifica Virus") {

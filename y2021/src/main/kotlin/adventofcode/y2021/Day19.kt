@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.collections.cartesian
 import adventofcode.util.vector.Vec3
 

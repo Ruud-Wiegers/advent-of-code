@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day08 : AdventSolution(2015, 8, "Matchsticks") {
 

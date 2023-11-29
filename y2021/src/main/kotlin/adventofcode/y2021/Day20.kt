@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day20 : AdventSolution(2021, 20, "Trench Map") {
     override fun solvePartOne(input: String) = parse(input).let { (rules, grid) -> solve(rules, grid, 2) }

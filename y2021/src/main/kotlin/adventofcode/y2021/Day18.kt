@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day18 : AdventSolution(2021, 18, "Snailfish") {
     override fun solvePartOne(input: String): Int {

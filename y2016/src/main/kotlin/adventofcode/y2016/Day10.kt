@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day10 : AdventSolution(2016, 10, "Balance Bots") {
     override fun solvePartOne(input: String): Int? {

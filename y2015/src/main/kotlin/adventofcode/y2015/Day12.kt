@@ -1,7 +1,7 @@
 package adventofcode.y2015
 
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import java.io.StreamTokenizer
 import java.io.StringReader
 

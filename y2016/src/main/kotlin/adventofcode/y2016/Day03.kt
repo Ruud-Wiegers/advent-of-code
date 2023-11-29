@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day03 : AdventSolution(2016, 3, "Squares With Three Sides") {

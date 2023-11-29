@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day16 : AdventSolution(2015, 16, "Aunt Sue") {

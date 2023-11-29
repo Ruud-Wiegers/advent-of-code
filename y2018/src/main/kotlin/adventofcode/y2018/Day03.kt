@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day03 : AdventSolution(2018, 3, "No Matter How You Slice It") {
 

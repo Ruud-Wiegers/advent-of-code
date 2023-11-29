@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day16 : AdventSolution(2016, 16, "Dragon Checksum ") {
     override fun solvePartOne(input: String) = fillDisk(input, 272).checksum()

@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.retrieveInput
+import adventofcode.io.retrieveInput
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import kotlin.random.Random

@@ -1,4 +1,4 @@
-package adventofcode
+package adventofcode.io
 
 import kotlin.system.measureNanoTime
 

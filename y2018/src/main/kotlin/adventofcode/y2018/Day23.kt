@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.abs
 
 object Day23 : AdventSolution(2018, 23, "Experimental Emergency Teleportation") {

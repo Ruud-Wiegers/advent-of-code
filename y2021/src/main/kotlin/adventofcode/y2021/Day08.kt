@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day08 : AdventSolution(2021, 8, "Seven Segment Search") {

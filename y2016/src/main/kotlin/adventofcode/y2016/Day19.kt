@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.log2
 
 object Day19 : AdventSolution(2016, 19, "An Elephant Named Joseph") {

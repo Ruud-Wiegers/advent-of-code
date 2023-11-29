@@ -1,7 +1,7 @@
 package adventofcode.y2019
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 

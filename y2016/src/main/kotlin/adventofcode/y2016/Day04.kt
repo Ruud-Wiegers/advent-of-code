@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day04 : AdventSolution(2016, 4, "Security Through Obscurity") {
     override fun solvePartOne(input: String) = parseRooms(input)

@@ -1,4 +1,4 @@
-package adventofcode.util
+package adventofcode.language.intcode
 
 class IntCodeProgram(
     private val data: Memory,

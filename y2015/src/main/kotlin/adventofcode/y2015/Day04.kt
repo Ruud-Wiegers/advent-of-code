@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.md5
 
 object Day04 : AdventSolution(2015, 4, "The Ideal Stocking Stuffer")

@@ -1,7 +1,7 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
-import adventofcode.util.elfcode.*
+import adventofcode.io.AdventSolution
+import adventofcode.language.elfcode.*
 
 object Day16 : AdventSolution(2018, 16, "Chronal Classification") {
 

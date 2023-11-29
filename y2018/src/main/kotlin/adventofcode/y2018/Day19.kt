@@ -1,10 +1,10 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
-import adventofcode.solve
-import adventofcode.util.elfcode.Instruction
-import adventofcode.util.elfcode.execute
-import adventofcode.util.elfcode.parseToElfcode
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
+import adventofcode.language.elfcode.Instruction
+import adventofcode.language.elfcode.execute
+import adventofcode.language.elfcode.parseToElfcode
 
 fun main() = Day19.solve()
 

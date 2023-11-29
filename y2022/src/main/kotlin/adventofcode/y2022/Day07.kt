@@ -1,6 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day07 : AdventSolution(2022, 7, "No Space Left On Device") {
 

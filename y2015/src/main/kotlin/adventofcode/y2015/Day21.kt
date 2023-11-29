@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day21 : AdventSolution(2015, 21, "RPG Simulator 20XX") {
 

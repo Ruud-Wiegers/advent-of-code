@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.abs
 
 object Day06 : AdventSolution(2018, 6, "Chronal Coordinates") {

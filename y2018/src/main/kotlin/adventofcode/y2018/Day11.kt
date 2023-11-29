@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day11 : AdventSolution(2018, 11, "Chronal Charge") {
 

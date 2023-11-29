@@ -1,9 +1,8 @@
 package adventofcode.y2019
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 import adventofcode.util.collections.firstDuplicate
-import adventofcode.util.collections.takeWhileDistinct
 import adventofcode.util.vector.Vec3
 
 fun main() = Day24.solve()

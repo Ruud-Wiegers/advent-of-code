@@ -1,8 +1,8 @@
 package adventofcode.y2016
 
-import adventofcode.util.AssemBunnyContext
-import adventofcode.util.parseToAssemBunny
-import adventofcode.AdventSolution
+import adventofcode.language.assembunny.AssemBunnyContext
+import adventofcode.language.assembunny.parseToAssemBunny
+import adventofcode.io.AdventSolution
 
 object Day12 : AdventSolution(2016, 12, "Leonardo's Monorail") {
 	override fun solvePartOne(input: String): String {

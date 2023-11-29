@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day03 : AdventSolution(2021, 3, "Binary Diagnostic") {
     override fun solvePartOne(input: String): Int {

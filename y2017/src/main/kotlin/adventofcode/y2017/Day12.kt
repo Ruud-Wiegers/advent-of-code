@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day12 : AdventSolution(2017, 12, "Digital Plumber") {
 

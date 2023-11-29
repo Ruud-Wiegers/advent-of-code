@@ -1,9 +1,9 @@
 package adventofcode.y2016
 
-import adventofcode.util.AssemBunnyContext
-import adventofcode.util.Instruction
-import adventofcode.util.parseToAssemBunny
-import adventofcode.AdventSolution
+import adventofcode.language.assembunny.AssemBunnyContext
+import adventofcode.language.assembunny.Instruction
+import adventofcode.language.assembunny.parseToAssemBunny
+import adventofcode.io.AdventSolution
 
 
 object Day25 : AdventSolution(2016, 25, "Clock Signal") {

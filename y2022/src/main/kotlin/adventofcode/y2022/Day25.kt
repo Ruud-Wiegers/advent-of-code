@@ -1,6 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day25 : AdventSolution(2022, 25, "Full of Hot Air") {

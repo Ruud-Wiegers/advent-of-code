@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day13 : AdventSolution(2017, 13, "Packet Scanners") {
 

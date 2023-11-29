@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import java.util.*
 
 object Day09 : AdventSolution(2018, 9, "Marble Mania") {

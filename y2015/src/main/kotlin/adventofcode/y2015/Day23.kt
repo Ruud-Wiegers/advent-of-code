@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 //solved on paper
 object Day23 : AdventSolution(2015, 23, "Opening the Turing Lock") {

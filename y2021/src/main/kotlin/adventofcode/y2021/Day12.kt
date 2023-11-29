@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day12 : AdventSolution(2021, 12, "Passage Pathing") {
     override fun solvePartOne(input: String) = solve(input, Path::visit1)

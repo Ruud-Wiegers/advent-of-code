@@ -1,4 +1,4 @@
-package adventofcode.util.elfcode
+package adventofcode.language.elfcode
 
 
 fun parseToElfcode(input: String): Pair<Int, List<Instruction>> {

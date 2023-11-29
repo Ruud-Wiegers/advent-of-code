@@ -1,7 +1,7 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 
 fun main() = Day24.solve()
 

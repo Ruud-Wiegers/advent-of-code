@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day05 : AdventSolution(2015, 5, "Doesn't He Have Intern-Elves For This?") {
 

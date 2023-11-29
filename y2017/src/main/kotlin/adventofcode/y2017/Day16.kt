@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.collections.takeWhileDistinct
 
 object Day16 : AdventSolution(2017, 16, "Permutation Promenade") {

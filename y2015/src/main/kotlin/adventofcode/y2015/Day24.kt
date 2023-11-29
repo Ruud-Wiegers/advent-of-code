@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day24 : AdventSolution(2015, 24, "It Hangs in the Balance") {
     override fun solvePartOne(input: String) = input.lines().map(String::toInt).let { solve(it, 3) }

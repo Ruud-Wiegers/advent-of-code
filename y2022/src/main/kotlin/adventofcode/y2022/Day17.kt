@@ -1,7 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
 import adventofcode.util.collections.cycle
 import adventofcode.util.collections.takeWhileDistinct
 import adventofcode.util.vector.Direction

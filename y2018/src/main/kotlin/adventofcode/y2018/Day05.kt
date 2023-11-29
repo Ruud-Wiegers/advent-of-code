@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import java.util.*
 
 object Day05 : AdventSolution(2018, 5, "Alchemical Reduction") {

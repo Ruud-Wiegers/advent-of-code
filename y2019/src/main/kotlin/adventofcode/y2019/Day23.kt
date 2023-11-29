@@ -1,9 +1,9 @@
 package adventofcode.y2019
 
-import adventofcode.AdventSolution
-import adventofcode.solve
-import adventofcode.util.IntCodeProgram
-import adventofcode.util.IntCodeProgram.State.WaitingForInput
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
+import adventofcode.language.intcode.IntCodeProgram
+import adventofcode.language.intcode.IntCodeProgram.State.WaitingForInput
 
 fun main() = Day23.solve()
 

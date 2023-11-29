@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day07 : AdventSolution(2016, 7, "Internet Protocol Version 7") {

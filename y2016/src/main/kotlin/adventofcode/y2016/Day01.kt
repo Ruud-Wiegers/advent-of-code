@@ -1,7 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
 import adventofcode.util.collections.firstDuplicate
 import adventofcode.util.collections.onlyChanges
 import adventofcode.util.vector.Direction

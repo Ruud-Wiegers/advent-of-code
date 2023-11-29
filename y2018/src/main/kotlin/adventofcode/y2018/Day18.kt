@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.collections.takeWhileDistinct
 
 object Day18 : AdventSolution(2018, 18, "Settlers of The North Pole") {

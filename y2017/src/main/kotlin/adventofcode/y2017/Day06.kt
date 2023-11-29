@@ -1,7 +1,7 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 import adventofcode.util.collections.takeWhileDistinct
 
 fun main() = Day06.solve()

@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day15 : AdventSolution(2016, 15, "Timing is Everything") {
 	override fun solvePartOne(input: String) = calulateWaitingTime(parseConfig(input)).toString()

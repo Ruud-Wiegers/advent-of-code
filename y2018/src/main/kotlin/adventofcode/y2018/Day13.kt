@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.y2018.Day13.Direction.*
 
 object Day13 : AdventSolution(2018, 13, "Mine Cart Madness") {

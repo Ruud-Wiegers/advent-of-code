@@ -1,6 +1,6 @@
 package adventofcode.y2018
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import java.util.*
 
 object Day22 : AdventSolution(2018, 22, "Mode Maze") {

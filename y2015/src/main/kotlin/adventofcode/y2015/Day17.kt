@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day17 : AdventSolution(2015, 17, "No Such Thing as Too Much") {
 

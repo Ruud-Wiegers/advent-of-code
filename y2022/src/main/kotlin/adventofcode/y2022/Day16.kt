@@ -1,6 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day16 : AdventSolution(2022, 16, "Proboscidea Volcanium") {

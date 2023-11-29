@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day09 : AdventSolution(2016, 9, "Explosives in Cyberspace") {
 

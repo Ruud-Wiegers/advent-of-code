@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.util.IState
 import adventofcode.util.aStar
 import adventofcode.util.collections.permutations

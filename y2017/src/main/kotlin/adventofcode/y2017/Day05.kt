@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day05 : AdventSolution(2017, 5, "A Maze of Twisty Trampolines, All Alike") {
 

@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import adventofcode.y2015.Day06.Action.*
 
 object Day06 : AdventSolution(2015, 6, "Probably a Fire Hazard") {

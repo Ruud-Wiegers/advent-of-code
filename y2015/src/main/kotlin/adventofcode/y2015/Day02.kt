@@ -1,6 +1,6 @@
 package adventofcode.y2015
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day02 : AdventSolution(2015, 2, "I Was Told There Would Be No Math") {
 

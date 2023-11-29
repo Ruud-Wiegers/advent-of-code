@@ -1,5 +1,6 @@
-package adventofcode
+package adventofcode.io
 
+import adventofcode.AOC_SESSION
 import java.io.File
 import java.io.InputStream
 import java.net.URL

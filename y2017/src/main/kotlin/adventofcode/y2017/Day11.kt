@@ -1,6 +1,6 @@
 package adventofcode.y2017
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.abs
 
 object Day11 : AdventSolution(2017, 11, "Hex Ed") {

@@ -1,6 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 object Day02 : AdventSolution(2022, 2, "Rock Paper Scissors") {
 

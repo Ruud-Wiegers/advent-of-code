@@ -1,6 +1,6 @@
 package adventofcode.y2016
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day18 : AdventSolution(2016, 18, "Like a Rogue") {

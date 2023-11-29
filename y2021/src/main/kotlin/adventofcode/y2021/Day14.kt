@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 
 
 object Day14 : AdventSolution(2021, 14, "Extended Polymerization") {

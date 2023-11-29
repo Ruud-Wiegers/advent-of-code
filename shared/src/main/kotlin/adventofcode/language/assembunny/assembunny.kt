@@ -1,6 +1,6 @@
 @file:Suppress("SpellCheckingInspection")
 
-package adventofcode.util
+package adventofcode.language.assembunny
 
 
 fun parseToAssemBunny(string: String): List<Instruction> = string.lines().map(::parseInstruction)

@@ -1,6 +1,6 @@
 package adventofcode.y2022
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.ceil
 
 object Day19 : AdventSolution(2022, 19, "Not Enough Minerals") {

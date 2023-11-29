@@ -1,6 +1,6 @@
 package adventofcode.y2021
 
-import adventofcode.AdventSolution
+import adventofcode.io.AdventSolution
 import kotlin.math.abs
 
 object Day07 : AdventSolution(2021, 7, "The Treachery of Whales") {

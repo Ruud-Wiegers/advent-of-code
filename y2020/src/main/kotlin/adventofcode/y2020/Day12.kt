@@ -1,7 +1,7 @@
 package adventofcode.y2020
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 import adventofcode.util.vector.Vec2
 import kotlin.math.absoluteValue
 

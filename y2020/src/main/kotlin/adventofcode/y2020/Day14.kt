@@ -1,7 +1,7 @@
 package adventofcode.y2020
 
-import adventofcode.AdventSolution
-import adventofcode.solve
+import adventofcode.io.AdventSolution
+import adventofcode.io.solve
 import adventofcode.util.SimpleParser
 
 fun main() = Day14.solve()
