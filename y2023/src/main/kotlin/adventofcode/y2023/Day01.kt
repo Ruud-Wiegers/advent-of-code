@@ -9,30 +9,36 @@ fun main() {
 
 object Day01 : AdventSolution(2023, 1, "Trebuchet?!") {
 
-    override fun solvePartOne(input: String) = solve(input, p1)
+    override fun solvePartOne(input: String) = solve(input, digitValues)
+    override fun solvePartTwo(input: String) = solve(input, digitValues + wordValues)
 
-    override fun solvePartTwo(input: String) = solve(input, p2)
 
     private fun solve(input: String, numericValues: Map<String, Int>) = input
         .lineSequence()
         .sumOf {
             val (_, firstDigit) = it.findAnyOf(numericValues.keys)!!
+            val firstValue = numericValues.getValue(firstDigit)
+
             val (_, lastDigit) = it.findLastAnyOf(numericValues.keys)!!
-            numericValues.getValue(firstDigit) * 10 + numericValues.getValue(lastDigit)
+            val lastValue = numericValues.getValue(lastDigit)
+
+            firstValue * 10 + lastValue
         }
 }
 
 
-private val p1 = (0..9).associateBy(Int::toString)
+private val digitValues = (0..9).associateBy(Int::toString)
 
-private val p2 = p1 + mapOf(
-    "one" to 1,
-    "two" to 2,
-    "three" to 3,
-    "four" to 4,
-    "five" to 5,
-    "six" to 6,
-    "seven" to 7,
-    "eight" to 8,
-    "nine" to 9
-)
+
+private val wordValues = listOf(
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine"
+).withIndex().associate { it.value to it.index }
