@@ -9,13 +9,10 @@ fun main() {
 
 object Day04 : AdventSolution(2023, 4, "Scratch Cards") {
 
-    override fun solvePartOne(input: String) = parse(input)
-        .map { card -> card.wins() }
-        .filter { it > 0 }
-        .sumOf { 1 shl it - 1 }
+    override fun solvePartOne(input: String) = parse(input).sumOf(Scratchcard::score)
 
     override fun solvePartTwo(input: String): Int {
-        val cards = parse(input).map { card -> card.wins() }.toList()
+        val cards = parse(input).map(Scratchcard::wins).toList()
 
         val copies = IntArray(cards.size) { 1 }
 
@@ -29,18 +26,18 @@ object Day04 : AdventSolution(2023, 4, "Scratch Cards") {
     }
 }
 
-
 private fun parse(input: String) = input.lineSequence().map { line ->
     val (idStr, own, win) = line.split(":", "|")
 
     Scratchcard(
         idStr.substringAfter("Card").trim().toInt(),
-        own.split(" ").filter(String::isNotBlank).map(String::toInt).toSet(),
+        own.split(" ").filter(String::isNotBlank).map(String::toInt),
         win.split(" ").filter(String::isNotBlank).map(String::toInt).toSet()
     )
 }
 
 
-data class Scratchcard(val id: Int, val own: Set<Int>, val winning: Set<Int>) {
+data class Scratchcard(val id: Int, val own: List<Int>, val winning: Set<Int>) {
     fun wins() = own.count { it in winning }
+    fun score() = wins().let { if (it == 0) 0 else 1 shl it - 1 }
 }
