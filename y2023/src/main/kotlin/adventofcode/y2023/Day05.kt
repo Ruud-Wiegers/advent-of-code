@@ -7,7 +7,7 @@ fun main() {
     Day05.solve()
 }
 
-object Day05 : AdventSolution(2023, 5, "Plants") {
+object Day05 : AdventSolution(2023, 5, "If You Give A Seed A Fertilizer") {
 
     override fun solvePartOne(input: String): Long? {
         val (seeds, converters) = parse(input)
@@ -20,10 +20,10 @@ object Day05 : AdventSolution(2023, 5, "Plants") {
     override fun solvePartTwo(input: String): Long {
         val (seeds, converters) = parse(input)
 
-        val ranges = seeds.chunked(2).map { it[0] until it[0] + it[1] }
+        val seedRanges = seeds.chunked(2).map { (start, length) -> start until start + length }
 
         return converters
-            .fold(ranges) { categoryRanges, converter ->
+            .fold(seedRanges) { categoryRanges, converter ->
                 converter.cut(categoryRanges).map { categoryRange -> converter.shiftRange(categoryRange) }
             }
             .minOf { it.first }
