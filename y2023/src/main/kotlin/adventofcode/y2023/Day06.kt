@@ -18,7 +18,7 @@ object Day06 : AdventSolution(2023, 6, "Wait For It") {
         }
 
         return times.zip(distances)
-            .map { (time, record) -> solveCombinations(time, record) }
+            .map { (time, record) -> waysToBeatTheRecord(time, record) }
             .reduce(Long::times)
     }
 
@@ -27,20 +27,20 @@ object Day06 : AdventSolution(2023, 6, "Wait For It") {
             "\\d+".toRegex().findAll(it).joinToString(separator = "", transform = MatchResult::value).toLong()
         }
 
-        return solveCombinations(time, distance)
+        return waysToBeatTheRecord(time, distance)
     }
 }
 
 
-private fun solveCombinations(time: Long, distanceToBeat: Long): Long {
+private fun waysToBeatTheRecord(time: Long, distanceToBeat: Long): Long {
 
     // Quadratic equation: tb - b² > d
     // t: total race time, b: button press milli's, d: distance to beat
     // So we use the quadratic formula to find the intercepts
     val d = sqrt(time * time - 4.0 * distanceToBeat)
 
-    val t1 = (time - d) / 2.0
-    val t2 = (time + d) / 2.0
+    val t1 = (time - d) / 2
+    val t2 = (time + d) / 2
 
     // A little bit of shenanigans to work around the case where x1 or x2 is an integer
     // We have to strictly beat the record.
@@ -49,5 +49,3 @@ private fun solveCombinations(time: Long, distanceToBeat: Long): Long {
 
     return lastFaster - firstFaster + 1
 }
-
-
