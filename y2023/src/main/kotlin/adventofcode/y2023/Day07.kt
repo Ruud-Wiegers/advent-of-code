@@ -12,7 +12,7 @@ object Day07 : AdventSolution(2023, 7, "???") {
     override fun solvePartOne(input: String): Long {
         val hands = input.lines().map {
             val (hand, bid) = it.split(" ")
-            Hand(hand.map { Card(it, cardValues) }, bid.toInt())
+            Hand(hand, bid.toInt())
         }
 
         return hands.sorted().mapIndexed { i, h -> (i + 1L) * h.bid }.sum()
@@ -21,7 +21,7 @@ object Day07 : AdventSolution(2023, 7, "???") {
     override fun solvePartTwo(input: String): Long {
         val hands = input.lines().map {
             val (hand, bid) = it.split(" ")
-            JokerHand(hand.map { Card(it, jokerCardValues) }, bid.toInt())
+            JokerHand(hand, bid.toInt())
         }
 
         return hands.sorted().mapIndexed { i, h -> (i + 1L) * h.bid }.sum()
@@ -29,13 +29,15 @@ object Day07 : AdventSolution(2023, 7, "???") {
 }
 
 
-private open class Hand(val hand: List<Card>, val bid: Int) : Comparable<Hand> {
+private open class Hand(str: String, val bid: Int) : Comparable<Hand> {
 
+    open val cardValues = "23456789TJQKA"
 
-    val freq = hand.groupingBy { it }.eachCount()
+    val hand: List<Card> by lazy { str.map { Card(it, cardValues) } }
 
-    open val handType: HandType by lazy {  freq.values.sorted().toHandType() }
-
+    open val handType: HandType by lazy {
+        hand.groupingBy { it }.eachCount().values.sorted().let(HandType::fromCardFrequency)
+    }
 
     override fun compareTo(other: Hand): Int = compareValuesBy(
         this,
@@ -50,15 +52,22 @@ private open class Hand(val hand: List<Card>, val bid: Int) : Comparable<Hand> {
 }
 
 
-private class JokerHand(hand: List<Card>, bid: Int) : Hand(hand,bid) {
+private class JokerHand(str: String, bid: Int) : Hand(str, bid) {
+
+    override val cardValues = "J23456789TQKA"
+
     override val handType: HandType by lazy {
+        val freq = hand.groupingBy { it }.eachCount()
         val jokers = freq[joker] ?: 0
         val other = freq.minus(joker).values.sorted()
         val best = other.dropLast(1) + ((other.lastOrNull() ?: 0) + jokers)
 
-        best.toHandType()
+        HandType.fromCardFrequency(best)
     }
 }
+
+private val joker = Card('J', "J23456789TQKA")
+
 
 
 private enum class HandType(val freq: List<Int>) {
@@ -68,18 +77,18 @@ private enum class HandType(val freq: List<Int>) {
     ThreeOfAKind(listOf(1, 1, 3)),
     FullHouse(listOf(2, 3)),
     FourOfAKind(listOf(1, 4)),
-    FiveOfAKind(listOf(5))
+    FiveOfAKind(listOf(5));
+
+    companion object {
+        fun fromCardFrequency(freq: List<Int>) = HandType.entries.first { freq == it.freq }
+    }
 }
 
-private fun List<Int>.toHandType() = HandType.entries.first { this == it.freq }
-private data class Card(val card: Char, val ordering: String) : Comparable<Card> {
+private class Card(card: Char, ordering: String) : Comparable<Card> {
 
     private val value = ordering.indexOf(card)
     override fun compareTo(other: Card): Int = value.compareTo(other.value)
+    override fun equals(other: Any?): Boolean = (other as? Card)?.value == value
+    override fun hashCode() = value.hashCode()
 }
 
-private const val cardValues = "23456789TJQKA"
-
-private const val jokerCardValues = "J23456789TQKA"
-
-private val joker = Card('J', jokerCardValues)
