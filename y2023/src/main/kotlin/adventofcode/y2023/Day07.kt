@@ -2,6 +2,8 @@ package adventofcode.y2023
 
 import adventofcode.io.AdventSolution
 import adventofcode.io.solve
+import java.util.Arrays
+import java.util.Collections
 
 fun main() {
     Day07.solve()

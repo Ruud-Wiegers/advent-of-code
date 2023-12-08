@@ -12,35 +12,32 @@ fun main() {
 object Day08 : AdventSolution(2023, 8, "Haunted Wasteland") {
 
     override fun solvePartOne(input: String): Int {
+        val (turns, graph) = parse(input)
 
-        val directions = parse(input)
-
-        val turnSequence = directions.turns.map { it == 'L' }.cycle()
-
-        val positions = turnSequence.scan("AAA") { pos, turnLeft ->
-            directions.map.getValue(pos).let { if (turnLeft) it.first else it.second }
-        }
-
-        return positions.indexOf("ZZZ")
-
+        return turns.map { it == 'L' }
+            .cycle()
+            .scan("AAA") { pos, turnLeft ->
+                graph.getValue(pos).let { (l, r) -> if (turnLeft) l else r }
+            }
+            .indexOf("ZZZ")
     }
 
     override fun solvePartTwo(input: String): Long {
-        val directions = parse(input)
+        val (turns, graph) = parse(input)
 
-        fun turnSequence() = directions.turns.map { it == 'L' }.cycle()
+        fun turnSequence() = turns.map { it == 'L' }.cycle()
 
 
-        val start = directions.map.keys.filter { it.endsWith("A") }.toSet()
-        val target = directions.map.keys.filter { it.endsWith("Z") }.toSet()
+        val start = graph.keys.filter { it.endsWith("A") }.toSet()
+        val target = graph.keys.filter { it.endsWith("Z") }.toSet()
 
-        val paths = start.map { pos ->
-            turnSequence().scan(pos) { p, turnLeft ->
-                directions.map.getValue(p).let { if (turnLeft) it.first else it.second }
+        val paths = start.map { initial ->
+            turnSequence().scan(initial) { pos, turnLeft ->
+                graph.getValue(pos).let { (l, r) -> if (turnLeft) l else r }
             }
         }
 
-        val cycles = paths.map { it.indexOfFirst { it in target } }
+        val cycles = paths.map { it.indexOfFirst(target::contains) }
 
         return cycles.map(Int::toLong).reduce(::lcm)
 
