@@ -7,7 +7,7 @@ fun main() {
     Day07.solve()
 }
 
-object Day07 : AdventSolution(2023, 7, "???") {
+object Day07 : AdventSolution(2023, 7, "Camel Cards") {
 
     override fun solvePartOne(input: String): Long {
         val hands = input.lines().map {
