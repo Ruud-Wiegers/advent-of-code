@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 internal class Day14Test {
 
     @Test
-    fun solvePartOne_a() {
+    fun solvePartOne() {
         val input = """
             O....#....
             O.OO#....#
