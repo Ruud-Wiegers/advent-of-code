@@ -3,7 +3,6 @@ package adventofcode.y2023
 import adventofcode.io.AdventSolution
 import adventofcode.io.solve
 import adventofcode.util.algorithm.transpose
-import adventofcode.util.collections.firstDuplicate
 import adventofcode.util.collections.splitAfter
 import adventofcode.util.collections.splitBefore
 import adventofcode.util.collections.takeWhileDistinct
@@ -20,10 +19,11 @@ object Day14 : AdventSolution(2023, 14, "Parabolic Reflector Dish") {
 
         val grid = input.lines().map { it.toList() }
 
-        val firstDuplicate = generateSequence(grid, ::cycle).firstDuplicate()
+        val beforeRepetition = generateSequence(grid, ::cycle).takeWhileDistinct().withIndex().last()
+        val firstDuplicate = cycle(beforeRepetition.value)
 
         val leadup = generateSequence(grid, ::cycle).indexOf(firstDuplicate)
-        val length = generateSequence(firstDuplicate, ::cycle).takeWhileDistinct().count()
+        val length = beforeRepetition.index - leadup + 1
 
         val remainder = (1_000_000_000 - leadup) % length
 
@@ -44,5 +44,4 @@ private fun List<List<Char>>.tiltSouth() = transpose().map(::moveRowEast).transp
 private fun List<List<Char>>.tiltEast() = map(::moveRowEast)
 
 private fun moveRowWest(row: List<Char>) = row.splitAfter { it == '#' }.flatMap { it.sortedDescending() }
-
 private fun moveRowEast(row: List<Char>) = row.splitBefore { it == '#' }.flatMap { it.sorted() }
