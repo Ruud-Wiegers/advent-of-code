@@ -13,23 +13,23 @@ object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
 
     override fun solvePartOne(input: String): Int {
 
-        val parsed = parse(input)
+         parsed = parse(input)
 
-        return solve(parsed, Beam(Vec2.origin, Direction.RIGHT))
+        return solve(parsed, Beam(Vec2(-1,0), Direction.RIGHT))
 
     }
 
     override fun solvePartTwo(input: String): Int {
 
-        val parsed = parse(input)
+         parsed = parse(input)
 
         val ys = input.lines().indices
         val xs = input.lines().first().indices
 
-        val top = xs.map { Beam(Vec2(it, ys.first), Direction.DOWN) }
-        val bottom = xs.map { Beam(Vec2(it, ys.last), Direction.UP) }
-        val left = ys.map { Beam(Vec2(xs.first, it), Direction.RIGHT) }
-        val right = ys.map { Beam(Vec2(xs.last, it), Direction.LEFT) }
+        val top = xs.map { Beam(Vec2(it, ys.first-1), Direction.DOWN) }
+        val bottom = xs.map { Beam(Vec2(it, ys.last+1), Direction.UP) }
+        val left = ys.map { Beam(Vec2(ys.first-1, it), Direction.RIGHT) }
+        val right = ys.map { Beam(Vec2(xs.last+1, it), Direction.LEFT) }
 
         val initial = top + bottom + left + right
 
@@ -37,26 +37,48 @@ object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
 
     }
 
+    private lateinit var parsed: Map<Vec2, Char>
+    private val rays = mutableMapOf<Beam, Pair<List<Vec2>, List<Beam>>>()
+
+
+    private fun trace(beam: Beam) = rays.getOrPut(beam) {
+        val path = generateSequence(beam.position+beam.direction.vector) { it + beam.direction.vector }.takeWhile { parsed[it] == '.' }
+
+        val next = (path.lastOrNull() ?: beam.position) + beam.direction.vector
+         if (parsed.containsKey(next))  (path+next).toList() to listOf(beam.copy(position = next)) else path.toList() to emptyList()
+
+    }
+
 
     private fun solve(parsed: Map<Vec2, Char>, initial: Beam): Int {
+        val energized = mutableSetOf<Vec2>()
         val visited = mutableSetOf<Beam>()
 
-        val open = mutableListOf(initial)
+        val (path, next) = trace(initial)
+        energized += path
+        val open = next.toMutableList()
 
         while (open.isNotEmpty()) {
             val c = open.removeLast()
 
             if (c in visited) continue
 
-            val type = parsed[c.position] ?: continue
-
-            open += bounce(type, c.direction).map { Beam(c.position + it.vector, it) }
             visited += c
+            val type = parsed[c.position]!!
 
+            require(type !='.')
+            bounce(type, c.direction).forEach {
+                val exit = c.copy(direction = it)
+                val (p2, n2) = trace(exit)
+                energized += p2
+                open += n2
+            }
+            energized += c.position
         }
 
-        return visited.map { it.position }.toSet().size
+        return energized.size
     }
+
 
 }
 
@@ -69,21 +91,27 @@ private fun parse(input: String): Map<Vec2, Char> = input.lines()
     }
     .toMap()
 
+
+private val memo= mutableMapOf<Pair<Char,Direction>,List<Direction>>()
+
 private fun bounce(type: Char, incomingDirection: Direction): List<Direction> {
-    return when (type) {
-        '\\' -> when (incomingDirection) {
-            Direction.UP, Direction.DOWN -> incomingDirection.turnLeft
-            else -> incomingDirection.turnRight
-        }.let(::listOf)
-        '/' -> when (incomingDirection) {
-            Direction.UP, Direction.DOWN -> incomingDirection.turnRight
-            else -> incomingDirection.turnLeft
-        }.let(::listOf)
+    return memo.getOrPut(type to incomingDirection) {
+        when (type) {
+            '\\' -> when (incomingDirection) {
+                Direction.UP, Direction.DOWN -> incomingDirection.turnLeft
+                else -> incomingDirection.turnRight
+            }.let(::listOf)
 
-        '-' -> listOf(Direction.LEFT, Direction.RIGHT) - incomingDirection.reverse
-        '|' -> listOf(Direction.UP, Direction.DOWN) - incomingDirection.reverse
+            '/' -> when (incomingDirection) {
+                Direction.UP, Direction.DOWN -> incomingDirection.turnRight
+                else -> incomingDirection.turnLeft
+            }.let(::listOf)
+
+            '-' -> listOf(Direction.LEFT, Direction.RIGHT) - incomingDirection.reverse
+            '|' -> listOf(Direction.UP, Direction.DOWN) - incomingDirection.reverse
 
 
-        else -> listOf(incomingDirection)
+            else -> listOf(incomingDirection)
+        }
     }
 }
