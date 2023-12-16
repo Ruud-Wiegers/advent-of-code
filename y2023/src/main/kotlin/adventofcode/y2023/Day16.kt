@@ -3,6 +3,7 @@ package adventofcode.y2023
 import adventofcode.io.AdventSolution
 import adventofcode.io.solve
 import adventofcode.util.vector.Direction
+import adventofcode.util.vector.Direction.*
 import adventofcode.util.vector.Vec2
 
 fun main() {
@@ -12,24 +13,23 @@ fun main() {
 object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
 
     override fun solvePartOne(input: String): Int {
+        val parsed = parse(input)
 
-         parsed = parse(input)
-
-        return solve(parsed, Beam(Vec2(-1,0), Direction.RIGHT))
+        return solve(parsed, Beam(Vec2(-1, 0), RIGHT))
 
     }
 
     override fun solvePartTwo(input: String): Int {
 
-         parsed = parse(input)
+        val parsed = parse(input)
 
         val ys = input.lines().indices
         val xs = input.lines().first().indices
 
-        val top = xs.map { Beam(Vec2(it, ys.first-1), Direction.DOWN) }
-        val bottom = xs.map { Beam(Vec2(it, ys.last+1), Direction.UP) }
-        val left = ys.map { Beam(Vec2(ys.first-1, it), Direction.RIGHT) }
-        val right = ys.map { Beam(Vec2(xs.last+1, it), Direction.LEFT) }
+        val top = xs.map { Beam(Vec2(it, ys.first - 1), DOWN) }
+        val bottom = xs.map { Beam(Vec2(it, ys.last + 1), UP) }
+        val left = ys.map { Beam(Vec2(ys.first - 1, it), RIGHT) }
+        val right = ys.map { Beam(Vec2(xs.last + 1, it), LEFT) }
 
         val initial = top + bottom + left + right
 
@@ -37,15 +37,21 @@ object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
 
     }
 
-    private lateinit var parsed: Map<Vec2, Char>
-    private val rays = mutableMapOf<Beam, Pair<List<Vec2>, List<Beam>>>()
+    private val rays = mutableMapOf<Beam, Pair<List<Vec2>, Beam?>>()
 
+    private fun trace(parsed: Map<Vec2, Char>, beam: Beam) = rays.getOrPut(beam) {
+        var next = beam.position
+        val path = mutableListOf<Vec2>()
+        do {
+            next += beam.direction.vector
+            path += next
+        } while (parsed[next] == '.')
 
-    private fun trace(beam: Beam) = rays.getOrPut(beam) {
-        val path = generateSequence(beam.position+beam.direction.vector) { it + beam.direction.vector }.takeWhile { parsed[it] == '.' }
-
-        val next = (path.lastOrNull() ?: beam.position) + beam.direction.vector
-         if (parsed.containsKey(next))  (path+next).toList() to listOf(beam.copy(position = next)) else path.toList() to emptyList()
+        if (!parsed.containsKey(next)) {
+            path.removeAt(path.lastIndex)
+            path to null
+        } else
+            path to beam.copy(position = next)
 
     }
 
@@ -54,9 +60,9 @@ object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
         val energized = mutableSetOf<Vec2>()
         val visited = mutableSetOf<Beam>()
 
-        val (path, next) = trace(initial)
+        val (path, next) = trace(parsed, initial)
         energized += path
-        val open = next.toMutableList()
+        val open = listOfNotNull(next).toMutableList()
 
         while (open.isNotEmpty()) {
             val c = open.removeLast()
@@ -67,11 +73,11 @@ object Day16 : AdventSolution(2023, 16, "The Floor Will Be Lava") {
             val type = parsed[c.position]!!
 
             require(type !='.')
-            bounce(type, c.direction).forEach {
+            bounces.getValue(type).getValue(c.direction).forEach {
                 val exit = c.copy(direction = it)
-                val (p2, n2) = trace(exit)
+                val (p2, n2) = trace(parsed, exit)
                 energized += p2
-                open += n2
+                n2?.let(open::add)
             }
             energized += c.position
         }
@@ -92,26 +98,32 @@ private fun parse(input: String): Map<Vec2, Char> = input.lines()
     .toMap()
 
 
-private val memo= mutableMapOf<Pair<Char,Direction>,List<Direction>>()
+private val bounces: Map<Char, Map<Direction, List<Direction>>> = mapOf(
+    '\\' to mapOf(
+        UP to LEFT,
+        RIGHT to DOWN,
+        DOWN to RIGHT,
+        LEFT to UP,
+    ).mapValues { listOf(it.value) },
 
-private fun bounce(type: Char, incomingDirection: Direction): List<Direction> {
-    return memo.getOrPut(type to incomingDirection) {
-        when (type) {
-            '\\' -> when (incomingDirection) {
-                Direction.UP, Direction.DOWN -> incomingDirection.turnLeft
-                else -> incomingDirection.turnRight
-            }.let(::listOf)
+    '/' to mapOf(
+        UP to RIGHT,
+        RIGHT to UP,
+        DOWN to LEFT,
+        LEFT to DOWN
+    ).mapValues { listOf(it.value) },
 
-            '/' -> when (incomingDirection) {
-                Direction.UP, Direction.DOWN -> incomingDirection.turnRight
-                else -> incomingDirection.turnLeft
-            }.let(::listOf)
+    '-' to mapOf(
+        UP to listOf(LEFT, RIGHT),
+        RIGHT to listOf(RIGHT),
+        DOWN to listOf(LEFT, RIGHT),
+        LEFT to listOf(LEFT)
+    ),
 
-            '-' -> listOf(Direction.LEFT, Direction.RIGHT) - incomingDirection.reverse
-            '|' -> listOf(Direction.UP, Direction.DOWN) - incomingDirection.reverse
-
-
-            else -> listOf(incomingDirection)
-        }
-    }
-}
+    '|' to mapOf(
+        UP to listOf(UP),
+        RIGHT to listOf(UP, DOWN),
+        DOWN to listOf(DOWN),
+        LEFT to listOf(UP, DOWN)
+    )
+)
