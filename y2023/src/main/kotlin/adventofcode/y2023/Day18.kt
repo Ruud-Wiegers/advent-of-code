@@ -20,12 +20,12 @@ object Day18 : AdventSolution(2023, 18, "Lavaduct Lagoon") {
         var x = 0L
         var area = 0L
 
-        lines.forEach { (dir, len) ->
-            when (dir) {
-                UP -> area += x * len
-                DOWN -> area -= x * len
-                RIGHT -> x += len
-                LEFT -> x -= len
+        for ((direction, length) in lines) {
+            when (direction) {
+                UP -> area += x * length
+                DOWN -> area -= x * length
+                RIGHT -> x += length
+                LEFT -> x -= length
             }
         }
 
@@ -49,11 +49,11 @@ private fun parse(input: String) = input.lines().map {
     Pair(direction, len.toLong())
 }
 
-
 private fun parseHex(input: String) = input.lines().map {
-    val hex = it.substringAfter("(#").dropLast(1)
+    val dir = it.takeLast(2).first()
+    val len = it.takeLast(7).dropLast(2)
 
-    val direction = when (hex.last()) {
+    val direction = when (dir) {
         '0' -> RIGHT
         '1' -> DOWN
         '2' -> LEFT
@@ -61,7 +61,5 @@ private fun parseHex(input: String) = input.lines().map {
         else -> error("direction")
     }
 
-    Pair(direction, hex.take(5).toLong(16))
+    Pair(direction, len.toLong(16))
 }
-
-
