@@ -38,6 +38,3 @@ internal class Day14Test {
         assertEquals(64, Day14.solvePartTwo(input))
     }
 }
-
-
-

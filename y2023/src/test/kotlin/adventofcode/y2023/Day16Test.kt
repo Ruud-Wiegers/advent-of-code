@@ -27,6 +27,3 @@ internal class Day16Test {
             .|....-|.\
             ..//.|....""".trimIndent()
 }
-
-
-

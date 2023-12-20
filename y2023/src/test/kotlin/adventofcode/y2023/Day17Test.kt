@@ -54,9 +54,3 @@ internal class Day17Test {
         2546548887735
         4322674655533""".trimIndent()
 }
-
-
-
-
-
-

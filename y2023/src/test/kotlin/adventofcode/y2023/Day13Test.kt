@@ -52,6 +52,3 @@ internal class Day13Test {
         assertEquals(400, Day13.solvePartTwo(input))
     }
 }
-
-
-

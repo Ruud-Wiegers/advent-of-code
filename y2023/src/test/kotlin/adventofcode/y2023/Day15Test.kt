@@ -18,6 +18,3 @@ internal class Day15Test {
         assertEquals(145, Day15.solvePartTwo(input))
     }
 }
-
-
-
