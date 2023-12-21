@@ -4,7 +4,6 @@ import adventofcode.io.AdventSolution
 import adventofcode.io.solve
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
-import adventofcode.util.vector.toGrid
 
 fun main() {
     Day21.solve()
@@ -50,13 +49,12 @@ object Day21 : AdventSolution(2023, 21, "Pulse Propagation") {
 
         val evens = solve(path, pos.middle, length  * 2 + 2).toLong()
         val odds = solve(path, pos.middle, length  * 2 + 1).toLong()
-        val bigCount = (steps / length).let { it * it }
-        val smallCount = (steps / length - 1).let { it * it }
-        val parity = ((steps -2) / length) %2 == 0L
+        val countInner = ((steps + length) / length /2 *2 -1).let { it * it }
+        val countOuter = ((steps) / length /2 *2).let { it * it }
         val stepParity = steps % 2 == 0L
 
-        count += evens *        if(stepParity == parity) bigCount else smallCount
-        count += odds *         if(stepParity == parity) smallCount else bigCount
+        count += countInner    *    if(stepParity) evens else odds
+        count += countOuter *         if(stepParity) odds else evens
 
         val a = (steps % length + length/2).toInt()
         val endpoints = listOf(pos.n, pos.e, pos.s, pos.w).map { solve(path, it, a).toLong() }

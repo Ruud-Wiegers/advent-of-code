@@ -9,33 +9,13 @@ internal class Day21Test {
 
         for (i in 6..36) {
             val a = Day21.brute(biginput, i).toLong()
-            val b =Day21.solve(input, 5, i.toLong())
+            val b = Day21.solve(input, 5, i.toLong())
             if (a != b) println("$i: expected:$a, actual:$b ")
         }
     }
 
 
-
-
-@Test
-fun testDiagonals(){
-
-    fun outputs( steps:Int, length:Int){
-        val a = ((steps - length /2 - 1) % (length * 2)).toInt()
-
-        val b = ((steps + length - 1) % (length * 2)).toInt()
-        val diagonal1Count = (steps + length - 1) / length /2*2 -1
-        val c = ((steps - 1) % (length * 2)).toInt()
-        val diagonal2Count = (steps - 1) / length / 2 * 2
-
-        println("$b $diagonal1Count $c $diagonal2Count  $a - $steps")
-    }
-
-    repeat(27) { outputs(it,5) }
-
 }
-    }
-
 
     val input = """
             .....
