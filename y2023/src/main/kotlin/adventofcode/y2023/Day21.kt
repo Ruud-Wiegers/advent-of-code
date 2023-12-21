@@ -47,16 +47,17 @@ object Day21 : AdventSolution(2023, 21, "Pulse Propagation") {
 
         var count = 0L
 
-        val evens = solve(path, pos.middle, length  * 2 + 2).toLong()
-        val odds = solve(path, pos.middle, length  * 2 + 1).toLong()
-        val countInner = ((steps + length) / length /2 *2 -1).let { it * it }
-        val countOuter = ((steps) / length /2 *2).let { it * it }
+        val evens = solve(path, pos.middle, length * 2 + 2).toLong()
+        val odds = solve(path, pos.middle, length * 2 + 1).toLong()
+        val countInner = ((steps + length) / length / 2 * 2 - 1).let { it * it }
+        val countOuter = ((steps) / length / 2 * 2).let { it * it }
         val stepParity = steps % 2 == 0L
 
-        count += countInner    *    if(stepParity) evens else odds
-        count += countOuter *         if(stepParity) odds else evens
+        count += countInner * if (stepParity) evens else odds
+        count += countOuter * if (stepParity) odds else evens
 
-        val a = (steps % length + length/2).toInt()
+        //this only works if we're beyond halfway traversing an endpoint (otherwise the block just before the endpoint is also incomplete)
+        val a = (steps % length + length / 2).toInt()
         val endpoints = listOf(pos.n, pos.e, pos.s, pos.w).map { solve(path, it, a).toLong() }
 
         count += endpoints.sum()
@@ -64,7 +65,7 @@ object Day21 : AdventSolution(2023, 21, "Pulse Propagation") {
 
         val b = ((steps + length - 1) % (length * 2)).toInt()
         val diagonals1 = listOf(pos.nw, pos.ne, pos.se, pos.sw).map { solve(path, it, b).toLong() }
-        val diagonal1Count = (steps + length - 1) / length /2*2 -1
+        val diagonal1Count = (steps + length - 1) / length / 2 * 2 - 1
         count += diagonal1Count * diagonals1.sum()
 
 
@@ -99,9 +100,15 @@ data class SidePositions(val length: Int) {
 
 
 private fun solve(path: Set<Vec2>, initial: Vec2, steps: Int): Int {
-    return generateSequence(setOf(initial)) { reached ->
-        reached.flatMap { it.neighbors().filter { it in path } }.toSet()
-    }.elementAt(steps).count()
+    val reached = mutableSetOf<Vec2>()
+
+     generateSequence(setOf(initial)) { open ->
+        open
+        .flatMap { it.neighbors().filter { it in path } }.filter { it !in reached }.toSet().also { reached += it }
+    }.takeWhile { it.isNotEmpty() }.take(steps+1).count()
+
+    return reached.count { (it.x + it.y + initial.x + initial.y + steps) %2 ==0 }
+
 }
 
 private fun parse(input: String): Map<Vec2, Char> = input.lines()
