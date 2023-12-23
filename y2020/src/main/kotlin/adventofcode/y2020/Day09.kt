@@ -1,7 +1,6 @@
 package adventofcode.y2020
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.util.collections.combinations
 
 fun main() = Day09.solve()

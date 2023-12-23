@@ -1,7 +1,6 @@
 package adventofcode.y2023
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.util.algorithm.transpose
 import adventofcode.util.collections.splitAfter
 import adventofcode.util.collections.splitBefore

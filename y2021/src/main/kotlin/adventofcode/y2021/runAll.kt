@@ -2,7 +2,6 @@ package adventofcode.y2021
 
 import adventofcode.io.AdventSolution
 import adventofcode.io.formattedTime
-import adventofcode.io.solve
 import kotlin.system.measureTimeMillis
 
 fun main() {

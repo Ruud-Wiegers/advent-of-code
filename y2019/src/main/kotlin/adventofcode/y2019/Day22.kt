@@ -1,7 +1,6 @@
 package adventofcode.y2019
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.util.SimpleParser
 import java.math.BigInteger
 import java.math.BigInteger.ONE

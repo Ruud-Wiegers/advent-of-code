@@ -1,7 +1,6 @@
 package adventofcode.y2020
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import java.math.BigInteger
 
 fun main() = Day13.solve()

@@ -1,7 +1,6 @@
 package adventofcode.y2020
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.util.vector.Vec2
 
 fun main() = Day20.solve()

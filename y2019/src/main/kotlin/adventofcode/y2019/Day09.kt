@@ -1,7 +1,6 @@
 package adventofcode.y2019
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.language.intcode.IntCodeProgram
 
 fun main() = repeat(5) { Day09.solve() }

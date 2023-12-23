@@ -1,7 +1,6 @@
 package adventofcode.y2023
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.sqrt

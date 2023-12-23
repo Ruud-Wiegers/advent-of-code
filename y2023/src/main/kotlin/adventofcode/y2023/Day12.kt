@@ -1,7 +1,6 @@
 package adventofcode.y2023
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 
 fun main() {
     Day12.solve()

@@ -1,7 +1,6 @@
 package adventofcode.y2018
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 
 fun main() = repeat(10){Day14.solve()}
 

@@ -1,7 +1,6 @@
 package adventofcode.y2019
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import kotlin.math.ceil
 
 fun main() = Day14.solve()

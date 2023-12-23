@@ -1,7 +1,6 @@
 package adventofcode.y2017
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import kotlin.math.abs
 
 fun main()

@@ -2,7 +2,7 @@ package adventofcode.io
 
 import kotlin.system.measureNanoTime
 
-abstract class AdventSolution(val year: Int, val day: Int, val title: String) {
+abstract class AdventSolution(private val year: Int, private val day: Int, private val title: String) {
     init {
         require(year in 2015..2030) { "$year is not a valid year. AoC started in 2015" }
         require(day in 1..25) { "$day is not a valid day in december. Choose a day in 1-25" }
@@ -10,17 +10,17 @@ abstract class AdventSolution(val year: Int, val day: Int, val title: String) {
 
     abstract fun solvePartOne(input: String): Any?
     abstract fun solvePartTwo(input: String): Any?
-}
 
-fun AdventSolution.solve() {
-    val input = retrieveInput(day, year)
+    fun solve() {
+        val input = retrieveInput(day, year)
 
-    println("Day $day: ${title.colored("32;1")}")
-    printSolution { solvePartOne(input) }
-    printSolution { solvePartTwo(input) }
-    println()
+        println("Day $day: ${title.colored("32;1")}")
+        printSolution { solvePartOne(input) }
+        printSolution { solvePartTwo(input) }
+        println()
 
-    System.out.flush()
+        System.out.flush()
+    }
 }
 
 private fun printSolution(solve: () -> Any?) {

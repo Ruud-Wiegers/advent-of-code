@@ -1,7 +1,6 @@
 package adventofcode.y2018
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.language.elfcode.Instruction
 import adventofcode.language.elfcode.execute
 import adventofcode.language.elfcode.parseToElfcode

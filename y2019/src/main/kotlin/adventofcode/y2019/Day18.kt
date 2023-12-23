@@ -1,7 +1,6 @@
 package adventofcode.y2019
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors

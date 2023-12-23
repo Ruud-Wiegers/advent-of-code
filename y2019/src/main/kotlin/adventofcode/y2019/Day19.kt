@@ -1,7 +1,6 @@
 package adventofcode.y2019
 
 import adventofcode.io.AdventSolution
-import adventofcode.io.solve
 import adventofcode.language.intcode.IntCodeProgram
 import adventofcode.util.collections.cartesian
 import adventofcode.util.vector.Direction
