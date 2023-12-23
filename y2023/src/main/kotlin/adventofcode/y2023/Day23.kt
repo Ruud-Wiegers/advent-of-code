@@ -14,35 +14,33 @@ object Day23 : AdventSolution(2023, 23, "A Long Walk") {
     override fun solvePartOne(input: String): Any {
 
         val lines = input.lines()
-        val start = lines.first().indexOfFirst { it == '.' }.let { Vec2(it, 0) }
+        val start = lines.first().indexOfFirst { it == '.' }.let { Vec2(it, -1) }
         val end = lines.last().indexOfFirst { it == '.' }.let { Vec2(it, lines.lastIndex) }
-        val grid = parse(input) + (start to 'v') + (end to 'v')
+        val grid = parse(input) + (end to 'v')
 
         val paths = findPathLengths(start, grid)
-        val lengths = paths.associate { (it.start to it.end) to it.length }
         val pathFrom = paths.groupBy { it.start }
 
         val exit = end + Direction.DOWN.vector
 
-        return findLongestPath(start, exit, pathFrom, lengths)
+        return findLongestPath(start, exit, pathFrom)
     }
 
     override fun solvePartTwo(input: String): Any {
 
         val lines = input.lines()
-        val start = lines.first().indexOfFirst { it == '.' }.let { Vec2(it, 0) }
+        val start = lines.first().indexOfFirst { it == '.' }.let { Vec2(it, -1) }
         val end = lines.last().indexOfFirst { it == '.' }.let { Vec2(it, lines.lastIndex) }
-        val grid = parse(input) + (start to 'v') + (end to 'v')
+        val grid = parse(input) + (end to 'v')
 
         val directedPaths = findPathLengths(start, grid)
 
         val paths = directedPaths + directedPaths.map { it.copy(start = it.end, end = it.start) }
-        val lengths = paths.associate { (it.start to it.end) to it.length }
         val pathFrom = paths.groupBy { it.start }
 
         val exit = end + Direction.DOWN.vector
 
-        return findLongestPath(start, exit, pathFrom, lengths)
+        return findLongestPath(start, exit, pathFrom)
     }
 
 
@@ -89,30 +87,25 @@ object Day23 : AdventSolution(2023, 23, "A Long Walk") {
         return Segment(cross, end.first + end.second.vector, pathLength + 3)
     }
 
+    private fun findLongestPath(start: Vec2, exit: Vec2, pathsFrom: Map<Vec2, List<Segment>>): Int {
+        val visited = mutableSetOf<Vec2>()
 
-    private fun findLongestPath(
-        start: Vec2,
-        exit: Vec2,
-        pathsFrom: Map<Vec2, List<Segment>>,
-        lengths: Map<Pair<Vec2, Vec2>, Int>
-    ): Int {
-        fun fullPath(path: List<Vec2>): List<List<Vec2>> =
-            if (path.last() == exit) listOf(path)
-            else pathsFrom[path.last()].orEmpty().map { it.end }.filter { it !in path }
-                .flatMap { next -> fullPath(path + next) }
+        fun fullPath(intersection: Vec2, length: Int): Int {
+            visited += intersection
+            val result = if (intersection == exit) length else {
+                pathsFrom[intersection].orEmpty()
+                    .filter { it.end !in visited }
+                    .maxOfOrNull { next -> fullPath(next.end, length + next.length) } ?: 0
+            }
+            visited -= intersection
+            return result
+        }
 
-
-        return fullPath(listOf(start)).maxOf { it.zipWithNext().sumOf { lengths[it] ?: 0 } }
+        return fullPath(start, 0) - 2
     }
-
 }
 
-private data class Segment(
-    val start: Vec2,
-    val end: Vec2,
-    val length: Int
-)
-
+private data class Segment(val start: Vec2, val end: Vec2, val length: Int)
 
 private fun parse(input: String) = input.lines().flatMapIndexed { y, line ->
     line.mapIndexed { x, ch -> Vec2(x, y) to ch }
