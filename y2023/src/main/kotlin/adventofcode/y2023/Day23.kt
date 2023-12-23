@@ -44,10 +44,7 @@ object Day23 : AdventSolution(2023, 23, "A Long Walk") {
     }
 
 
-    private fun findPathLengths(
-        start: Vec2,
-        grid: Map<Vec2, Char>
-    ): Set<Segment> {
+    private fun findPathLengths(start: Vec2, grid: Map<Vec2, Char>): Set<Segment> {
         val segments = mutableSetOf<Segment>()
         val intersections = mutableSetOf<Vec2>()
         val unexplored = mutableListOf<Vec2>()
@@ -88,20 +85,31 @@ object Day23 : AdventSolution(2023, 23, "A Long Walk") {
     }
 
     private fun findLongestPath(start: Vec2, exit: Vec2, pathsFrom: Map<Vec2, List<Segment>>): Int {
-        val visited = mutableSetOf<Vec2>()
 
-        fun fullPath(intersection: Vec2, length: Int): Int {
-            visited += intersection
-            val result = if (intersection == exit) length else {
-                pathsFrom[intersection].orEmpty()
-                    .filter { it.end !in visited }
-                    .maxOfOrNull { next -> fullPath(next.end, length + next.length) } ?: 0
+        //Remapping intersections to indexes, so we can use a booleanArray to keep track of where we are. 2x speedup
+        val keys = (pathsFrom.keys + exit).toList().withIndex().associate { it.value to it.index }
+        val startKey = keys.getValue(start)
+        val exitKey = keys.getValue(exit)
+        val keysFrom =
+            pathsFrom.entries.associate { keys.getValue(it.key) to it.value.map { keys.getValue(it.end) to it.length } }
+
+        //using backtracking to keep track of which paths we've visited, instead of copying state. 2x speedup
+        val visited = BooleanArray(keys.size)
+
+        fun fullPath(intersection: Int, lengthSoFar: Int): Int {
+            visited[intersection] = true
+            val result = if (intersection == exitKey) lengthSoFar else {
+                keysFrom[intersection].orEmpty()
+                    .filterNot { visited[it.first] }
+                    .maxOfOrNull { (nextIntersection, pathLength) ->
+                        fullPath(nextIntersection, lengthSoFar + pathLength)
+                    } ?: 0
             }
-            visited -= intersection
+            visited[intersection] = false
             return result
         }
 
-        return fullPath(start, 0) - 2
+        return fullPath(startKey, 0) - 2
     }
 }
 
