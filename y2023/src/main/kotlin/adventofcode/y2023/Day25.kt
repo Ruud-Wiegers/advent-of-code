@@ -53,14 +53,14 @@ private fun WeightedGraph.findMinCut(): List<Int> {
     while (rem.size > 2) {
 
         val next = rem.maxBy { v ->
-            getValue(v).edgeWeights.filterKeys { it in a }.values.sum()
+            getValue(v).edgeWeights.entries.sumOf { if (it.key in a) it.value else 0 }
         }
         a += next
         rem -= next
     }
 
     val next = rem.maxBy { v ->
-        getValue(v).edgeWeights.filterKeys { it in a }.values.sum()
+        getValue(v).edgeWeights.entries.sumOf { if (it.key in a) it.value else 0 }
     }
 
 
