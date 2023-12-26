@@ -11,14 +11,16 @@ object Day25 : AdventSolution(2023, 25, "Snowverload") {
     override fun solvePartOne(input: String): Any {
         val weightedGraph: WeightedGraph = parse(input)
             .mapValues { Desc(1, it.value.associateWith { 1 }.toMutableMap()) }
-            .toMutableMap()
+            .entries.sortedBy { it.key }.map { it.value }.toTypedArray()
 
-        while (weightedGraph.size > 2) {
+        repeat(weightedGraph.size - 2) {
             val (s, t) = weightedGraph.findMinCut()
 
-            val cut = weightedGraph.getValue(t).edgeWeights.values.sum()
+
+            val cut = weightedGraph[t].edgeWeights.values.sum()
             if (cut == 3) {
-                return weightedGraph.filterKeys { it != t }.values.sumOf { it.vertexCount } * weightedGraph.getValue(t).vertexCount
+                val wt = weightedGraph[t].vertexCount
+                return (weightedGraph.sumOf { it.vertexCount } - wt) * wt
             }
             weightedGraph.merge(s, t)
         }
@@ -44,39 +46,54 @@ private fun parse(input: String): Map<Int, List<Int>> {
 }
 
 private data class Desc(var vertexCount: Int, val edgeWeights: MutableMap<Int, Int>)
-private typealias WeightedGraph = MutableMap<Int, Desc>
+
+private typealias WeightedGraph = Array<Desc>
 
 private fun WeightedGraph.findMinCut(): List<Int> {
-    val a = mutableSetOf(keys.first())
-    val rem = (keys - a).toMutableSet()
 
-    while (rem.size > 2) {
+    val last = indexOfLast { it.vertexCount > 0 }
+    val a = BooleanArray(last + 1)
+    a[0] = true
 
-        val next = rem.maxBy { v ->
-            getValue(v).edgeWeights.entries.sumOf { if (it.key in a) it.value else 0 }
-        }
-        a += next
-        rem -= next
+    val weightsFromA = IntArray(last + 1)
+
+    this.first().edgeWeights.forEach { weightsFromA[it.key] += it.value }
+
+    repeat(a.size - 3) {
+
+
+        val x = weightsFromA.max()
+        val next = weightsFromA.indexOf(x)
+        a[next] = true
+        weightsFromA[next] = 0
+        this[next].edgeWeights.forEach { if (!a[it.key]) weightsFromA[it.key] += it.value }
     }
 
-    val next = rem.maxBy { v ->
-        getValue(v).edgeWeights.entries.sumOf { if (it.key in a) it.value else 0 }
-    }
-
-
-    return listOf(next, (rem - next).first())
+    val c1 = weightsFromA.indexOfFirst { it > 0 }
+    val c2 = weightsFromA.indexOfLast { it > 0 }
+    return listOf(c1, c2).sortedByDescending { weightsFromA[it] }
 }
 
+
+//merge s and t, move the empty t to the end of the array
 private fun WeightedGraph.merge(s: Int, t: Int) {
-    val tDesc = remove(t)!!
-    val stDesc = getValue(s)
+    val tDesc = get(t)
+    val stDesc = get(s)
+
 
     tDesc.edgeWeights.forEach { (k, v) -> stDesc.edgeWeights.merge(k, v, Int::plus) }
     stDesc.edgeWeights -= s
     stDesc.edgeWeights -= t
     stDesc.vertexCount += tDesc.vertexCount
 
-    for ((_, w) in this.values) {
+    val swap = maxOf(t, indexOfLast { it.vertexCount > 0 })
+
+    for ((_, w) in this) {
         w.remove(t)?.let { w.merge(s, it, Int::plus) }
+        w.remove(swap)?.let { w[t] = it }
     }
+
+    this[t] = this[swap]
+    this[swap] = Desc(0, mutableMapOf())
+
 }
