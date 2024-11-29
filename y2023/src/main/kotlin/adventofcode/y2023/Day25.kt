@@ -52,21 +52,20 @@ private typealias WeightedGraph = Array<Desc>
 private fun WeightedGraph.findMinCut(): List<Int> {
 
     val last = indexOfLast { it.vertexCount > 0 }
-    val a = BooleanArray(last + 1)
-    a[0] = true
+    val grouped = BooleanArray(last + 1)
+    grouped[0] = true
 
     val weightsFromA = IntArray(last + 1)
 
-    this.first().edgeWeights.forEach { weightsFromA[it.key] += it.value }
+    this[0].edgeWeights.forEach { weightsFromA[it.key] += it.value }
 
-    repeat(a.size - 3) {
+    repeat(last - 2) {
 
 
-        val x = weightsFromA.max()
-        val next = weightsFromA.indexOf(x)
-        a[next] = true
+        val next = weightsFromA.indexOf(weightsFromA.max())
+        grouped[next] = true
         weightsFromA[next] = 0
-        this[next].edgeWeights.forEach { if (!a[it.key]) weightsFromA[it.key] += it.value }
+        this[next].edgeWeights.forEach { if (!grouped[it.key]) weightsFromA[it.key] += it.value }
     }
 
     val c1 = weightsFromA.indexOfFirst { it > 0 }

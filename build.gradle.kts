@@ -1,7 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "2.0.21"
 }
 allprojects {
 
@@ -17,8 +18,8 @@ allprojects {
 
 subprojects {
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "19"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_19)
         }
     }
 
