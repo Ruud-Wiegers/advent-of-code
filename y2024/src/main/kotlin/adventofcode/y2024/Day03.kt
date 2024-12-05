@@ -1,6 +1,7 @@
 package adventofcode.y2024
 
 import adventofcode.io.AdventSolution
+import adventofcode.util.vector.Vec2
 
 fun main() {
     Day03.solve()
@@ -24,5 +25,6 @@ object Day03 : AdventSolution(2024, 3, "Mull It Over") {
             }
         }
         return sum
+
     }
 }
