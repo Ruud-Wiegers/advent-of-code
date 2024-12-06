@@ -18,7 +18,7 @@ object Day01 : AdventSolution(2016, 1, "No Time for a Taxicab") {
         .scan(Person(Direction.UP, Vec2.origin), Person::applyCommand)
         .map(Person::position)
         .onlyChanges()
-        .firstDuplicate()
+        .firstDuplicate()!!
         .distance(Vec2.origin)
 
     private fun parseCommands(input: String) = input

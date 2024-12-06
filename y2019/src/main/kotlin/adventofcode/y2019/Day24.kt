@@ -10,7 +10,7 @@ object Day24 : AdventSolution(2019, 24, "Planet of Discord") {
 
     override fun solvePartOne(input: String) =
             generateSequence(ConwayGrid(input), ConwayGrid::next)
-                    .firstDuplicate()
+                    .firstDuplicate()!!
                     .resourceValue()
 
     private data class ConwayGrid(private val grid: List<List<Boolean>>) {
