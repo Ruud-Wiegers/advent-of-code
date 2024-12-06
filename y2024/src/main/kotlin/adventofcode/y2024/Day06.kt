@@ -16,17 +16,32 @@ object Day06 : AdventSolution(2024, 6, "Guard Gallivant") {
     override fun solvePartOne(input: String): Int {
         val (start, obstacles) = parseInput(input)
 
-        return path(start, obstacles).distinctBy { it.first }.count() - 1
+        return path(start, obstacles).map { it.first }.toSet().count() - 1
     }
 
-    override fun solvePartTwo(input: String): Int {
+    override fun solvePartTwo(input: String): Long {
         val (start, obstacles) = parseInput(input)
 
         val candidates = path(start, obstacles).map { it.first }.toSet() - start
 
-        return candidates.count { path(start, obstacles + it).firstDuplicate() != null }
+        return candidates
+            .parallelStream()
+            .filter { path(start, obstacles + it).firstDuplicate() != null }
+            .count()
     }
 }
+
+private fun parseInput(input: String): Pair<Vec2, Set<Vec2>> {
+    val grid = input.lines().flatMapIndexed { y, line ->
+        line.mapIndexed { x, c -> c to Vec2(x, y) }
+    }.groupBy(Pair<Char, Vec2>::first, Pair<Char, Vec2>::second)
+
+    val start = grid['^'].orEmpty().single()
+    val guards = grid['#'].orEmpty().toSet()
+
+    return start to guards
+}
+
 
 private fun path(start: Vec2, obstacles: Set<Vec2>): Sequence<Pair<Vec2, Direction>> {
     val xBounds = obstacles.xBounds()
@@ -40,18 +55,4 @@ private fun path(start: Vec2, obstacles: Set<Vec2>): Sequence<Pair<Vec2, Directi
             else -> pos + dir.vector to dir
         }
     }
-}
-
-
-private fun parseInput(input: String): Pair<Vec2, Set<Vec2>> {
-    val grid = input.lines()
-        .flatMapIndexed { y, line ->
-            line.mapIndexed { x, c -> c to Vec2(x, y) }
-        }
-        .groupBy(Pair<Char, Vec2>::first, Pair<Char, Vec2>::second)
-
-    val start = grid['^'].orEmpty().single()
-    val guards = grid['#'].orEmpty().toSet()
-
-    return start to guards
 }
