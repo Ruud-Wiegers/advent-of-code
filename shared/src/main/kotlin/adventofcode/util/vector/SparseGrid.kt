@@ -6,8 +6,8 @@ typealias  SparseGrid<T> = Map<Vec2, T>
 
 fun SparseGrid<*>.yBounds() = keys.xBounds()
 fun SparseGrid<*>.xBounds() = keys.yBounds()
-fun Set<Vec2>.xBounds() = (minOf { it.x })..(maxOf { it.x })
-fun Set<Vec2>.yBounds() = (minOf { it.y })..(maxOf { it.y })
+fun Collection<Vec2>.xBounds() = (minOf { it.x })..(maxOf { it.x })
+fun Collection<Vec2>.yBounds() = (minOf { it.y })..(maxOf { it.y })
 
 
 

@@ -13,28 +13,24 @@ object Day08 : AdventSolution(2024, 8, "Resonant Collinearity") {
 
     override fun solvePartOne(input: String): Int {
         val grid = parseInput(input)
-        val bounds = Bounds(grid.values.flatten().toSet())
+        val bounds = Bounds(grid.values.flatten())
         val frequencies = grid - '.'
-
 
         return frequencies.flatMap { findAntiNodes(it.value) }
             .filter { it in bounds }
-            .toSet().count()
-
-
+            .toSet()
+            .count()
     }
 
     override fun solvePartTwo(input: String): Int {
         val grid = parseInput(input)
-        val bounds = Bounds(grid.values.flatten().toSet())
+        val bounds = Bounds(grid.values.flatten())
         val frequencies = grid - '.'
-
 
         return frequencies.flatMap { findAntiNodesTwo(it.value, bounds) }
             .filter { it in bounds }
-            .toSet().count()
-
-
+            .toSet()
+            .count()
     }
 }
 
@@ -66,7 +62,7 @@ private fun parseInput(input: String): Map<Char, List<Vec2>> = input.lines().fla
 }.groupBy(Pair<Char, Vec2>::first, Pair<Char, Vec2>::second)
 
 private data class Bounds(val xBounds: IntRange, val yBounds: IntRange) {
-    constructor(grid: Set<Vec2>) : this(grid.xBounds(), grid.yBounds())
+    constructor(grid: Collection<Vec2>) : this(grid.xBounds(), grid.yBounds())
 
     operator fun contains(v: Vec2) = v.x in xBounds && v.y in yBounds
 }
