@@ -34,28 +34,13 @@ object Day08 : AdventSolution(2024, 8, "Resonant Collinearity") {
     }
 }
 
-private fun findAntiNodes(nodes: List<Vec2>): List<Vec2> = buildList {
-    for (a in nodes) {
-        for (b in nodes) {
-            if (a == b) continue
-            add(a + a - b)
-        }
-    }
-}
+private fun findAntiNodes(nodes: List<Vec2>): List<Vec2> = combinations(nodes) { a, b -> a + a - b }
 
-private fun findAntiNodesTwo(nodes: List<Vec2>, bounds: Bounds): List<Vec2> = buildList {
-    for (a in nodes) {
-        for (b in nodes) {
-            if (a == b) continue
+private fun findAntiNodesTwo(nodes: List<Vec2>, bounds: Bounds): List<Vec2> = combinations(nodes) { a, b ->
+    val step = a - b
+    generateSequence(a, step::plus).takeWhile(bounds::contains).toList()
+}.flatten()
 
-            var current = a
-            while (current in bounds) {
-                add(current)
-                current += a - b
-            }
-        }
-    }
-}
 
 private fun parseInput(input: String): Map<Char, List<Vec2>> = input.lines().flatMapIndexed { y, line ->
     line.mapIndexed { x, c -> c to Vec2(x, y) }
@@ -65,4 +50,18 @@ private data class Bounds(val xBounds: IntRange, val yBounds: IntRange) {
     constructor(grid: Collection<Vec2>) : this(grid.xBounds(), grid.yBounds())
 
     operator fun contains(v: Vec2) = v.x in xBounds && v.y in yBounds
+
+
+}
+
+
+
+inline fun <T, R> combinations(items: Iterable<T>, crossinline transform: (T, T) -> R): List<R> = buildList {
+    for (a in items) {
+        for (b in items) {
+            if (a == b) continue
+
+            add(transform(a, b))
+        }
+    }
 }
