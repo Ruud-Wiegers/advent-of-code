@@ -9,102 +9,67 @@ fun main() {
 object Day09 : AdventSolution(2024, 9, "Resonant Collinearity") {
 
     override fun solvePartOne(input: String): Long {
-        val inputSize = (input.length + 1) / 2L
 
-        val f = Reader(false, -1, 0, -1, input)
-        val b = Reader(false, inputSize, 0, input.length, input)
+        val disk = input.chunked(2).flatMapIndexed { index, str ->
+            List(str[0].digitToInt()) { index } + List(str.getOrElse(1) { '0' }.digitToInt()) { -1 }
+        }.toIntArray()
 
-        return combinedRead(f, b).withIndex().sumOf { (i, v) -> i * v }
-    }
+        var f = 0
+        var b = disk.lastIndex
 
-
-    data class Reader(
-        var isReadingData: Boolean,
-        var currentId: Long,
-        var cellsRemaining: Int,
-
-        var position: Int,
-        val data: String
-    ) {
-
-        fun readForward(): Long? {
-            while (cellsRemaining == 0) {
-                position++
-                if (position >= data.length) return null
-                isReadingData = !isReadingData
-                if (isReadingData) currentId++
-                cellsRemaining = data[position].digitToInt()
-            }
-
-            cellsRemaining--
-
-            return if (isReadingData) currentId else -1
-        }
-
-        fun readBackward(): Long? {
-            while (cellsRemaining == 0) {
-                position--
-                if (position < 0) return null
-                isReadingData = !isReadingData
-                if (isReadingData) currentId--
-                cellsRemaining = data[position].digitToInt()
-            }
-
-            cellsRemaining--
-
-            return if (isReadingData) currentId else -1
-        }
-
-    }
-
-    fun combinedRead(f: Reader, b: Reader): Sequence<Long> = generateSequence {
-        if (f.position > b.position) null //TODO if reading same data block, finish data block
-
-        else if (f.position == b.position && f.cellsRemaining + b.cellsRemaining <= f.data[f.position].digitToInt()) null
-        else {
-
-            //TODO fix end bit, there's still the possibility that the fwd reader is in an empty block and the bwd reader tries to read beyond that block, giving a doubled read?
-
-            val fwd = f.readForward()!!
-
-            if (fwd >= 0) fwd else {
-                var bwd = b.readBackward()
-                while (bwd == -1L)
-                    bwd = b.readBackward()
-
-                bwd
+        val result = buildList {
+            while (f <= b) {
+                val forward = disk[f++]
+                if (forward >= 0)
+                    add(forward)
+                else {
+                    var backward: Int
+                    do
+                        backward = disk[b--]
+                    while (backward == -1)
+                    add(backward)
+                }
             }
         }
+
+        return result.mapIndexed(Int::times).sumOf(Int::toLong)
     }
 
 
     override fun solvePartTwo(input: String): Long {
-
-        val chunks = input.scan(0L) { acc, s -> acc + s.digitToInt() }.zipWithNext { a, b -> a until b }.chunked(2)
-
-
-        fun LongRange.size() = last - first + 1
-
-        val files = chunks.map { it[0] }.withIndex()
-        val gaps = chunks.mapNotNull { if (it.size == 2) it[1] else null }.toMutableList()
+        val (files, gaps) = parseInput(input)
 
         val movedFiles = files.reversed().map { file ->
 
-            val gap = gaps.firstOrNull { gap -> gap.last < file.value.first && file.value.size() <= gap.size() }
 
-            if (gap == null) {
+            val gapIndex = gaps.indexOfFirst { gap -> gap.last < file.value.first && file.value.size() <= gap.size() }
+
+            if (gapIndex == -1) {
                 file
             } else {
+                val gap = gaps[gapIndex]
                 val movedFile = gap.first until gap.first + file.value.size()
-                val i = gaps.indexOf(gap)
-                gaps[i] = gap.first + file.value.size()..gap.last()
+                gaps[gapIndex] = gap.first + file.value.size()..gap.last()
                 file.copy(value = movedFile)
             }
         }
-        return movedFiles.sumOf { (i, v) -> v.sumOf(i::times) }
+
+        fun LongRange.sum(): Long = (first + last) * size() / 2
+
+        return movedFiles.sumOf { (i, v) -> i * v.sum() }
     }
 }
 
+private fun parseInput(input: String): Pair<Iterable<IndexedValue<LongRange>>, MutableList<LongRange>> {
+    val ranges =
+        input.asSequence().map(Char::digitToInt).scan(0L, Long::plus).zipWithNext(Long::rangeUntil).toList()
+
+    val files = ranges.filterIndexed { i, v -> i % 2 == 0 }.withIndex()
+    val gaps = ranges.filterIndexed { i, v -> i % 2 != 0 }.toMutableList()
+    return Pair(files, gaps)
+}
+
+private fun LongRange.size() = last - first + 1
 
 
 
