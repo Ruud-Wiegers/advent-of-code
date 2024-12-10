@@ -6,7 +6,7 @@ fun main() {
     Day09.solve()
 }
 
-object Day09 : AdventSolution(2024, 9, "Resonant Collinearity") {
+object Day09 : AdventSolution(2024, 9, "Disk Fragmenter") {
 
     override fun solvePartOne(input: String): Long {
 
