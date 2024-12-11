@@ -35,7 +35,7 @@ private fun parseInput(input: String): SparseGrid<Int> = input.lines()
     .associate { it }
 
 
-fun findAllSummits(grid: SparseGrid<Int>, trailhead: Vec2): List<Vec2> = generateSequence(listOf(trailhead)) {
+private fun findAllSummits(grid: SparseGrid<Int>, trailhead: Vec2): List<Vec2> = generateSequence(listOf(trailhead)) {
     it.flatMap { prev ->
         val expectedHeight = grid.getValue(prev) + 1
         prev.neighbors().filter { new -> grid[new] == expectedHeight }
