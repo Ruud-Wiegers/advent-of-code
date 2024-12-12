@@ -30,9 +30,6 @@ object Day11 : AdventSolution(2024, 11, "Plutonian Pebbles") {
 
     private fun splitStone(value: Long): List<Long> {
         val str = value.toString()
-        val size = str.length / 2
-        val l = str.take(size).toLong()
-        val r = str.drop(size).toLong()
-        return listOf(l, r)
+        return str.chunked(str.length / 2).map(String::toLong)
     }
 }
