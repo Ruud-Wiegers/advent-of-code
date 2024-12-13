@@ -13,7 +13,7 @@ internal class Day13Test {
 
     @Test
     fun solvePartTwo() {
-        assertEquals(1206, Day13.solvePartTwo(input))
+        assertEquals(875318608908, Day13.solvePartTwo(input))
     }
 
     val input = """Button A: X+94, Y+34
