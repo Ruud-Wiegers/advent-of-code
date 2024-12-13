@@ -13,10 +13,10 @@ object Day13 : AdventSolution(2024, 13, "Claw Contraption") {
         .sumOf { (a, b) -> 3 * a + b }
 
 
-    private val offset = 10_000_000_000_000.0
+    private const val OFFSET = 10_000_000_000_000.0
 
     override fun solvePartTwo(input: String) = parseInput(input)
-        .map { it.copy(t = it.t + Vec2Double(offset, offset)) }
+        .map { it.copy(target = it.target + Vec2Double(OFFSET, OFFSET)) }
         .mapNotNull(::solve)
         .sumOf { (a, b) -> 3 * a + b }
 
@@ -32,33 +32,31 @@ private fun parseInput(input: String): List<Problem> = input.split("\n\n")
         Problem(a, b, target)
     }
 
-private data class Problem(val a: Vec2Double, val b: Vec2Double, val t: Vec2Double) {
-    fun rotate(theta: Double) = Problem(a.rotate(theta), b.rotate(theta), t.rotate(theta))
-}
+private data class Problem(val a: Vec2Double, val b: Vec2Double, val target: Vec2Double)
 
 private fun solve(problem: Problem): Pair<Long, Long>? {
 
     // First, rotate the entire coordinate system such that one of the buttons is axis-aligned
-    // Button a will now only move in the y direction
+    // Button a will now only move in the y direction. Therefore, in the rotated coordinates
+    // only button b can contribute to the movement in the x direction.
+    // calculate the number of times b should be pressed with simple division of the x-components
     val theta = problem.a.atan2()
-    val rotated = problem.rotate(theta)
-
-    // Button b is the only button that can change the x position now, so figure that out first
-    // in the rotated coordinates
-    val bCount = (rotated.t.x / rotated.b.x).roundToLong()
+    val rotatedTarget = problem.target.rotate(theta)
+    val rotatedB = problem.b.rotate(theta)
+    val bCount = (rotatedTarget.x / rotatedB.x).roundToLong()
 
     // back in the original coordinates, move the remaining distance by pressing a
-    val remainingDistance = problem.t - problem.b * bCount
+    val remainingDistance = problem.target - problem.b * bCount
     val aCount = (remainingDistance.y / problem.a.y).roundToLong()
 
-    //now test the calculation in the original coordinates
-    return Pair(aCount, bCount).takeIf { problem.a * aCount + problem.b * bCount == problem.t }
+    // now test the exact result in the original coordinates
+    val clawPosition = problem.a * aCount + problem.b * bCount
+    return Pair(aCount, bCount).takeIf { clawPosition == problem.target }
 }
 
 private data class Vec2Double(val x: Double, val y: Double) {
     operator fun plus(o: Vec2Double) = Vec2Double(x + o.x, y + o.y)
     operator fun minus(o: Vec2Double) = Vec2Double(x - o.x, y - o.y)
-    operator fun div(o: Long) = Vec2Double(x / o.toDouble(), y / o.toDouble())
     operator fun times(o: Long) = Vec2Double(x * o.toDouble(), y * o.toDouble())
 
     fun rotate(theta: Double) =
