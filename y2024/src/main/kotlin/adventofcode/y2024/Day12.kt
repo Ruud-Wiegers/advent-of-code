@@ -45,15 +45,15 @@ object Day12 : AdventSolution(2024, 12, "Garden Groups") {
     }
 
     private fun siding(plot: Set<Vec2>): Int = plot.sumOf { tile ->
-        Direction.entries.count { dir -> plot.hasFence(tile, dir) }
+        Direction.entries.count { direction -> plot.hasFence(tile, direction) }
     }
 
     private fun bulkSiding(plot: Set<Vec2>): Int = plot.sumOf { tile ->
-        Direction.entries.count { dir ->
-            val neighbor = tile + dir.turnLeft.vector
-            plot.hasFence(tile, dir) && !plot.hasFence(neighbor, dir)
+        Direction.entries.count { direction ->
+            val neighbor = tile + direction.turnLeft.vector
+            plot.hasFence(tile, direction) && !plot.hasFence(neighbor, direction)
         }
     }
 
-    private fun Set<Vec2>.hasFence(v: Vec2, dir: Direction): Boolean = v in this && v + dir.vector !in this
+    private fun Set<Vec2>.hasFence(v: Vec2, direction: Direction): Boolean = v in this && v + direction.vector !in this
 }
