@@ -2,6 +2,7 @@ package adventofcode.y2024
 
 import adventofcode.io.AdventSolution
 import adventofcode.util.vector.Vec2
+import adventofcode.util.vector.neighbors
 
 fun main() = Day14.solve()
 
@@ -29,23 +30,11 @@ object Day14 : AdventSolution(2024, 14, "Restroom Redoubt") {
 
         return generateSequence(initial) {
             it.map {
-                it.copy(p = (it.p + it.v).let { (x, y) ->
-                    Vec2(
-                        x % 101,
-                        y % 103
-                    )
-                })
+                it.copy(p = (it.p + it.v).let { (x, y) -> Vec2(x % 101, y % 103) })
             }
         }
             .map { it.map { it.p }.toSet() }
-            .map { iteration ->
-                (0 until 103).map { y ->
-                    (0 until 101).map { x ->
-                        if (Vec2(x, y) in iteration) '#' else ' '
-                    }.joinToString("")
-                }
-            }
-            .indexOfFirst { it.any { "############" in it } }
+            .indexOfFirst { set -> set.count { it.neighbors().all(set::contains) } > 10 }
     }
 }
 
