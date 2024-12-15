@@ -4,9 +4,8 @@ import adventofcode.io.AdventSolution
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Direction.*
 import adventofcode.util.vector.Vec2
-import adventofcode.y2024.Tile.*
-import kotlin.collections.filterValues
 import adventofcode.util.vector.plus
+import adventofcode.y2024.Tile.*
 
 fun main() = Day15.solve()
 
@@ -81,24 +80,17 @@ private fun solve(grid: MutableMap<Vec2, Tile>, instructions: List<Direction>): 
 }
 
 
-private enum class Tile { Floor, Box, LeftBox, RightBox, Player }
-
-private fun Map<Vec2, Tile>.canMove(position: Vec2, dir: Direction): Boolean {
-    var answer = when (this[position]) {
+private fun Map<Vec2, Tile>.canMove(position: Vec2, dir: Direction): Boolean =
+    when (this[position]) {
         Floor -> true
         Player, Box, LeftBox, RightBox -> canMove(position + dir, dir)
         null -> false
-    }
-
-    answer = answer && when {
-        dir  in listOf(LEFT, RIGHT)-> true
+    } && when {
+        dir in listOf(LEFT, RIGHT) -> true
         this[position] == LeftBox -> canMove(position + RIGHT + dir, dir)
         this[position] == RightBox -> canMove(position + LEFT + dir, dir)
         else -> true
     }
-
-    return answer
-}
 
 private fun MutableMap<Vec2, Tile>.move(position: Vec2, dir: Direction, moveSibling: Boolean = true) {
     when (this[position]) {
@@ -109,7 +101,7 @@ private fun MutableMap<Vec2, Tile>.move(position: Vec2, dir: Direction, moveSibl
 
     when {
         !moveSibling -> {}
-        dir !in listOf(UP, DOWN) -> {}
+        dir in listOf(LEFT, RIGHT) -> {}
         this[position] == LeftBox -> move(position + RIGHT, dir, moveSibling = false)
         this[position] == RightBox -> move(position + LEFT, dir, moveSibling = false)
     }
@@ -117,3 +109,6 @@ private fun MutableMap<Vec2, Tile>.move(position: Vec2, dir: Direction, moveSibl
     this[position + dir] = this.getValue(position)
     this[position] = Floor
 }
+
+
+private enum class Tile { Floor, Box, LeftBox, RightBox, Player }
