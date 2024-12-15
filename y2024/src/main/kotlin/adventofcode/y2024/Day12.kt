@@ -5,6 +5,7 @@ import adventofcode.util.vector.Direction
 import adventofcode.util.vector.SparseGrid
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.neighbors
+import adventofcode.util.vector.plus
 
 fun main() = Day12.solve()
 
@@ -50,10 +51,10 @@ object Day12 : AdventSolution(2024, 12, "Garden Groups") {
 
     private fun bulkSiding(plot: Set<Vec2>): Int = plot.sumOf { tile ->
         Direction.entries.count { direction ->
-            val neighbor = tile + direction.turnLeft.vector
+            val neighbor = tile + direction.turnLeft
             plot.hasFence(tile, direction) && !plot.hasFence(neighbor, direction)
         }
     }
 
-    private fun Set<Vec2>.hasFence(v: Vec2, direction: Direction): Boolean = v in this && v + direction.vector !in this
+    private fun Set<Vec2>.hasFence(v: Vec2, direction: Direction): Boolean = v in this && v + direction !in this
 }

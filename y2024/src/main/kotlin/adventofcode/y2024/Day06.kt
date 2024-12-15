@@ -6,6 +6,7 @@ import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.xBounds
 import adventofcode.util.vector.yBounds
+import adventofcode.util.vector.plus
 
 fun main() {
     Day06.solve()
@@ -51,8 +52,8 @@ private fun path(start: Vec2, obstacles: Set<Vec2>): Sequence<Pair<Vec2, Directi
     return generateSequence(start to Direction.UP) { (pos, dir) ->
         when {
             !inBounds(pos) -> null
-            pos + dir.vector in obstacles -> pos to dir.turnRight
-            else -> pos + dir.vector to dir
+            pos + dir in obstacles -> pos to dir.turnRight
+            else -> pos + dir to dir
         }
     }
 }
