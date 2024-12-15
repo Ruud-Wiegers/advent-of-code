@@ -38,3 +38,6 @@ fun Vec2.neighbors(): List<Vec2> = Direction.entries.map { this + it.vector }
 
 val mooreDelta = (-1..1).cartesian().map { (dx, dy) -> Vec2(dx, dy) }.toList()
 fun Vec2.mooreNeighbors(): List<Vec2> = mooreDelta.map(this::plus)
+
+infix operator fun Vec2.plus(d: Direction) = this + d.vector
+infix operator fun Vec2.minus(d: Direction) = this + d.vector

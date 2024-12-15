@@ -4,8 +4,8 @@ package adventofcode.util.vector
 // used when position is relative to start (and may become negative)
 typealias  SparseGrid<T> = Map<Vec2, T>
 
-fun SparseGrid<*>.yBounds() = keys.xBounds()
-fun SparseGrid<*>.xBounds() = keys.yBounds()
+fun SparseGrid<*>.xBounds() = keys.xBounds()
+fun SparseGrid<*>.yBounds() = keys.yBounds()
 fun Collection<Vec2>.xBounds() = (minOf { it.x })..(maxOf { it.x })
 fun Collection<Vec2>.yBounds() = (minOf { it.y })..(maxOf { it.y })
 
