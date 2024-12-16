@@ -25,7 +25,7 @@ object Day16 : AdventSolution(2024, 16, "Reindeer Maze") {
 
     private fun costOfShortestPath(state: State, end: Vec2, grid: Set<Vec2>): Int {
 
-        val open = sortedMapOf(0 to listOf(state))
+        val open = sortedMapOf(0 to setOf(state))
         val seen = mutableSetOf(state)
 
 
@@ -41,7 +41,7 @@ object Day16 : AdventSolution(2024, 16, "Reindeer Maze") {
                     .mapValues { it.value + lowestCost }
                     .forEach {
                         seen += it.key
-                        open.merge(it.value, listOf(it.key)) { a, b -> a + b }
+                        open.merge(it.value, setOf(it.key)) { a, b -> a + b }
                     }
             }
         }
@@ -60,25 +60,38 @@ object Day16 : AdventSolution(2024, 16, "Reindeer Maze") {
 
     private fun shortestPaths(state: State, end: Vec2, grid: Set<Vec2>): Int {
 
-        val open = sortedMapOf(0 to listOf(StateWithPath(state, setOf(state.p))))
+        val open = sortedMapOf(0 to setOf(state))
         val seen = mutableMapOf(state to 0)
+        val predecessors = mutableMapOf(state to emptySet<State>())
 
         while (open.isNotEmpty()) {
             val lowestCost = open.firstKey()
             val candidates = open.remove(lowestCost)!!
 
-            if (candidates.any { it.state.p == end }) {
-                return candidates.filter { it.state.p == end }.map { it.path }.reduce { a, b -> a + b }.size
+            if (candidates.any { it.p == end }) {
+                val visited = mutableSetOf<Vec2>(end)
+
+                var edge = candidates.filter { it.p == end }.toSet()
+                while (edge.isNotEmpty()) {
+                    visited += edge.map { it.p }
+                    edge = edge.flatMap { predecessors[it].orEmpty() }.toSet()
+                }
+
+                return visited.size
             }
 
             for (candidate in candidates) {
-                candidate.state.neighbours()
+                candidate.neighbours()
                     .filterKeys { it.p in grid }
                     .mapValues { it.value + lowestCost }
                     .filter { (seen[it.key] ?: Int.MAX_VALUE) >= it.value }
                     .forEach {
                         seen[it.key] = it.value
-                        open.merge(it.value, listOf(StateWithPath(it.key, candidate.path + it.key.p))) { a, b -> a + b }
+                        open.merge(it.value, setOf(it.key)) { a, b -> a + b }
+                        if ((seen[it.key] ?: Int.MAX_VALUE) > it.value) {
+                            predecessors.remove(it.key)
+                        }
+                        predecessors.merge(it.key, setOf(candidate)) { a, b -> a + b }
                     }
             }
         }
@@ -101,5 +114,3 @@ data class State(val p: Vec2, val d: Direction) {
         copy(p = p + d) to 1
     )
 }
-
-data class StateWithPath(val state: State, val path: Set<Vec2>)
