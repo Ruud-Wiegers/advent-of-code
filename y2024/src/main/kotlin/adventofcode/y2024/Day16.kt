@@ -10,7 +10,7 @@ fun main() {
     Day16.solve()
 }
 
-object Day16 : AdventSolution(2024, 16, "???") {
+object Day16 : AdventSolution(2024, 16, "Reindeer Maze") {
 
     override fun solvePartOne(input: String): Int {
         val parsed = parseInput(input)
@@ -19,11 +19,11 @@ object Day16 : AdventSolution(2024, 16, "???") {
         val end = parsed.entries.single { it.value == 'E' }.key
         val grid = parsed.keys
 
-        return costOfShortestPath(State(start, Direction.RIGHT, grid), end)
+        return costOfShortestPath(State(start, Direction.RIGHT), end, grid)
 
     }
 
-    private fun costOfShortestPath(state: State, end: Vec2): Int {
+    private fun costOfShortestPath(state: State, end: Vec2, grid: Set<Vec2>): Int {
 
         val open = sortedMapOf(0 to listOf(state))
         val seen = mutableSetOf(state)
@@ -36,6 +36,7 @@ object Day16 : AdventSolution(2024, 16, "???") {
             for (candidate in candidates) {
                 if (candidate.p == end) return lowestCost
                 candidate.neighbours()
+                    .filterKeys { it.p in grid }
                     .filterKeys { it !in seen }
                     .mapValues { it.value + lowestCost }
                     .forEach {
@@ -53,31 +54,30 @@ object Day16 : AdventSolution(2024, 16, "???") {
         val end = parsed.entries.single { it.value == 'E' }.key
         val grid = parsed.keys
 
-        return shortestPaths(State(start, Direction.RIGHT, grid), end)
+        return shortestPaths(State(start, Direction.RIGHT), end, grid)
     }
 
 
-    private fun shortestPaths(state: State, end: Vec2): Int {
+    private fun shortestPaths(state: State, end: Vec2, grid: Set<Vec2>): Int {
 
         val open = sortedMapOf(0 to listOf(StateWithPath(state, setOf(state.p))))
-       // val seen = mutableSetOf(state)
-
+        val seen = mutableMapOf(state to 0)
 
         while (open.isNotEmpty()) {
             val lowestCost = open.firstKey()
             val candidates = open.remove(lowestCost)!!
 
-            if (lowestCost%100 ==0)println(lowestCost)
             if (candidates.any { it.state.p == end }) {
                 return candidates.filter { it.state.p == end }.map { it.path }.reduce { a, b -> a + b }.size
             }
 
             for (candidate in candidates) {
                 candidate.state.neighbours()
-                    //.filterKeys { it !in seen }
+                    .filterKeys { it.p in grid }
                     .mapValues { it.value + lowestCost }
+                    .filter { (seen[it.key] ?: Int.MAX_VALUE) >= it.value }
                     .forEach {
-                    //    seen += it.key
+                        seen[it.key] = it.value
                         open.merge(it.value, listOf(StateWithPath(it.key, candidate.path + it.key.p))) { a, b -> a + b }
                     }
             }
@@ -94,12 +94,12 @@ object Day16 : AdventSolution(2024, 16, "???") {
 }
 
 
-data class State(val p: Vec2, val d: Direction, val grid: Set<Vec2>) {
+data class State(val p: Vec2, val d: Direction) {
     fun neighbours(): Map<State, Int> = mapOf(
         copy(d = d.turnLeft) to 1000,
         copy(d = d.turnRight) to 1000,
         copy(p = p + d) to 1
-    ).filterKeys { it.p in grid }
+    )
 }
 
 data class StateWithPath(val state: State, val path: Set<Vec2>)
