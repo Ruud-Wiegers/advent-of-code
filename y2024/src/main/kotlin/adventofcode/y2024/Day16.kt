@@ -67,6 +67,7 @@ object Day16 : AdventSolution(2024, 16, "???") {
             val lowestCost = open.firstKey()
             val candidates = open.remove(lowestCost)!!
 
+            if (lowestCost%100 ==0)println(lowestCost)
             if (candidates.any { it.state.p == end }) {
                 return candidates.filter { it.state.p == end }.map { it.path }.reduce { a, b -> a + b }.size
             }
