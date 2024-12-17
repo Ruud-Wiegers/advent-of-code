@@ -41,5 +41,5 @@ object Day04 : AdventSolution(2024, 4, "Ceres Search") {
         .flatMapIndexed { y, line ->
             line.mapIndexed { x, c -> Vec2(x, y) to c }
         }
-        .associate { it }
+        .toMap()
 }

@@ -30,7 +30,7 @@ private fun parseInput(input: String): Pair<Map<Vec2, Tile>, List<Direction>> {
             line.mapIndexed { x, c -> Vec2(x, y) to c }
         }
         .filter { (_, v) -> v in "O.@" }
-        .associate { it }
+        .toMap()
         .mapValues {
             when (it.value) {
                 '.' -> Floor
@@ -66,7 +66,7 @@ private fun widenInput(grid: Map<Vec2, Tile>): Map<Vec2, Tile> = grid.flatMap { 
         }
     )
 }
-    .associate { it }
+    .toMap()
 
 private fun solve(grid: MutableMap<Vec2, Tile>, instructions: List<Direction>): Int {
     instructions.forEach { instruction ->

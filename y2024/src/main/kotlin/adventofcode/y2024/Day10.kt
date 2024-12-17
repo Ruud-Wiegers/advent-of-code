@@ -32,7 +32,7 @@ private fun parseInput(input: String): SparseGrid<Int> = input.lines()
     .flatMapIndexed { y, line ->
         line.mapIndexed { x, c -> Vec2(x, y) to c.digitToInt() }
     }
-    .associate { it }
+    .toMap()
 
 
 private fun findAllSummits(grid: SparseGrid<Int>, trailhead: Vec2): List<Vec2> = generateSequence(listOf(trailhead)) {

@@ -25,7 +25,7 @@ object Day12 : AdventSolution(2024, 12, "Garden Groups") {
         .flatMapIndexed { y, line ->
             line.mapIndexed { x, c -> Vec2(x, y) to c }
         }
-        .associate { it }
+        .toMap()
 
     private fun findPlots(grid: MutableMap<Vec2, Char>): List<MutableSet<Vec2>> = buildList {
         while (grid.isNotEmpty()) {
