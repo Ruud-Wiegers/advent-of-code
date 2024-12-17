@@ -23,7 +23,6 @@ object Day17 : AdventSolution(2024, 17, "Chronospatial Computer") {
     override fun solvePartTwo(input: String): Long? {
         val (_, instructions) = input.parseInput()
 
-
         fun dfs(digitToFix: Int, constructed: Long): Long? = (0..7).asSequence().firstNotNullOfOrNull {
             val newConstructed = (constructed shl 3) + it
             val computer = Computer(a = newConstructed)
@@ -39,7 +38,6 @@ object Day17 : AdventSolution(2024, 17, "Chronospatial Computer") {
         }
 
         return dfs(instructions.lastIndex, 0)
-
     }
 
     fun String.parseInput(): Pair<List<Int>, List<Int>> {

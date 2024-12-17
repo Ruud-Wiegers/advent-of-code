@@ -22,18 +22,20 @@ private fun parseInput(input: String): List<Equation> = input.lines().map {
     Equation(numbers.first(), numbers.drop(1))
 }
 
-private data class Equation(val solution: Long, val operands: List<Long>)
+private data class Equation(val solution: Long, val operands: List<Long>) {
+    fun hasSolution(vararg operators: (Long, Long) -> Long): Boolean {
 
-private fun Equation.hasSolution(vararg operators: (Long, Long) -> Long): Boolean {
-    fun solutions(values: List<Long>): Boolean = when {
-        values.size == 1 -> values.first() == solution
-        values.first() > solution -> false
-        else -> operators.any { operator ->
-            solutions(listOf(operator(values[0], values[1])) + values.drop(2))
+        fun solutions(values: List<Long>): Boolean = when {
+            values.size == 1 -> values.last() == solution
+            values.last() > solution -> false
+            else -> operators.any { operator ->
+                val newValues = values.toMutableList()
+                newValues.addLast(operator(newValues.removeLast(), newValues.removeLast()))
+                solutions(newValues)
+            }
         }
+
+        return solutions(operands.asReversed())
     }
-
-    return solutions(operands)
 }
-
 infix fun Long.combine(o: Long) = (toString() + o.toString()).toLong()
