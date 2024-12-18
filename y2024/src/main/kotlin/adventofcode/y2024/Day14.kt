@@ -36,32 +36,33 @@ object Day14 : AdventSolution(2024, 14, "Restroom Redoubt") {
             .map { it.map { it.p }.toSet() }
             .indexOfFirst { set -> set.count { it.neighbors().all(set::contains) } > 10 }
     }
-}
 
-private fun parseInput(input: String): List<Particle> = input.lines()
-    .map {
-        val (px, py, vx, vy) = """p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)""".toRegex()
-            .matchEntire(it)!!.groupValues.drop(1).map(String::toInt)
 
-        Particle(Vec2(px, py), Vec2(vx, vy))
+    private fun parseInput(input: String): List<Particle> = input.lines()
+        .map {
+            val (px, py, vx, vy) = """p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)""".toRegex()
+                .matchEntire(it)!!.groupValues.drop(1).map(String::toInt)
+
+            Particle(Vec2(px, py), Vec2(vx, vy))
+        }
+
+    private fun bounds(xMax: Int, yMax: Int): List<Box> {
+        val xMid = xMax / 2
+        val yMid = yMax / 2
+
+        return listOf(
+            Box(0 until xMid, 0 until yMid),
+            Box(0 until xMid, yMid + 1 until yMax),
+            Box(xMid + 1 until xMax, 0 until yMid),
+            Box(xMid + 1 until xMax, yMid + 1 until yMax),
+        )
     }
 
-private fun bounds(xMax: Int, yMax: Int): List<Box> {
-    val xMid = xMax / 2
-    val yMid = yMax / 2
+    private data class Particle(val p: Vec2, val v: Vec2) {
+        fun move(tick: Int) = copy(p = p + v * tick)
+    }
 
-    return listOf(
-        Box(0 until xMid, 0 until yMid),
-        Box(0 until xMid, yMid + 1 until yMax),
-        Box(xMid + 1 until xMax, 0 until yMid),
-        Box(xMid + 1 until xMax, yMid + 1 until yMax),
-    )
-}
-
-private data class Particle(val p: Vec2, val v: Vec2) {
-    fun move(tick: Int) = copy(p = p + v * tick)
-}
-
-private data class Box(val xBounds: IntRange, val yBounds: IntRange) {
-    operator fun contains(v: Vec2) = v.x in xBounds && v.y in yBounds
+    private data class Box(val xBounds: IntRange, val yBounds: IntRange) {
+        operator fun contains(v: Vec2) = v.x in xBounds && v.y in yBounds
+    }
 }
