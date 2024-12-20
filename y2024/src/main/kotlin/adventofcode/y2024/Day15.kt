@@ -69,10 +69,12 @@ private fun widenInput(grid: Map<Vec2, Tile>): Map<Vec2, Tile> = grid.flatMap { 
     .toMap()
 
 private fun solve(grid: MutableMap<Vec2, Tile>, instructions: List<Direction>): Int {
+    var player = grid.filterValues { it == Player }.keys.single()
+
     instructions.forEach { instruction ->
-        val player = grid.filterValues { it == Player }.keys.single()
         if (grid.canMove(player, instruction)) {
             grid.move(player, instruction)
+            player += instruction
         }
 
     }

@@ -19,41 +19,42 @@ object Day20 : AdventSolution(2024, 20, "Race Condition") {
         val racetrack = path(grid)
         return countValidCheats(racetrack, 20)
     }
-}
 
-private fun parseInput(input: String) = input.lines()
-    .flatMapIndexed { y, line ->
-        line.mapIndexed { x, c -> Vec2(x, y) to c }
-    }
-    .filter { (_, v) -> v in ".SE" }
-    .toMap()
 
-private fun path(grid: Map<Vec2, Char>): List<Vec2> {
-    val start = grid.entries.first { it.value == 'S' }.key
-    val track = grid.keys.toMutableSet()
+    fun parseInput(input: String) = input.lines()
+        .flatMapIndexed { y, line ->
+            line.mapIndexed { x, c -> Vec2(x, y) to c }
+        }
+        .filter { (_, v) -> v in ".SE" }
+        .toMap()
 
-    return buildList {
-        add(start)
-        track -= start
-        while (track.isNotEmpty()) {
-            val edge = this.last().neighbors().first { it in track }
-            track -= edge
-            add(edge)
+    fun path(grid: Map<Vec2, Char>): List<Vec2> {
+        val start = grid.entries.first { it.value == 'S' }.key
+        val track = grid.keys.toMutableSet()
+
+        return buildList {
+            add(start)
+            track -= start
+            while (track.isNotEmpty()) {
+                val edge = this.last().neighbors().first { it in track }
+                track -= edge
+                add(edge)
+            }
         }
     }
-}
 
-private fun countValidCheats(racetrack: List<Vec2>, maxCheatLength: Int): Int {
-    var count = 0
+    fun countValidCheats(racetrack: List<Vec2>, maxCheatLength: Int, minCheatGain: Int = 100): Int {
+        var count = 0
 
-    for (oldIndex in racetrack.indices) {
-        for (newIndex in oldIndex + 100..racetrack.lastIndex) {
-            val cheatLength = racetrack[oldIndex].distance(racetrack[newIndex])
-            val cheatGain = newIndex - oldIndex
+        for (oldIndex in racetrack.indices) {
+            for (newIndex in oldIndex + minCheatGain..racetrack.lastIndex) {
+                val cheatLength = racetrack[oldIndex].distance(racetrack[newIndex])
+                val cheatGain = newIndex - oldIndex
 
-            if (cheatLength > maxCheatLength) continue
-            if (cheatGain - cheatLength >= 100) count++
+                if (cheatLength > maxCheatLength) continue
+                if (cheatGain - cheatLength >= minCheatGain) count++
+            }
         }
+        return count
     }
-    return count
 }
