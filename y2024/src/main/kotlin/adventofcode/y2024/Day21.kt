@@ -12,32 +12,44 @@ object Day21 : AdventSolution(2024, 21, "Keypad Conundrum") {
 }
 
 private fun solve(input: String, depth: Int): Long = input.lines().sumOf { line ->
-    line.dropLast(1).toInt() * solve(line, numpadTransitions, depth)
+    line.dropLast(1).toInt() * countSteps(numpadPossiblePaths, line, depth)
 }
 
 
-private data class Path(val from: Char, val to: Char)
-private data class MemoState(val path: Path, val depth: Int)
-
-private val numpadTransitions = createNumpad().transitions()
-private val movepadTransitions = createArrowpad().transitions()
-
-private val memo = mutableMapOf<MemoState, Long>()
-
-private fun solve(inputs: String, transitions: Map<Path, List<String>>, depth: Int) =
-    ("A$inputs").zipWithNext { a, b -> Path(a, b) }
-        .sumOf { countSteps(transitions, MemoState(it, depth)) }
+private data class ButtonPair(val from: Char, val to: Char)
+private val memo = mutableMapOf<Pair<ButtonPair, Int>, Long>()
 
 
-private fun countSteps(transitions: Map<Path, List<String>>, state: MemoState): Long = memo.getOrPut(state) {
-    if (state.depth == 0) 1L
-    else {
-        transitions.getValue(state.path).minOf { solve(it, movepadTransitions, state.depth - 1) }
+private fun countSteps(possiblePaths: Map<ButtonPair, List<String>>, buttonSequence: String, depth: Int) =
+    ("A$buttonSequence").zipWithNext { a, b -> ButtonPair(a, b) }
+        .sumOf { countSteps(possiblePaths, it, depth) }
+
+
+private fun countSteps(possiblePaths: Map<ButtonPair, List<String>>, buttonPair: ButtonPair, depth: Int): Long =
+    memo.getOrPut(Pair(buttonPair, depth)) {
+        if (depth == 0) 1L
+        else possiblePaths.getValue(buttonPair).minOf { countSteps(movepadPossiblePaths, it, depth - 1) }
     }
-}
+
+
+private val numpadPossiblePaths = Keypad(
+    mapOf(
+        '7' to Vec2(0, 0), '8' to Vec2(1, 0), '9' to Vec2(2, 0),
+        '4' to Vec2(0, 1), '5' to Vec2(1, 1), '6' to Vec2(2, 1),
+        '1' to Vec2(0, 2), '2' to Vec2(1, 2), '3' to Vec2(2, 2),
+        '0' to Vec2(1, 3), 'A' to Vec2(2, 3)
+    )
+).possiblePaths()
+
+private val movepadPossiblePaths = Keypad(
+    mapOf(
+        '^' to Vec2(1, 0), 'A' to Vec2(2, 0),
+        '<' to Vec2(0, 1), 'v' to Vec2(1, 1), '>' to Vec2(2, 1)
+    )
+).possiblePaths()
+
 
 private data class Keypad(val grid: Map<Char, Vec2>) {
-    val validPositions = grid.values.toSet()
 
     fun validMovement(from: Vec2, moves: String): Boolean {
         return moves.scan(from) { acc, it ->
@@ -48,11 +60,11 @@ private data class Keypad(val grid: Map<Char, Vec2>) {
                 'v' -> acc + Direction.DOWN.vector
                 else -> acc
             }
-        }.all { it in validPositions }
+        }.all { it in grid.values }
     }
 
-    fun inputsToPress(path: Path): List<String> {
-        val (dx, dy) = grid.getValue(path.to) - grid.getValue(path.from)
+    fun possiblePaths(buttonPair: ButtonPair): List<String> {
+        val (dx, dy) = grid.getValue(buttonPair.to) - grid.getValue(buttonPair.from)
 
         val h = buildString {
             if (dx < 0) repeat(-dx) { append('<') }
@@ -64,26 +76,9 @@ private data class Keypad(val grid: Map<Char, Vec2>) {
             if (dy > 0) repeat(dy) { append('v') }
         }
 
-        return listOf(h + v + "A", v + h + "A").filter { validMovement(grid.getValue(path.from), it) }
+        return listOf(h + v + "A", v + h + "A").filter { validMovement(grid.getValue(buttonPair.from), it) }
     }
 
-    fun transitions(): Map<Path, List<String>> =
-        grid.keys.flatMap { from -> grid.keys.map { to -> Path(from, to) } }.associateWith(::inputsToPress)
+    fun possiblePaths(): Map<ButtonPair, List<String>> =
+        grid.keys.flatMap { from -> grid.keys.map { to -> ButtonPair(from, to) } }.associateWith(::possiblePaths)
 }
-
-
-private fun createNumpad() = Keypad(
-    mapOf(
-        '7' to Vec2(0, 0), '8' to Vec2(1, 0), '9' to Vec2(2, 0),
-        '4' to Vec2(0, 1), '5' to Vec2(1, 1), '6' to Vec2(2, 1),
-        '1' to Vec2(0, 2), '2' to Vec2(1, 2), '3' to Vec2(2, 2),
-        '0' to Vec2(1, 3), 'A' to Vec2(2, 3)
-    )
-)
-
-private fun createArrowpad() = Keypad(
-    mapOf(
-        '^' to Vec2(1, 0), 'A' to Vec2(2, 0),
-        '<' to Vec2(0, 1), 'v' to Vec2(1, 1), '>' to Vec2(2, 1)
-    )
-)
