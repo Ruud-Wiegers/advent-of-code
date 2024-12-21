@@ -19,17 +19,16 @@ private fun solve(input: String, depth: Int): Long = input.lines().sumOf { code 
 private fun countStepsForSequence(keypad: Keypad, buttonSequence: String, depth: Int): Long =
     "A$buttonSequence".zipWithNext(::ButtonPair).sumOf { countStepsForSingleMove(keypad, it, depth) }
 
+private val memo = mutableMapOf<Pair<ButtonPair, Int>, Long>()
 private fun countStepsForSingleMove(keypad: Keypad, buttonPair: ButtonPair, depth: Int): Long =
     memo.getOrPut(Pair(buttonPair, depth)) {
         if (depth == 0) 1L
         else countStepsForSequence(directionalKeypadPaths, keypad.bestPath(buttonPair), depth - 1)
     }
 
-private val memo = mutableMapOf<Pair<ButtonPair, Int>, Long>()
 
 private val numericKeypadPaths = Keypad("789", "456", "123", " 0A")
 private val directionalKeypadPaths = Keypad(" ^A", "<v>")
-
 
 private data class Keypad(val grid: Map<Char, Vec2>) {
     constructor(vararg string: String) : this(
@@ -43,15 +42,20 @@ private data class Keypad(val grid: Map<Char, Vec2>) {
           Horizontal movement first, or vertical movement first
        2. The < and v buttons are furthest from the A button, so they should be prioritized,
           so they're more clustered. It's slightly magical, but it works
+            -> if you go ^<<, the inputting robot has to move left in two separate steps: A -> ^ and ^ -> <
+            -> if you go <<^, the inputting robot can move A -> <, which requires two sequential left presses
+               and thus saves moving back and forth to the furthest key
        3. Only valid paths should be considered, so sometimes you should take the other order
     */
     fun bestPath(buttonPair: ButtonPair): String {
         val (dx, dy) = grid.getValue(buttonPair.to) - grid.getValue(buttonPair.from)
 
-        val l = buildString { if (dx < 0) repeat(-dx) { append('<') } }
-        val r = buildString { if (dx > 0) repeat(dx) { append('>') } }
-        val u = buildString { if (dy < 0) repeat(-dy) { append('^') } }
-        val d = buildString { if (dy > 0) repeat(dy) { append('v') } }
+        fun steps(delta: Int, key: String) = key.repeat(delta.coerceAtLeast(0))
+
+        val l = steps(-dx, "<")
+        val r = steps(+dx, ">")
+        val u = steps(-dy, "^")
+        val d = steps(+dy, "v")
 
         return listOf(l + d + u + r + "A", r + u + d + l + "A")
             .first { validMovement(grid.getValue(buttonPair.from), it) }
