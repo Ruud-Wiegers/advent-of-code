@@ -14,29 +14,27 @@ object Day22 : AdventSolution(2024, 22, "???") {
 
     override fun solvePartTwo(input: String): Int {
         val bananaPrices = input.lines().map {
-            generateSequence(it.toLong()) { calculate(it) }.drop(1).take(2000).map { (it % 10).toInt() }.toList()
+            generateSequence(it.toLong()) { calculate(it) }.drop(1).take(2000)
+                .map { (it % 10).toInt() }
+                .toList()
         }
 
         val deltaPatterns = bananaPrices.map { it.zipWithNext { a, b -> b - a }.windowed(4) }
 
         val priceAtFirstOccurrence = deltaPatterns.zip(bananaPrices) { deltas, buyer ->
             deltas.zip(buyer.drop(4))
-                .groupBy({ it.first }, { it.second })
-                .mapValues { it.value.first() }
+                .groupingBy { it.first }.aggregate { _, acc: Int?, (_, v), _ -> acc ?: v }
                 .entries
         }
 
-        return priceAtFirstOccurrence
-            .flatten()
-            .groupBy({ it.key }, { it.value })
-            .values
-            .maxOf { it.sum() }
+        return priceAtFirstOccurrence.flatten()
+            .groupingBy { it.key }.fold(0) { acc, (_, v) -> acc + v }
+            .values.max()
     }
 
 }
 
 private fun calculate(input: Long): Long {
-    val one = (input xor input * 64) % 16777216
-    val two = (one xor one / 32) % 16777216
-    return (two xor two * 2048) % 16777216
+    fun Long.step(f: (Long) -> Long) = (this xor f(this)) % 16777216
+    return input.step { it * 64 }.step { it / 32 }.step { it * 2048 }
 }
