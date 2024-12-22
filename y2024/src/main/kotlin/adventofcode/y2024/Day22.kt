@@ -27,8 +27,9 @@ object Day22 : AdventSolution(2024, 22, "???") {
             }.sum()
         }
 
-
-        return patterns().maxOf { score(it) }
+        println(patterns().size0)
+var count = 0
+        return patterns().maxOf { score(it) .also { println("${count++}, $it") } }
 
     }
 
@@ -45,10 +46,11 @@ object Day22 : AdventSolution(2024, 22, "???") {
             for (b in -9..9)
                 for (c in -9..9)
                     for (d in -9..9) {
-                        add(listOf(a, b, c, d))
+                        if (a+b in -9..9 && a+b+c in -9..9 && a+b+c+d in 1..9)
+                            add(listOf(a, b, c, d))
                     }
 
-    }.sortedByDescending(List<Int>::sum).dropWhile { it.sum() > 9 }.takeWhile { it.sum() > 0 }
+    }.sortedByDescending(List<Int>::sum)
 
 
 }
