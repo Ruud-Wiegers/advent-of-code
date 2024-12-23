@@ -6,28 +6,29 @@ fun main() {
     Day22.solve()
 }
 
-object Day22 : AdventSolution(2024, 22, "???") {
+object Day22 : AdventSolution(2024, 22, "Monkey Market") {
 
     override fun solvePartOne(input: String) = input.lines().sumOf {
         generateSequence(it.toLong()) { calculate(it) }.elementAt(2000)
     }
 
     override fun solvePartTwo(input: String): Int {
-        val bananaPrices = input.lines().map {
+        val bananaPrices = input.lineSequence().map {
             generateSequence(it.toLong()) { calculate(it) }.drop(1).take(2000)
                 .map { (it % 10).toInt() }
-                .toList()
         }
 
         val deltaPatterns = bananaPrices.map { it.zipWithNext { a, b -> b - a }.windowed(4) }
 
-        val priceAtFirstOccurrence = deltaPatterns.zip(bananaPrices) { deltas, buyer ->
-            deltas.zip(buyer.drop(4))
-                .groupingBy { it.first }.aggregate { _, acc: Int?, (_, v), _ -> acc ?: v }
-                .entries
-        }
+        val priceAtFirstOccurrence: Sequence<Map.Entry<List<Int>, Int>> = deltaPatterns.zip(bananaPrices)
+            .flatMap { (deltas, buyer) ->
+                deltas.zip(buyer.drop(4))
+                    .groupingBy { it.first }
+                    .aggregate { _, acc: Int?, (_, v), _ -> acc ?: v }
+                    .asSequence()
+            }
 
-        return priceAtFirstOccurrence.flatten()
+        return priceAtFirstOccurrence
             .groupingBy { it.key }.fold(0) { acc, (_, v) -> acc + v }
             .values.max()
     }
