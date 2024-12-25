@@ -11,7 +11,6 @@ fun main() {
 object Day25 : AdventSolution(2024, 25, "Code Chronicle") {
 
     override fun solvePartOne(input: String): Int {
-
         val (keyStr, lockStr) = input.split("\n\n").map(String::lines).partition { it[0][0] == '#' }
 
         fun pinLengths(image: List<String>) = image.transposeString().map { pin -> pin.count('#'::equals) }
