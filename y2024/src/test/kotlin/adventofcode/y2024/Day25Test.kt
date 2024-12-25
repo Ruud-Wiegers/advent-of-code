@@ -7,7 +7,7 @@ internal class Day25Test {
 
     @Test
     fun solvePartOne() {
-        assertEquals(0, Day25.solvePartOne(input))
+        assertEquals(3, Day25.solvePartOne(input))
     }
 
     @Test
@@ -15,5 +15,43 @@ internal class Day25Test {
         assertEquals("Free Star!", Day25.solvePartTwo(input))
     }
 
-    private val input = """0"""
+    private val input = """#####
+.####
+.####
+.####
+.#.#.
+.#...
+.....
+
+#####
+##.##
+.#.##
+...##
+...#.
+...#.
+.....
+
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####
+
+.....
+.....
+#.#..
+###..
+###.#
+###.#
+#####
+
+.....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####"""
 }
