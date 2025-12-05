@@ -7,13 +7,22 @@ internal class Day04Test {
 
     @Test
     fun solvePartOne() {
-        assertEquals(TODO(), Day04.solvePartOne(input))
+        assertEquals(13, Day04.solvePartOne(input))
     }
 
     @Test
     fun solvePartTwo() {
-        assertEquals(TODO(), Day04.solvePartTwo(input))
+        assertEquals(43, Day04.solvePartTwo(input))
     }
 
-    private val input = """"""
+    private val input = """..@@.@@@@.
+    @@@.@.@.@@
+    @@@@@.@.@@
+    @.@@@@..@.
+    @@.@@@@.@@
+    .@@@@@@@.@
+    .@.@.@.@@@
+    @.@@@.@@@@
+    .@@@@@@@@.
+    @.@.@@@.@."""
 }

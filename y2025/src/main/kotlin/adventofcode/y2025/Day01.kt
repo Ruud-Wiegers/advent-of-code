@@ -22,6 +22,8 @@ object Day01 : AdventSolution(2025, 1, "Secret Entrance") {
         var count = 0
 
         input.fold(50) { acc, i ->
+
+
             var new = acc + i
 
             while (new >= 100) {
@@ -33,16 +35,19 @@ object Day01 : AdventSolution(2025, 1, "Secret Entrance") {
                 new += 100
                 count++
             }
+            if (acc == 0 && i < 0) count--
+            if (new == 0 && i < 0) count++
+
+            println("$acc, $i, $count")
             new
-        }.let { println(it) }
+        }
 
         return count
     }
 }
 
-private fun parseInput(input: String) = input.lines()
-    .map {
-        val sign = if (it[0] == 'L') -1 else 1
-        val step = it.substring(1).toInt()
-        sign * step
-    }
+private fun parseInput(input: String) = input
+    .replace('L', '-')
+    .replace('R', '+')
+    .lines()
+    .map { it.toInt() }
