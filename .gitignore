@@ -19,3 +19,4 @@ data/**/*.txt
 gradle
 */out/production/**
 */out/test/**
+/.kotlin/
