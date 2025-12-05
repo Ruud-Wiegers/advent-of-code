@@ -7,7 +7,7 @@ fun main() {
     Day06.solve()
 }
 
-object Day06 : AdventSolution(2025, 6, "???") {
+object Day06 : AdventSolution(2025, 6, "Trash Chute?!") {
 
     override fun solvePartOne(input: String): Any {
 

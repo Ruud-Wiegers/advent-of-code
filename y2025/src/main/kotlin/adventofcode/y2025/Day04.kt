@@ -29,9 +29,7 @@ object Day04 : AdventSolution(2025, 4, "Printing Department") {
     private fun getStacks(input: String): Set<Vec2> = buildSet {
         input.lines().forEachIndexed { y, line ->
             line.forEachIndexed { x, ch ->
-                if (ch == '@')
-                    add(Vec2(x, y))
-
+                if (ch == '@') add(Vec2(x, y))
             }
         }
     }
