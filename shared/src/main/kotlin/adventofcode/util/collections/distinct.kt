@@ -16,7 +16,7 @@ fun <T> Sequence<T>.takeWhileDistinct(): Sequence<T> {
  *
  * The operation is _terminal_.
  */
-fun <T> Sequence<T>.firstDuplicate(): T? {
+fun <T> Sequence<T>.findFirstDuplicate(): T? {
     val history = mutableSetOf<T>()
     return dropWhile { e -> (e !in history).also { history += e } }.firstOrNull()
 }

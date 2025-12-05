@@ -1,7 +1,7 @@
 package adventofcode.y2016
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.collections.firstDuplicate
+import adventofcode.util.collections.findFirstDuplicate
 import adventofcode.util.collections.onlyChanges
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
@@ -18,7 +18,7 @@ object Day01 : AdventSolution(2016, 1, "No Time for a Taxicab") {
         .scan(Person(Direction.UP, Vec2.origin), Person::applyCommand)
         .map(Person::position)
         .onlyChanges()
-        .firstDuplicate()!!
+        .findFirstDuplicate()!!
         .distance(Vec2.origin)
 
     private fun parseCommands(input: String) = input

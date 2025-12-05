@@ -16,45 +16,37 @@ object Day05 : AdventSolution(2025, 5, "Cafeteria") {
         val (ranges, ingredients) = parse(input)
 
         return ingredients.count { i -> ranges.any { r -> i in r } }
-
     }
 
     override fun solvePartTwo(input: String): Long {
-        val ranges = parse(input).ranges.sortedBy { it.first }
 
+        val ranges = parse(input).first.sortedBy { it.first }
 
-        var start = ranges.first().first
-        var end = ranges.first().last
+        val output = buildList {
+            var currentRange = ranges.first()
 
-        val output = mutableListOf<LongRange>()
-
-        ranges.forEach { new ->
-            if (new.first <= end) {
-                end = maxOf(end, new.last)
-            } else {
-                output += start..end
-                start = new.first
-                end = new.last
+            ranges.forEach { new ->
+                if (new.first > currentRange.last) {
+                    add(currentRange)
+                    currentRange = new
+                } else if (currentRange.last < new.last) {
+                    currentRange = currentRange.first..new.last
+                }
             }
+
+            add(currentRange)
         }
 
-        output += start..end
-
-
         return output.sumOf { it.last - it.first + 1L }
-
-
     }
 }
 
-private fun parse(input: String): Stuff {
+private fun parse(input: String): Pair<List<LongRange>, List<Long>> {
     val (rangesStr, ingredientsStr) = input.split("\n\n")
 
     val ranges = rangesStr.lines().map { it.split("-").let { (l, r) -> l.toLong()..r.toLong() } }
 
     val ingredients = ingredientsStr.lines().map { it.toLong() }
 
-    return Stuff(ranges, ingredients)
+    return Pair(ranges, ingredients)
 }
-
-private data class Stuff(val ranges: List<LongRange>, val ingredients: List<Long>)

@@ -1,6 +1,8 @@
 package adventofcode.y2025
 
 import adventofcode.io.AdventSolution
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 fun main() {
     Day01.solve()
@@ -8,44 +10,19 @@ fun main() {
 
 object Day01 : AdventSolution(2025, 1, "Secret Entrance") {
 
-    override fun solvePartOne(input: String): Any {
+    override fun solvePartOne(input: String) = parseInput(input)
+        .solve()
 
-        val input = parseInput(input)
+    override fun solvePartTwo(input: String) = parseInput(input)
+        .flatMap { generateSequence { it.sign }.take(it.absoluteValue) }
+        .solve()
 
-        val scan = input.scan(50) { acc, i -> (acc + (i % 100 + 100)) % 100 }
-        return scan.count { it <= 0 }
-    }
+    private fun parseInput(input: String) = input
+        .replace('L', '-')
+        .replace('R', '+')
+        .lineSequence()
+        .map(String::toInt)
 
-    override fun solvePartTwo(input: String): Int {
-        val input = parseInput(input)
-
-        var count = 0
-
-        input.fold(50) { acc, i ->
-
-
-            var new = acc + i
-
-            while (new >= 100) {
-                new -= 100
-                count++
-
-            }
-            while (new < 0) {
-                new += 100
-                count++
-            }
-            if (acc == 0 && i < 0) count--
-            if (new == 0 && i < 0) count++
-            new
-        }
-
-        return count
-    }
+    private fun Sequence<Int>.solve(): Int = scan(50) { acc, i -> (acc + i % 100 + 100) % 100 }
+        .count { it == 0 }
 }
-
-private fun parseInput(input: String) = input
-    .replace('L', '-')
-    .replace('R', '+')
-    .lines()
-    .map { it.toInt() }

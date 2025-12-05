@@ -1,7 +1,7 @@
 package adventofcode.y2024
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.collections.firstDuplicate
+import adventofcode.util.collections.findFirstDuplicate
 import adventofcode.util.vector.Direction
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.xBounds
@@ -27,7 +27,7 @@ object Day06 : AdventSolution(2024, 6, "Guard Gallivant") {
 
         return candidates
             .parallelStream()
-            .filter { path(start, obstacles + it).firstDuplicate() != null }
+            .filter { path(start, obstacles + it).findFirstDuplicate() != null }
             .count()
     }
 }
