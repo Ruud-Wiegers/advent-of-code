@@ -1,47 +1,24 @@
 package adventofcode.y2025
 
 import adventofcode.io.AdventSolution
-import kotlin.math.abs
 
 fun main() {
     Day03.solve()
 }
 
-object Day03 : AdventSolution(2025, 3, "???") {
+object Day03 : AdventSolution(2025, 3, "Lobby") {
 
-    override fun solvePartOne(input: String): Any {
-        fun best(bank: String): Int {
-            val pairIndexes = bank.indices.flatMap { left ->
-                (left + 1..bank.lastIndex).map { right ->
-                    bank[left] to bank[right]
-                }
-            }
-            return pairIndexes.maxOf { (l, r) -> "$l$r".toInt() }
-        }
+    override fun solvePartOne(input: String) = solve(input, 2)
+    override fun solvePartTwo(input: String) = solve(input, 12)
 
-        val banks = input.lines()
+    private fun solve(input: String, batteries: Int): Long = input.lines()
+        .map { it.map(Char::digitToInt) }
+        .sumOf { pickBattery(it, batteries, "").toLong() }
 
-        return banks.sumOf { best(it) }
-    }
-
-    override fun solvePartTwo(input: String): Long {
-
-        fun pickBattery(bank: List<Int>, batteriesLeft: Int, selected: String): String {
-            if (batteriesLeft == 0) return selected
-
-            val selectable = bank.dropLast(batteriesLeft - 1)
-
-            val toSelect = selectable.max()
-            val indexToSelect = selectable.indexOf(toSelect)
-
-            return pickBattery(bank.drop(indexToSelect + 1), batteriesLeft - 1, selected + toSelect)
-
-
-        }
-
-        val banks = input.lines().map { it.map { it.digitToInt() } }
-
-        return banks.sumOf { pickBattery(it, 12, "").toLong() }
-
+    private tailrec fun pickBattery(bank: List<Int>, batteriesLeft: Int, selected: String): String {
+        if (batteriesLeft == 0) return selected
+        val selectable = bank.dropLast(batteriesLeft - 1)
+        val indexToSelect = selectable.indexOf(selectable.max())
+        return pickBattery(bank.drop(indexToSelect + 1), batteriesLeft - 1, selected + selectable.max())
     }
 }

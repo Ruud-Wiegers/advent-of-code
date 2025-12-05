@@ -37,8 +37,6 @@ object Day01 : AdventSolution(2025, 1, "Secret Entrance") {
             }
             if (acc == 0 && i < 0) count--
             if (new == 0 && i < 0) count++
-
-            println("$acc, $i, $count")
             new
         }
 

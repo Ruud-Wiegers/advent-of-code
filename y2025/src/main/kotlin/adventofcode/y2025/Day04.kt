@@ -9,7 +9,7 @@ fun main() {
     Day04.solve()
 }
 
-object Day04 : AdventSolution(2025, 4, "???") {
+object Day04 : AdventSolution(2025, 4, "Printing Department") {
 
     override fun solvePartOne(input: String): Any {
 
@@ -31,15 +31,14 @@ object Day04 : AdventSolution(2025, 4, "???") {
             input.lines().forEachIndexed { y, line ->
                 line.forEachIndexed { x, ch ->
                     if (ch == '@')
-                        add(Vec2(x,y))
+                        add(Vec2(x, y))
 
                 }
             }
         }
 
-
         val last = generateSequence(stacks) { prev ->
-            prev.filter { it.mooreNeighbors().count { it in prev } >=5}.toSet()
+            prev.filter { it.mooreNeighbors().count { it in prev } >= 5 }.toSet()
         }.takeWhileDistinct().last().size
 
 
