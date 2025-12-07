@@ -12,22 +12,21 @@ fun main() {
 object Day07 : AdventSolution(2025, 7, "Laboratories") {
 
     override fun solvePartOne(input: String): Any {
-        val (start, splitters) = parse(input)
-        val bottom = splitters.maxOf { it.y }
+        val grid = input.lines()
+        val start = grid[0].indexOf('S')
+
         var splitCount = 0
 
         var beams = setOf(start)
-
-        while (beams.first().y <= bottom) {
+        for (y in 1..grid.lastIndex) {
             beams = buildSet {
-                beams.forEach { beam ->
-                    val next = beam + DOWN
-                    if (next !in splitters) {
-                        add(next)
-                    } else {
+                for (x in beams) {
+                    if (grid[y][x] == '^') {
                         splitCount++
-                        add(next + LEFT)
-                        add(next + RIGHT)
+                        add(x - 1)
+                        add(x + 1)
+                    } else {
+                        add(x)
                     }
                 }
             }
