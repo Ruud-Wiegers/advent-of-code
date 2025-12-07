@@ -35,11 +35,13 @@ object Day07 : AdventSolution(2025, 7, "Laboratories") {
     }
 
     override fun solvePartTwo(input: String): Long {
-        val (start, splitters) = parse(input)
-        val bottom = splitters.maxOf { it.y }
+        val grid = input.lines()
+        val start = Vec2(grid[0].indexOf('S'), 0)
 
-        fun Vec2.fall() = generateSequence(this) { it + DOWN }.takeWhile { it.y <= bottom }
-        fun Vec2.firstSplitterHit() = fall().find { it in splitters }
+        fun Vec2.firstSplitterHit() = generateSequence(this.y, Int::inc)
+            .takeWhile { it <= grid.lastIndex }
+            .find { y -> grid[y][this.x] == '^' }
+            ?.let { y -> Vec2(this.x, y) }
 
         val cache = mutableMapOf<Vec2, Long>()
         fun countSplits(position: Vec2): Long = cache.getOrPut(position) {
@@ -53,19 +55,5 @@ object Day07 : AdventSolution(2025, 7, "Laboratories") {
 
         return countSplits(start)
     }
-}
-
-private fun parse(input: String): Pair<Vec2, Set<Vec2>> {
-
-    lateinit var start: Vec2
-    val splitters = buildSet {
-        input.lines().forEachIndexed { y, line ->
-            line.forEachIndexed { x, ch ->
-                if (ch == 'S') start = Vec2(x, y)
-                else if (ch == '^') add(Vec2(x, y))
-            }
-        }
-    }
-    return Pair(start, splitters)
 }
 
