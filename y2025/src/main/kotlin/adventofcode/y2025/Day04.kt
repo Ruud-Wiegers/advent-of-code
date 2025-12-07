@@ -5,9 +5,7 @@ import adventofcode.util.collections.findFirstDuplicate
 import adventofcode.util.vector.Vec2
 import adventofcode.util.vector.mooreNeighbors
 
-fun main() {
-    Day04.solve()
-}
+fun main() = Day04.solve()
 
 object Day04 : AdventSolution(2025, 4, "Printing Department") {
 

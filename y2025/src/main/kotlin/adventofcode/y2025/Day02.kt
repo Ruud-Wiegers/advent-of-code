@@ -3,9 +3,7 @@ package adventofcode.y2025
 import adventofcode.io.AdventSolution
 
 
-fun main() {
-    Day02.solve()
-}
+fun main() = Day02.solve()
 
 object Day02 : AdventSolution(2025, 2, "Gift Shop") {
 

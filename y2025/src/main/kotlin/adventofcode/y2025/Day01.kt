@@ -4,9 +4,7 @@ import adventofcode.io.AdventSolution
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
-fun main() {
-    Day01.solve()
-}
+fun main() = Day01.solve()
 
 object Day01 : AdventSolution(2025, 1, "Secret Entrance") {
 

@@ -4,9 +4,8 @@ import adventofcode.io.AdventSolution
 import adventofcode.util.algorithm.transposeString
 import adventofcode.util.collections.splitBefore
 
-fun main() {
-    Day06.solve()
-}
+fun main() = Day06.solve()
+
 
 object Day06 : AdventSolution(2025, 6, "Trash Compactor") {
 

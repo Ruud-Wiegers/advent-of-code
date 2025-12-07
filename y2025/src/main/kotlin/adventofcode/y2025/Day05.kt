@@ -1,13 +1,9 @@
 package adventofcode.y2025
 
 import adventofcode.io.AdventSolution
-import adventofcode.util.vector.Vec2
-import adventofcode.util.vector.mooreNeighbors
-import kotlin.text.toLong
 
-fun main() {
-    Day05.solve()
-}
+fun main() = Day05.solve()
+
 
 object Day05 : AdventSolution(2025, 5, "Cafeteria") {
 
