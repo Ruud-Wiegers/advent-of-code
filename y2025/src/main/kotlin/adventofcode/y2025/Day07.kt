@@ -13,12 +13,11 @@ object Day07 : AdventSolution(2025, 7, "Laboratories") {
         val start = grid[0].indexOf('S')
 
         var splitCount = 0
-
         var beams = setOf(start)
-        for (y in 1..grid.lastIndex) {
+        for (line in grid.drop(1)) {
             beams = buildSet {
                 for (x in beams) {
-                    if (grid[y][x] == '^') {
+                    if (line[x] == '^') {
                         splitCount++
                         add(x - 1)
                         add(x + 1)
