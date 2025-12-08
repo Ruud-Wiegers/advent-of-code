@@ -9,10 +9,12 @@ fun main() {
 
 object Day08 : AdventSolution(2025, 8, "Playground") {
 
-    override fun solvePartOne(input: String): Any {
+    override fun solvePartOne(input: String): Long = solvePartOne(input, 1000)
+
+    fun solvePartOne(input: String, connections: Int ): Long {
         val junctions = parse(input)
 
-        val distances = distances(junctions).sortedBy { it.second }.take(1000)
+        val distances = distances(junctions).sortedBy { it.second }.take(connections)
         val sets = DisjointUnionSets(junctions.size)
 
         distances.forEach { sets.union(it.first.first, it.first.second) }
