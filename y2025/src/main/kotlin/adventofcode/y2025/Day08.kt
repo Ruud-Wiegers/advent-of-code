@@ -66,9 +66,6 @@ private class UnionFind(n: Int) {
     private var _setCount = n
     val setCount: Int get() = _setCount
 
-    fun toSets(): List<Set<Int>> = parent.indices.groupBy { findRoot(it) }.values.map { it.toSet() }
-
-    //connect x and y
     fun union(x: Int, y: Int) {
         val xRoot = findRoot(x)
         val yRoot = findRoot(y)
@@ -76,6 +73,10 @@ private class UnionFind(n: Int) {
             parent[yRoot] = xRoot
             _setCount--
         }
+    }
+
+    fun toSets(): List<Set<Int>> {
+        return parent.indices.groupBy { findRoot(it) }.values.map { it.toSet() }
     }
 
     private fun findRoot(x: Int): Int {
