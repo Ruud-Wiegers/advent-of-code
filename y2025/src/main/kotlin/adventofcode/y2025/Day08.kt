@@ -1,6 +1,7 @@
 package adventofcode.y2025
 
 import adventofcode.io.AdventSolution
+import adventofcode.util.algorithm.UnionFind
 import adventofcode.util.vector.Vec3
 
 fun main() {
@@ -58,33 +59,3 @@ private fun distances(junctions: List<Vec3>): List<Connection> = buildList {
 
 fun magnitude(v1: Vec3, v2: Vec3): Long =
     (v2 - v1).let { (x, y, z) -> x.toLong() * x + y.toLong() * y + z.toLong() * z }
-
-
-
-private class UnionFind(n: Int) {
-    private val parent: IntArray = IntArray(n) { it }
-    private var _setCount = n
-    val setCount: Int get() = _setCount
-
-    fun union(x: Int, y: Int) {
-        val xRoot = findRoot(x)
-        val yRoot = findRoot(y)
-        if (xRoot != yRoot) {
-            parent[yRoot] = xRoot
-            _setCount--
-        }
-    }
-
-    fun toSets(): List<Set<Int>> {
-        return parent.indices.groupBy { findRoot(it) }.values.map { it.toSet() }
-    }
-
-    private fun findRoot(x: Int): Int {
-        var ancestor = x
-        while (ancestor != parent[ancestor]) {
-            ancestor = parent[ancestor]
-        }
-        return ancestor
-    }
-}
-
