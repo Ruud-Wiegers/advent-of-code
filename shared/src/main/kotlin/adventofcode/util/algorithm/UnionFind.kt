@@ -23,6 +23,7 @@ class UnionFind(n: Int) {
         while (ancestor != parent[ancestor]) {
             ancestor = parent[ancestor]
         }
+        parent[x] = ancestor
         return ancestor
     }
 }
