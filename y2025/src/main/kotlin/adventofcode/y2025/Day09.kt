@@ -31,7 +31,7 @@ object Day09 : AdventSolution(2025, 9, "Movie Theater") {
 
     }
 
-    //assumption: the perimeter does not touch itself. (or, if it does, it does not matter)
+    //assumption: If the perimeter touches itself anywhere, it is not relevant for the flood-fill
     override fun solvePartTwo(input: String): Long {
 
         // read input to vectors
@@ -41,8 +41,8 @@ object Day09 : AdventSolution(2025, 9, "Movie Theater") {
         }
 
         // rescale
-        val xs = corners.map { it.x }.toSortedSet().withIndex().associate { (i, x) -> x to i * 2 }
-        val ys = corners.map { it.y }.toSortedSet().withIndex().associate { (i, y) -> y to i * 2 }
+        val xs: Map<Int, Int> = corners.flatMap { it.x..it.x + 1 }.toSortedSet().withIndex().associate { (i, x) -> x to i }
+        val ys: Map<Int, Int> = corners.flatMap { it.y..it.y + 1 }.toSortedSet().withIndex().associate { (i, y) -> y to i }
         fun rescale(v: Vec2) = Vec2(xs.getValue(v.x), ys.getValue(v.y))
         val rescaledCorners = corners.map { rescale(it) }
 
@@ -62,8 +62,8 @@ object Day09 : AdventSolution(2025, 9, "Movie Theater") {
         for (v in greenPerimeter) denseScaledGrid[v.y][v.x] = true
 
         // floodfill dense grid
-        val startLine = denseScaledGrid.indexOfFirst { it[0] && !it[1] }
-        val startPoint = Vec2(startLine, 1)
+        val startLine = denseScaledGrid.indexOfFirst {  it[0] && !it[1] }
+        val startPoint = Vec2(1, startLine)
         val open = mutableListOf(startPoint)
 
         while (open.isNotEmpty()) {
