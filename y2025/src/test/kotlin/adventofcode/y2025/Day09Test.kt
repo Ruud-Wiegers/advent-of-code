@@ -7,13 +7,20 @@ internal class Day09Test {
 
     @Test
     fun solvePartOne() {
-        assertEquals(TODO(), Day09.solvePartOne(input))
+        assertEquals(50, Day09.solvePartOne(input))
     }
 
     @Test
     fun solvePartTwo() {
-        assertEquals(TODO(), Day09.solvePartTwo(input))
+        assertEquals(24, Day09.solvePartTwo(input))
     }
 
-    private val input = """"""
+    private val input = """7,1
+11,1
+11,7
+9,7
+9,5
+2,5
+2,3
+7,3"""
 }

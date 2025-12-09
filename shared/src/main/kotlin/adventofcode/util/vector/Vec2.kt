@@ -1,6 +1,7 @@
 package adventofcode.util.vector
 
 import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 data class Vec2(val x: Int, val y: Int) {
     operator fun plus(o: Vec2) = Vec2(x + o.x, y + o.y)
@@ -8,6 +9,8 @@ data class Vec2(val x: Int, val y: Int) {
     operator fun div(o: Int) = Vec2(x / o, y / o)
     operator fun times(o: Int) = Vec2(x * o, y * o)
     fun distance(o: Vec2) = (o - this).let { it.x.absoluteValue + it.y.absoluteValue }
+
+    val sign : Vec2 get() = Vec2(x.sign, y.sign)
 
     companion object {
         val origin = Vec2(0, 0)
