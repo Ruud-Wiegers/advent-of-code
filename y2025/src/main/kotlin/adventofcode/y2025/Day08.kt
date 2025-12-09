@@ -1,6 +1,7 @@
 package adventofcode.y2025
 
 import adventofcode.io.AdventSolution
+import adventofcode.util.algorithm.UnionFind
 import adventofcode.util.vector.Vec3
 
 fun main() {
@@ -13,27 +14,29 @@ object Day08 : AdventSolution(2025, 8, "Playground") {
 
     fun solvePartOne(input: String, connectionCount: Int): Long {
         val junctions = parse(input)
-
-        val distances = distances(junctions).take(connectionCount)
+        val connections = distances(junctions).sortedBy { it.distance }.take(connectionCount)
 
         val unionFind = UnionFind(junctions.size)
-        distances.forEach { unionFind.union(it.fromIndex, it.toIndex) }
+        for ((fromIndex, toIndex) in connections) {
+            unionFind.union(fromIndex, toIndex)
+        }
 
         val results = unionFind.toSets()
         val largestGroupSizes = results.map { it.size }.sortedDescending().take(3)
         return largestGroupSizes.map(Int::toLong).reduce(Long::times)
     }
 
+
     override fun solvePartTwo(input: String): Long {
         val junctions = parse(input)
+        val connections = distances(junctions).sortedBy { it.distance }
 
-        val distances = distances(junctions)
         val sets = UnionFind(junctions.size)
 
-        distances.forEach { (fromId, toId) ->
-            sets.union(fromId, toId)
+        for ((fromIndex, toIndex) in connections) {
+            sets.union(fromIndex, toIndex)
             if (sets.setCount == 1) {
-                return junctions[fromId].x.toLong() * junctions[toId].x.toLong()
+                return junctions[fromIndex].x.toLong() * junctions[toIndex].x.toLong()
             }
         }
 
@@ -50,41 +53,9 @@ private fun parse(input: String): List<Vec3> = input
 private data class Connection(val fromIndex: Int, val toIndex: Int, val distance: Long)
 
 private fun distances(junctions: List<Vec3>): List<Connection> = buildList {
-
-    for (a in junctions.indices)
-        for (b in (a + 1)..junctions.lastIndex)
-            add(Connection(a, b, magnitude(junctions[a], junctions[b])))
-}.sortedBy { it.distance }
-
-fun magnitude(v1: Vec3, v2: Vec3): Long =
-    (v2 - v1).let { (x, y, z) -> x.toLong() * x + y.toLong() * y + z.toLong() * z }
-
-
-
-private class UnionFind(n: Int) {
-    private val parent: IntArray = IntArray(n) { it }
-    private var _setCount = n
-    val setCount: Int get() = _setCount
-
-    fun union(x: Int, y: Int) {
-        val xRoot = findRoot(x)
-        val yRoot = findRoot(y)
-        if (xRoot != yRoot) {
-            parent[yRoot] = xRoot
-            _setCount--
-        }
-    }
-
-    fun toSets(): List<Set<Int>> {
-        return parent.indices.groupBy { findRoot(it) }.values.map { it.toSet() }
-    }
-
-    private fun findRoot(x: Int): Int {
-        var ancestor = x
-        while (ancestor != parent[ancestor]) {
-            ancestor = parent[ancestor]
-        }
-        return ancestor
-    }
+    for (from in junctions.indices)
+        for (to in (from + 1)..junctions.lastIndex)
+            add(Connection(from, to, (junctions[from] - junctions[to]).magnitude()))
 }
 
+private fun Vec3.magnitude(): Long = x.toLong() * x + y.toLong() * y + z.toLong() * z
