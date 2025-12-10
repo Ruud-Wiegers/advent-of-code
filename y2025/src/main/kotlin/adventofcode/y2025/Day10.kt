@@ -34,43 +34,46 @@ object Day10 : AdventSolution(2025, 10, "Factory") {
             .groupBy({ it.first }, { it.second })
 
 
-        val ctx = Context()
+        return Context().use { it.optimize(buttons.size, buttonPressesPerCounter, targets) }
+    }
 
-        //create buttons
-        val countButtonPressedExpressions =
-            List(buttons.size) { index -> ctx.mkIntConst("times button $index is pressed") }.toTypedArray()
-
+    private fun Context.optimize(
+        buttonCount: Int,
+        buttonPressesPerCounter: Map<Int, List<Int>>,
+        counterTargets: List<Int>
+    ): Int {
+        val countButtonPressedExpressions: Array<IntExpr> = List(buttonCount) { index ->
+            mkIntConst("button $index pressed")
+        }.toTypedArray()
 
         // Each counter target value should be reached by pressing the corresponding buttons
         val counterTargetValueReachedExpressions: List<BoolExpr> =
             buttonPressesPerCounter.map { (counterIndex, buttons) ->
                 val buttonPressExpressions = buttons.map(countButtonPressedExpressions::get).toTypedArray()
-                val sumOfButtonPressesExpression = ctx.mkAdd(*buttonPressExpressions)
-                val counterTargetValueExpression: IntExpr = ctx.mkInt(targets[counterIndex])
+                val sumOfButtonPressesExpression = mkAdd(*buttonPressExpressions)
+                val counterTargetValueExpression: IntExpr = mkInt(counterTargets[counterIndex])
 
-                ctx.mkEq(sumOfButtonPressesExpression, counterTargetValueExpression)
+                mkEq(sumOfButtonPressesExpression, counterTargetValueExpression)
             }
 
-        val sumOfButtonPressesExpression = ctx.mkAdd(*countButtonPressedExpressions)
+        val sumOfButtonPressesExpression: ArithExpr<IntSort> = mkAdd(*countButtonPressedExpressions)
 
-        val optimizationContext: Optimize = ctx.mkOptimize()
+        val optimizationContext: Optimize = mkOptimize()
 
         counterTargetValueReachedExpressions.forEach {
             optimizationContext.Add(it)
         }
 
-
         //require that each button is pressed 0+ times
-        countButtonPressedExpressions.forEach { buttonVar ->
-            optimizationContext.Add(ctx.mkGe(buttonVar, ctx.mkInt(0)))
+        countButtonPressedExpressions.forEach { buttonPressedExpression ->
+            optimizationContext.Add(mkGe(buttonPressedExpression, mkInt(0)))
         }
 
-        optimizationContext.MkMinimize(sumOfButtonPressesExpression)
+        val answer = optimizationContext.MkMinimize(sumOfButtonPressesExpression)
 
         optimizationContext.Check()
-        return optimizationContext.model.evaluate(sumOfButtonPressesExpression, false)
-            .let { it as IntNum }
-            .int
+
+        return answer.value.let { it as IntNum }.int
     }
 }
 
@@ -87,5 +90,3 @@ private fun parse(input: String): Machine {
     val targets = split.last().drop(1).dropLast(1).split(",").map(String::toInt)
     return Machine(lights, buttons, targets)
 }
-
-
