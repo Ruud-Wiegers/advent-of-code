@@ -30,8 +30,7 @@ object Day10 : AdventSolution(2025, 10, "Factory") {
         val buttonPressesPerCounter: Map<Int, List<Int>> = buttons
             .flatMapIndexed { index, booleans ->
                 booleans.withIndex().filter { it.value }.map { it.index to index }
-            }
-            .groupBy({ it.first }, { it.second })
+            }.groupBy({ it.first }, { it.second })
 
 
         return Context().use { it.optimize(buttons.size, buttonPressesPerCounter, targets) }
@@ -46,7 +45,6 @@ object Day10 : AdventSolution(2025, 10, "Factory") {
             mkIntConst("button $index pressed")
         }.toTypedArray()
 
-        // Each counter target value should be reached by pressing the corresponding buttons
         val counterTargetValueReachedExpressions: List<BoolExpr> =
             buttonPressesPerCounter.map { (counterIndex, buttons) ->
                 val buttonPressExpressions = buttons.map(countButtonPressedExpressions::get).toTypedArray()
@@ -60,18 +58,12 @@ object Day10 : AdventSolution(2025, 10, "Factory") {
 
         val optimizationContext: Optimize = mkOptimize()
 
-        counterTargetValueReachedExpressions.forEach {
-            optimizationContext.Add(it)
-        }
-
-        //require that each button is pressed 0+ times
-        countButtonPressedExpressions.forEach { buttonPressedExpression ->
-            optimizationContext.Add(mkGe(buttonPressedExpression, mkInt(0)))
-        }
-
+        counterTargetValueReachedExpressions.forEach(optimizationContext::Add)
+        countButtonPressedExpressions.map { mkGe(it, mkInt(0)) }.forEach(optimizationContext::Add)
         val answer = optimizationContext.MkMinimize(sumOfButtonPressesExpression)
 
         optimizationContext.Check()
+
 
         return answer.value.let { it as IntNum }.int
     }
