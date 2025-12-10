@@ -14,11 +14,12 @@ object Day10 : AdventSolution(2025, 10, "Factory") {
 
     private fun solveSingle(input: String): Int {
         val (lights, buttons) = parse(input)
+        val initial = lights.map { false }
 
         fun nextState(state: List<Boolean>) = buttons.map { state.zip(it, Boolean::xor) }
 
-        return generateSequence(listOf(lights)) { it.flatMap(::nextState).distinct() }
-            .indexOfFirst { it.any { state -> state.none { it } } }
+        return generateSequence(listOf(initial)) { it.flatMap(::nextState).distinct() }
+            .indexOfFirst { it.any(lights::equals) }
     }
 
     override fun solvePartTwo(input: String) = input.lines().sumOf(::solveZ3)
