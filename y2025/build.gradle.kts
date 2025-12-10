@@ -11,5 +11,6 @@ application {
 
 dependencies {
     implementation(project(":shared"))
+    implementation("tools.aqua:z3-turnkey:4.14.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
 }
