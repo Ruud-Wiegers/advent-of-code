@@ -66,12 +66,10 @@ private fun Map<String, List<String>>.pruneUnreachable(start: String): Map<Strin
 
     while (open.isNotEmpty()) {
         visited += open
-        open = open.flatMap { this[it].orEmpty() }.toSet()
+        open = open.flatMap { this[it].orEmpty().filterNot(visited::contains) }.toSet()
     }
 
-    return this
-        .filterKeys { it in visited }
-        .mapValues { it.value.filter { it in visited } }
+    return this.filterKeys(visited::contains).mapValues { it.value.filter(visited::contains) }
 }
 
 
